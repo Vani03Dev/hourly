@@ -4,9 +4,13 @@ import React from "react";
 import Link from "next/link";
 import { Box, Container, Grid, Typography, Button, Stack, Chip } from "@mui/material";
 
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 import { FadeIn, SlideUp } from "../shared/MotionWrapper";
 
 export function Hero() {
+  const { isAuthenticated, isOnboarded, user } = useSelector((state: RootState) => state.auth);
+
   return (
     <Box sx={{ minHeight: 'calc(100vh - 64px)', bgcolor: 'background.default', display: 'flex', alignItems: 'center', py: { xs: 8, md: 0 }, overflow: 'hidden' }}>
       <Container maxWidth="lg">
@@ -26,12 +30,27 @@ export function Hero() {
             
             <SlideUp delay={0.3}>
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 6 }}>
-                <Button component={Link} href="/search" variant="contained" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', boxShadow: '0 8px 24px -8px rgba(30, 58, 95, 0.5)', '&:hover': { boxShadow: '0 12px 28px -8px rgba(30, 58, 95, 0.7)', transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
-                  Find an Expert
-                </Button>
-                <Button component={Link} href="/signup" variant="outlined" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', borderWidth: 2, '&:hover': { borderWidth: 2, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
-                  Become a Professional
-                </Button>
+                {isOnboarded ? (
+                  <>
+                    <Button component={Link} href="/expert/dashboard" variant="contained" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', boxShadow: '0 8px 24px -8px rgba(30, 58, 95, 0.5)', '&:hover': { boxShadow: '0 12px 28px -8px rgba(30, 58, 95, 0.7)', transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+                      Go to Dashboard
+                    </Button>
+                    {user && (
+                      <Button component={Link} href={`/book/${user.id}`} variant="outlined" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', borderWidth: 2, '&:hover': { borderWidth: 2, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+                        View Public Profile
+                      </Button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Button component={Link} href="/search" variant="contained" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', boxShadow: '0 8px 24px -8px rgba(30, 58, 95, 0.5)', '&:hover': { boxShadow: '0 12px 28px -8px rgba(30, 58, 95, 0.7)', transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+                      Find an Expert
+                    </Button>
+                    <Button component={Link} href={isAuthenticated ? "/expert/onboarding" : "/signup"} variant="outlined" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', borderWidth: 2, '&:hover': { borderWidth: 2, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+                      {isAuthenticated ? "Complete Profile" : "Become a Professional"}
+                    </Button>
+                  </>
+                )}
               </Stack>
             </SlideUp>
 

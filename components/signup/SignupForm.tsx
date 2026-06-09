@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { Box, Typography, Button, TextField, Dialog, DialogTitle, DialogContent, Stepper, Step, StepLabel, IconButton } from "@mui/material";
+import { Box, Typography, Button, TextField, Dialog, DialogTitle, DialogContent, Stepper, Step, StepLabel, IconButton, Divider } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
@@ -24,7 +24,6 @@ const steps = ["Personal Info", "Contact Details", "Security"];
 
 export function SignupForm() {
   const router = useRouter();
-  const { signup } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [showOTP, setShowOTP] = useState(false);
   const [formData, setFormData] = useState<SignupFormValues | null>(null);
@@ -56,19 +55,38 @@ export function SignupForm() {
     setActiveStep((prev) => prev - 1);
   };
 
-  const onSubmit = (data: SignupFormValues) => {
-    setFormData(data);
-    setTimeout(() => {
-      setShowOTP(true);
-    }, 1000);
+  const onSubmit = async (data: SignupFormValues) => {
+    try {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            first_name: data.name.split(' ')[0] || '',
+            last_name: data.name.split(' ').slice(1).join(' ') || '',
+            phone: data.phone,
+            city: data.city
+          }
+        }
+      });
+
+      if (error) {
+        import('@/utils/toast').then(({ Toast }) => Toast.error(error.message));
+      } else {
+        import('@/utils/toast').then(({ Toast }) => Toast.success('Account created successfully!'));
+        router.push('/expert/dashboard');
+      }
+    } catch (error) {
+      import('@/utils/toast').then(({ Toast }) => Toast.error('An unexpected error occurred.'));
+    }
   };
 
   const handleVerifyOTP = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData) {
-      signup(formData);
-      router.push("/dashboard");
-    }
+    router.push("/dashboard");
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -231,6 +249,40 @@ export function SignupForm() {
             </Button>
           )}
         </Box>
+
+        <Box sx={{ mt: 4, mb: 3 }}>
+          <Divider sx={{ '&::before, &::after': { borderColor: 'divider' } }}>
+            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 'bold', px: 1 }}>OR</Typography>
+          </Divider>
+        </Box>
+
+        <Button
+          fullWidth
+          variant="outlined"
+          type="button"
+          onClick={async () => {
+            const { createClient } = await import('@/utils/supabase/client');
+            const supabase = createClient();
+            await supabase.auth.signInWithOAuth({
+              provider: 'google',
+              options: {
+                redirectTo: `${location.origin}/auth/callback`,
+              },
+            });
+          }}
+          sx={{ 
+            py: 1.5, 
+            borderRadius: 2, 
+            fontWeight: 'bold', 
+            color: 'text.primary', 
+            borderColor: 'divider',
+            '&:hover': { borderColor: 'text.primary', bgcolor: 'action.hover' },
+            mb: 2
+          }}
+        >
+          <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" sx={{ width: 20, height: 20, mr: 1.5 }} />
+          Continue with Google
+        </Button>
 
         <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', mt: 4 }}>
           Already have an account? <Box component="span" onClick={() => router.push("/")} sx={{ color: 'primary.main', fontWeight: 'bold', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>Log In →</Box>

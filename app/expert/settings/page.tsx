@@ -11,10 +11,134 @@ export default function ExpertSettingsPage() {
   const { user } = useAuth();
   
   const [activeTab, setActiveTab] = useState("profile");
-  const [name, setName] = useState(user?.name || "Priya Patel");
-  const [title, setTitle] = useState("Senior Product Designer at Google");
-  const [rate, setRate] = useState("1200");
-  const [bio, setBio] = useState("I help designers crack product design interviews at FAANG. With 5+ years of experience, I can review your portfolio and do mock whiteboard sessions.");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [title, setTitle] = useState("");
+  const [rate, setRate] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch actual profile data
+  React.useEffect(() => {
+    async function loadProfile() {
+      if (!user) return;
+      try {
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
+        
+        const { data, error } = await supabase
+          .from('expert_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+          
+        if (data) {
+          setTitle(data.title || "");
+          setBio(data.bio || "");
+          setRate(data.hourly_rate ? data.hourly_rate.toString() : "");
+          if (data.first_name) setFirstName(data.first_name);
+          else if (user?.user_metadata?.first_name) setFirstName(user.user_metadata.first_name);
+          
+          if (data.last_name) setLastName(data.last_name);
+          else if (user?.user_metadata?.last_name) setLastName(user.user_metadata.last_name);
+          
+          if (data.avatar_url) setAvatarUrl(data.avatar_url);
+        }
+      } catch (error) {
+        console.error("Error loading profile", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadProfile();
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('expert_profiles')
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          title: title,
+          bio: bio,
+          hourly_rate: parseInt(rate) || 0,
+        })
+        .eq('id', user.id);
+        
+      if (error) throw error;
+      const { Toast } = await import('@/utils/toast');
+      Toast.success('Settings saved successfully!');
+    } catch (error: any) {
+      console.error(error);
+      const { Toast } = await import('@/utils/toast');
+      Toast.error(error.message || 'Failed to save settings');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      if (!event.target.files || event.target.files.length === 0 || !user) return;
+      
+      const file = event.target.files[0];
+      
+      // Validate file size (Max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        const { Toast } = await import('@/utils/toast');
+        Toast.error('File size must be less than 2MB');
+        return;
+      }
+
+      setIsUploading(true);
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+
+      // Ensure no collisions by using user UUID
+      // Structure: [user_id]/avatar.jpg
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${user.id}/avatar.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const publicUrl = data.publicUrl + `?t=${Date.now()}`; // Add timestamp to break browser cache
+
+      // Save URL to database
+      const { error: updateError } = await supabase
+        .from('expert_profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      const { Toast } = await import('@/utils/toast');
+      Toast.success('Profile photo updated!');
+      
+    } catch (error: any) {
+      console.error(error);
+      const { Toast } = await import('@/utils/toast');
+      Toast.error(error.message || 'Failed to upload photo');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  if (isLoading) return null; // Or a loading spinner
 
   return (
     <Container maxWidth="lg">
@@ -23,8 +147,15 @@ export default function ExpertSettingsPage() {
           <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>Profile & Settings</Typography>
           <Typography variant="body1" color="text.secondary">Hover over the tabs to switch views instantly.</Typography>
         </Box>
-        <Button variant="contained" color="primary" size="large" sx={{ borderRadius: 2 }}>
-          Save Changes
+        <Button 
+          variant="contained" 
+          color="primary" 
+          size="large" 
+          sx={{ borderRadius: 2 }}
+          onClick={handleSave}
+          disabled={isSaving}
+        >
+          {isSaving ? "Saving..." : "Save Changes"}
         </Button>
       </Box>
 
@@ -72,17 +203,39 @@ export default function ExpertSettingsPage() {
               <Grid container spacing={4}>
                 <Grid size={{ xs: 12, md: 4 }}>
                   <Paper elevation={1} sx={{ p: 4, borderRadius: 3, textAlign: 'center' }}>
-                    <Avatar sx={{ width: 120, height: 120, mx: 'auto', mb: 3, fontSize: '3rem', bgcolor: 'primary.main', transition: 'all 0.3s', '&:hover': { transform: 'scale(1.05)' } }}>
-                      {name.charAt(0)}
+                    <Avatar 
+                      src={avatarUrl}
+                      sx={{ width: 120, height: 120, mx: 'auto', mb: 3, fontSize: '3rem', bgcolor: 'primary.main', transition: 'all 0.3s', '&:hover': { transform: 'scale(1.05)' } }}
+                    >
+                      {!avatarUrl && firstName.charAt(0)}
                     </Avatar>
-                    <Button variant="outlined" fullWidth sx={{ borderRadius: 2 }}>Upload Photo</Button>
+                    
+                    <Button 
+                      variant="outlined" 
+                      component="label"
+                      fullWidth 
+                      disabled={isUploading}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      {isUploading ? 'Uploading...' : 'Upload Photo'}
+                      <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                      />
+                    </Button>
+                    
                   </Paper>
                 </Grid>
                 <Grid size={{ xs: 12, md: 8 }}>
                   <Paper elevation={1} sx={{ p: 4, borderRadius: 3 }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>Basic Details</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                      <TextField label="Full Name" fullWidth value={name} onChange={(e) => setName(e.target.value)} />
+                      <Box sx={{ display: 'flex', gap: 2 }}>
+                        <TextField label="First Name" fullWidth value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                        <TextField label="Last Name" fullWidth value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                      </Box>
                       <TextField label="Professional Title" fullWidth value={title} onChange={(e) => setTitle(e.target.value)} />
                       <TextField label="About You (Bio)" fullWidth multiline rows={4} value={bio} onChange={(e) => setBio(e.target.value)} />
                     </Box>

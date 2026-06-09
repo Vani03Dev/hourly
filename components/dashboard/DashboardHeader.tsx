@@ -22,11 +22,11 @@ export function DashboardHeader() {
           </Button>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, borderLeft: 1, borderColor: 'divider', pl: 3 }}>
             <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
-              <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>{user?.name || "User"}</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main' }}>{user?.user_metadata?.first_name || user?.email || "User"}</Typography>
               <Typography variant="caption" color="text.secondary">Mentee Account</Typography>
             </Box>
-            <Avatar src={user?.avatar || undefined} alt={user?.name || "User"} sx={{ width: 40, height: 40, bgcolor: 'grey.200', color: 'text.secondary', fontWeight: 'bold' }}>
-              {!user?.avatar && "U"}
+            <Avatar src={user?.user_metadata?.avatar_url || undefined} alt={user?.user_metadata?.first_name || "User"} sx={{ width: 40, height: 40, bgcolor: 'grey.200', color: 'text.secondary', fontWeight: 'bold' }}>
+              {(!user?.user_metadata?.avatar_url) && "U"}
             </Avatar>
           </Box>
         </Stack>

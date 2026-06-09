@@ -58,6 +58,9 @@ export const metadata: Metadata = {
   },
 };
 
+import { NotificationsProvider } from "@/contexts/NotificationsContext";
+import { ReduxProvider } from "@/store/ReduxProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -67,13 +70,17 @@ export default function RootLayout({
     <html lang="en" className={plusJakartaSans.variable}>
       <body className={`flex flex-col min-h-screen ${plusJakartaSans.className}`} style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif' }}>
         <ThemeRegistry>
-          <AuthProvider>
-            <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '8px' } }} />
-            <Header />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-            <BottomNav />
-          </AuthProvider>
+          <ReduxProvider>
+            <AuthProvider>
+              <NotificationsProvider>
+                <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '8px' } }} />
+                <Header />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+                <BottomNav />
+              </NotificationsProvider>
+            </AuthProvider>
+          </ReduxProvider>
         </ThemeRegistry>
       </body>
     </html>

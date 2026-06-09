@@ -12,38 +12,47 @@ export default function SearchPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortOrder, setSortOrder] = useState("recommended");
   const [loading, setLoading] = useState(true);
+  const [allExperts, setAllExperts] = useState<any[]>([]);
 
-  // Expanded mock data to make filtering more interesting
-  const allExperts = useMemo(() => {
-    const duplicated = [...mockExperts];
-    // Add some variations
-    duplicated.push({
-      ...mockExperts[0],
-      id: "5",
-      name: "Sanjay Kumar",
-      title: "VP of Engineering at Flipkart",
-      bio: "Scaling systems and building engineering culture.",
-      price: 2500,
-    });
-    duplicated.push({
-      ...mockExperts[1],
-      id: "6",
-      name: "Aditi Rao",
-      title: "Senior Product Manager",
-      bio: "Product strategy and growth for consumer apps.",
-      price: 800,
-    });
-    return duplicated;
-  }, []);
-
-  // Simulate network loading when filters change
+  // Fetch real data from Supabase
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoading(true);
-    const timer = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(timer);
-       
-  }, [query, priceRange, selectedCategories, sortOrder]);
+    async function loadExperts() {
+      setLoading(true);
+      try {
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
+        
+        const { data, error } = await supabase
+          .from('expert_profiles')
+          .select('*')
+          .eq('is_onboarded', true);
+          
+        if (error) throw error;
+        
+        // Map Supabase rows to our existing Expert interface
+        const mappedExperts = data.map((row: any) => ({
+          id: row.id,
+          name: `${row.first_name || ''} ${row.last_name || ''}`.trim() || 'Expert',
+          title: row.title || 'Professional',
+          bio: row.bio || '',
+          price: row.hourly_rate || 0,
+          rating: 5.0, // Mock until reviews are implemented
+          sessions: 0, // Mock until bookings are implemented
+          credentials: row.tags || [],
+          isOnline: false,
+          photo: row.avatar_url || null,
+        }));
+        
+        setAllExperts(mappedExperts);
+      } catch (error) {
+        console.error("Error loading experts", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadExperts();
+  }, []);
 
   const filteredExperts = useMemo(() => {
     let result = allExperts;
@@ -55,7 +64,15 @@ export default function SearchPage() {
         e.name.toLowerCase().includes(lowerQ) || 
         e.title.toLowerCase().includes(lowerQ) || 
         e.bio.toLowerCase().includes(lowerQ) ||
-        e.credentials.some(c => c.toLowerCase().includes(lowerQ))
+        e.credentials.some((c: string) => c.toLowerCase().includes(lowerQ))
+      );
+    }
+
+    // Filter by categories
+    if (selectedCategories.length > 0) {
+      // Allow if expert has ANY of the selected categories, or if we want ALL, change to every
+      result = result.filter(e => 
+        e.credentials.some((c: string) => selectedCategories.includes(c))
       );
     }
 

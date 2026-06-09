@@ -1,59 +1,83 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string;
-  role?: string;
-}
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { User, Session } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/client";
+import { useDispatch } from "react-redux";
+import { setAuth, clearAuth } from "@/store/slices/authSlice";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, role?: string) => void;
-  logout: () => void;
-  signup: (userData: any) => void;
+  session: Session | null;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Note: we instantiate the supabase client once securely inside the provider
+  const supabase = createClient();
 
-  const login = (email: string, role: string = "mentee") => {
-    setUser({
-      id: "u123",
-      name: email.split("@")[0],
-      email: email,
-      avatar: "https://i.pravatar.cc/150?u=current_user",
-      role
-    });
-  };
+  const dispatch = useDispatch();
 
-  const logout = () => {
-    setUser(null);
-  };
+  useEffect(() => {
+    const handleAuthChange = async (currentSession: Session | null) => {
+      setSession(currentSession);
+      setUser(currentSession?.user || null);
+      
+      if (currentSession?.user && currentSession.access_token) {
+        // Fetch onboarding status
+        const { data } = await supabase
+          .from('expert_profiles')
+          .select('is_onboarded')
+          .eq('id', currentSession.user.id)
+          .single();
+          
+        const isOnboarded = !!data?.is_onboarded;
+        
+        dispatch(setAuth({ 
+          user: currentSession.user, 
+          token: currentSession.access_token,
+          isOnboarded 
+        }));
+      } else {
+        dispatch(clearAuth());
+      }
+      setIsLoading(false);
+    };
 
-  const signup = (userData: any) => {
-    setUser({
-      id: "u124",
-      name: userData.name,
-      email: userData.email,
-      avatar: "https://i.pravatar.cc/150?u=new_user",
-    });
-  };
+    // 1. Fetch active session instantly on mount
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      handleAuthChange(session);
+    };
+    
+    fetchSession();
+
+    // 2. Setup highly-secure real-time listener for Auth State changes (Login, Logout, Token Refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, currentSession) => {
+        handleAuthChange(currentSession);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase.auth, dispatch]);
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated: !!user,
         user,
-        login,
-        logout,
-        signup,
+        session,
+        isLoading,
       }}
     >
       {children}

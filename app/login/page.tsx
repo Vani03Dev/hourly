@@ -1,26 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Box, Paper, Typography, TextField, Button, Divider } from "@mui/material";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { Toast } from "@/utils/toast";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate network request
-    setTimeout(() => {
-      setIsLoading(false);
-      toast.success('Successfully logged in! Welcome back.');
-      router.push('/dashboard');
-    }, 1000);
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+      
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+      
+      if (error) {
+        Toast.error(error.message);
+      } else {
+        Toast.success('Successfully logged in! Welcome back.');
+        router.push('/expert/dashboard');
+      }
+    } catch (error) {
+      Toast.error('An unexpected error occurred.');
+    }
   };
 
   return (
@@ -41,21 +66,25 @@ export default function LoginPage() {
             </Typography>
           </Box>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               <TextField
                 fullWidth
                 label="Email Address"
                 type="email"
                 variant="outlined"
-                required
+                {...register("email")}
+                error={!!errors.email}
+                helperText={errors.email?.message}
               />
               <TextField
                 fullWidth
                 label="Password"
                 type="password"
                 variant="outlined"
-                required
+                {...register("password")}
+                error={!!errors.password}
+                helperText={errors.password?.message}
               />
               
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1 }}>
@@ -71,10 +100,10 @@ export default function LoginPage() {
                 variant="contained"
                 color="primary"
                 size="large"
-                disabled={isLoading}
+                disabled={isSubmitting}
                 sx={{ py: 1.5, borderRadius: 2, fontWeight: 'bold', fontSize: '1rem', mt: 1 }}
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isSubmitting ? 'Signing in...' : 'Sign In'}
               </Button>
             </Box>
           </form>
@@ -88,6 +117,16 @@ export default function LoginPage() {
           <Button
             fullWidth
             variant="outlined"
+            onClick={async () => {
+              const { createClient } = await import('@/utils/supabase/client');
+              const supabase = createClient();
+              await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                  redirectTo: `${location.origin}/auth/callback`,
+                },
+              });
+            }}
             sx={{ 
               py: 1.5, 
               borderRadius: 2, 
@@ -103,7 +142,7 @@ export default function LoginPage() {
 
           <Box sx={{ mt: 4, textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" style={{ textDecoration: 'none' }}>
                 <Typography component="span" variant="body2" sx={{ fontWeight: 'bold', color: 'secondary.main', '&:hover': { textDecoration: 'underline' } }}>
                   Sign up
