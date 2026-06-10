@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
 import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from '@/utils/supabase/client';
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -59,7 +60,7 @@ export default function ExpertAvailabilityPage() {
     async function fetchSchedule() {
       if (!user) return;
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         const { data, error } = await supabase
@@ -195,7 +196,7 @@ export default function ExpertAvailabilityPage() {
     if (!user) return;
     setIsSaving(true);
     try {
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
       
       const { error } = await supabase

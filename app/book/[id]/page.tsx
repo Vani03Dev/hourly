@@ -15,6 +15,7 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from '@/utils/supabase/client';
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -36,7 +37,7 @@ export default function PublicProfilePage() {
   useEffect(() => {
     async function loadExpertProfile() {
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         const { data, error } = await supabase
@@ -71,7 +72,7 @@ export default function PublicProfilePage() {
       const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`;
 
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         const { data, error } = await supabase
           .from('bookings')
@@ -223,7 +224,7 @@ export default function PublicProfilePage() {
     
     setIsBooking(true);
     try {
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
       
       const now = new Date();

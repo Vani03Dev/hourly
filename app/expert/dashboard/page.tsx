@@ -10,6 +10,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
+import { createClient } from '@/utils/supabase/client';
 
 export default function ExpertDashboardPage() {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ export default function ExpertDashboardPage() {
   React.useEffect(() => {
     async function checkOnboarding() {
       if (!user) return;
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
       
       const { data, error } = await supabase
@@ -46,7 +47,7 @@ export default function ExpertDashboardPage() {
 
   const fetchBookings = async () => {
     if (!user) return;
-    const { createClient } = await import('@/utils/supabase/client');
+    
     const supabase = createClient();
     
     const { data, error } = await supabase

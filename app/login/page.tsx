@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { Toast } from "@/utils/toast";
+import { createClient } from '@/utils/supabase/client';
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -29,7 +30,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
       
       const { error } = await supabase.auth.signInWithPassword({
@@ -118,7 +119,7 @@ export default function LoginPage() {
             fullWidth
             variant="outlined"
             onClick={async () => {
-              const { createClient } = await import('@/utils/supabase/client');
+              
               const supabase = createClient();
               await supabase.auth.signInWithOAuth({
                 provider: 'google',

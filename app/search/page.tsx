@@ -5,6 +5,7 @@ import { Box, Container, Typography, Grid, Select, MenuItem, Pagination, FormCon
 import { SearchFilters } from "@/components/search/SearchFilters";
 import { ExpertGrid } from "@/components/search/ExpertGrid";
 import { mockExperts } from "@/lib/mock-data";
+import { createClient } from '@/utils/supabase/client';
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -20,7 +21,7 @@ export default function SearchPage() {
        
     setLoading(true);
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         const { data, error } = await supabase

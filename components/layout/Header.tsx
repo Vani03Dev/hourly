@@ -13,6 +13,7 @@ import { useNotifications } from "@/contexts/NotificationsContext";
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { createClient } from '@/utils/supabase/client';
 
 export function Header() {
   const { mode, toggleColorMode } = useColorMode();
@@ -41,7 +42,7 @@ export function Header() {
   ];
 
   const handleLogout = async () => {
-    const { createClient } = await import('@/utils/supabase/client');
+    
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = '/login';

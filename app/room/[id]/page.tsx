@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { JitsiMeeting } from '@jitsi/react-sdk';
+import { createClient } from '@/utils/supabase/client';
 
 export default function VideoRoomPage() {
   const params = useParams();
@@ -24,7 +25,7 @@ export default function VideoRoomPage() {
       if (!user || !bookingId) return;
       
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         // Fetch the booking ensuring the current user is either the mentee or expert

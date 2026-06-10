@@ -7,6 +7,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import EventIcon from '@mui/icons-material/Event';
 import Link from "next/link";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { createClient } from '@/utils/supabase/client';
 
 export default function MenteeDashboardPage() {
   const { user } = useAuth();
@@ -19,7 +20,7 @@ export default function MenteeDashboardPage() {
       if (!user) return;
       
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         // Fetch bookings where user is mentee

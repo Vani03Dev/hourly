@@ -10,6 +10,7 @@ import confetti from "canvas-confetti";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Suspense } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams();
@@ -30,7 +31,7 @@ function BookingSuccessContent() {
 
     async function fetchBooking(id: string) {
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         // Fetch booking and profiles using a join

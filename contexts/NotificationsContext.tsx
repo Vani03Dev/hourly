@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
+import { createClient } from '@/utils/supabase/client';
 
 type Notification = {
   id: string;
@@ -54,7 +55,7 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
     let subscription: any = null;
 
     const fetchNotifications = async () => {
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
       
       const { data, error } = await supabase
@@ -114,7 +115,7 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
   }, [user]);
 
   const markAsRead = async (id: string) => {
-    const { createClient } = await import('@/utils/supabase/client');
+    
     const supabase = createClient();
     
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
@@ -127,7 +128,7 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
 
   const markAllAsRead = async () => {
     if (!user) return;
-    const { createClient } = await import('@/utils/supabase/client');
+    
     const supabase = createClient();
     
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));

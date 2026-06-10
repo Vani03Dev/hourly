@@ -9,6 +9,7 @@ import StarIcon from '@mui/icons-material/Star';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoIcon from '@mui/icons-material/Info';
+import { createClient } from '@/utils/supabase/client';
 
 export default function ExpertSettingsPage() {
   const { user } = useAuth();
@@ -30,7 +31,7 @@ export default function ExpertSettingsPage() {
     async function loadProfile() {
       if (!user) return;
       try {
-        const { createClient } = await import('@/utils/supabase/client');
+        
         const supabase = createClient();
         
         const { data, error } = await supabase
@@ -72,7 +73,7 @@ export default function ExpertSettingsPage() {
     if (!user) return;
     setIsSaving(true);
     try {
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
       const { error } = await supabase
         .from('expert_profiles')
@@ -111,7 +112,7 @@ export default function ExpertSettingsPage() {
       }
 
       setIsUploading(true);
-      const { createClient } = await import('@/utils/supabase/client');
+      
       const supabase = createClient();
 
       // Ensure no collisions by using user UUID
@@ -323,7 +324,7 @@ export default function ExpertSettingsPage() {
                     color={hasGoogleCalendar ? "error" : "primary"}
                     href={hasGoogleCalendar ? "#" : "/api/google/auth"}
                     onClick={hasGoogleCalendar ? async () => {
-                      const { createClient } = await import('@/utils/supabase/client');
+                      
                       await createClient().from('google_integrations').delete().eq('expert_id', user!.id);
                       setHasGoogleCalendar(false);
                     } : undefined}
