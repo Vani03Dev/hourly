@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   // Ensure the logged in user matches the state
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user || user.id !== state) {

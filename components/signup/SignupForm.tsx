@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Box, Typography, Button, TextField, Dialog, DialogTitle, DialogContent, Stepper, Step, StepLabel, IconButton, Divider } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from '@/utils/supabase/client';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const signupSchema = z.object({
@@ -57,7 +58,6 @@ export function SignupForm() {
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
-      const { createClient } = await import('@/utils/supabase/client');
       const supabase = createClient();
 
       const { error } = await supabase.auth.signUp({
@@ -261,7 +261,6 @@ export function SignupForm() {
           variant="outlined"
           type="button"
           onClick={async () => {
-            const { createClient } = await import('@/utils/supabase/client');
             const supabase = createClient();
             await supabase.auth.signInWithOAuth({
               provider: 'google',
