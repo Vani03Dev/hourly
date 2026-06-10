@@ -1,5 +1,5 @@
-# Ignore local Supabase Docker state and migrations
-supabase/
+# Ignore local Supabase Docker state and migrations at root
+/supabase/
 
 # Ignore markdown docs and artifacts
 *.md
