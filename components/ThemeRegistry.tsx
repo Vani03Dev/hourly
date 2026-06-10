@@ -25,9 +25,11 @@ export function ThemeRegistry({ children }: { children: React.ReactNode }) {
     // Check local storage or system preference on mount
     const savedMode = localStorage.getItem('themeMode');
     if (savedMode === 'dark' || savedMode === 'light') {
+       
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setMode(savedMode);
     } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+       
        
       setMode('dark');
     }

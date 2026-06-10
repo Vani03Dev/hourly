@@ -155,13 +155,18 @@ export function Header() {
                     ) : (
                       notifications.map((notif) => (
                         <Box key={notif.id}>
-                          <ListItem 
+                          <ListItemButton 
                             alignItems="flex-start" 
-                            onClick={() => { if(!notif.is_read) markAsRead(notif.id); }}
+                            onClick={() => { 
+                              if(!notif.is_read) markAsRead(notif.id); 
+                              handleNotificationClose();
+                            }}
                             sx={{ 
-                              cursor: notif.is_read ? 'default' : 'pointer', 
                               bgcolor: notif.is_read ? 'transparent' : 'rgba(13, 148, 136, 0.05)',
-                              '&:hover': { bgcolor: notif.is_read ? 'rgba(0,0,0,0.02)' : 'rgba(13, 148, 136, 0.1)' }
+                              '&:hover': { bgcolor: notif.is_read ? 'rgba(0,0,0,0.02)' : 'rgba(13, 148, 136, 0.1)' },
+                              borderRadius: 1,
+                              mx: 0.5,
+                              my: 0.25
                             }}
                           >
                             <ListItemText
@@ -184,8 +189,8 @@ export function Header() {
                             {!notif.is_read && (
                               <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', mt: 1, flexShrink: 0, ml: 2 }} />
                             )}
-                          </ListItem>
-                          <Divider component="li" />
+                          </ListItemButton>
+                          <Divider component="li" sx={{ mx: 2 }} />
                         </Box>
                       ))
                     )}

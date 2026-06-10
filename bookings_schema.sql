@@ -7,6 +7,11 @@ CREATE TABLE IF NOT EXISTS public.bookings (
   start_time TEXT NOT NULL,
   end_time TEXT NOT NULL,
   status TEXT DEFAULT 'confirmed',
+  payment_status TEXT DEFAULT 'pending',
+  razorpay_order_id TEXT,
+  razorpay_payment_id TEXT,
+  amount_paid NUMERIC DEFAULT 0,
+  platform_fee NUMERIC DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

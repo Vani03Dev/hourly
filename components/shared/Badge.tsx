@@ -12,7 +12,8 @@ export function Badge({
   rounded = "sm",
   ...props
 }: BadgeProps) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
+ 
 const variants = {
     teal: "bg-teal text-white",
     green: "bg-green/10 text-green", // Wait, #D1FAE5 is light green, text #065F46

@@ -1,0 +1,12 @@
+# Ignore local Supabase Docker state and migrations
+supabase/
+
+# Ignore markdown docs and artifacts
+*.md
+docs/
+
+# Ignore dotfiles
+.github/
+.vscode/
+.env*
+!.env.example

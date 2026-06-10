@@ -69,8 +69,9 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
       }
 
       // Subscribe to real-time events
+      const channelName = `notifications-${user.id}-${Math.random()}`;
       subscription = supabase
-        .channel('public:notifications')
+        .channel(channelName)
         .on(
           'postgres_changes',
           {
@@ -106,7 +107,9 @@ export const NotificationsProvider = ({ children }: { children: React.ReactNode 
 
     return () => {
       isMounted = false;
-      if (subscription) subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, [user]);
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Container, Box, Typography, Paper, Grid, Avatar, Chip, Button, 
   Divider, Skeleton, IconButton
@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export default function PublicProfilePage() {
   const params = useParams();
+  const router = useRouter();
   const expertId = params.id as string;
   
   const { user } = useAuth();
@@ -28,6 +29,8 @@ export default function PublicProfilePage() {
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [existingBookings, setExistingBookings] = useState<any[]>([]);
+  const [googleBusySlots, setGoogleBusySlots] = useState<{start: Date, end: Date}[]>([]);
+  
   const [isBooking, setIsBooking] = useState(false);
 
   useEffect(() => {
@@ -77,8 +80,31 @@ export default function PublicProfilePage() {
           .eq('booking_date', dateString)
           .neq('status', 'canceled');
           
-        if (error) throw error;
-        setExistingBookings(data || []);
+        const bookings = data || [];
+        setExistingBookings(bookings);
+
+        // Fetch Google Calendar events
+        try {
+          const res = await fetch('/api/google/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ expert_id: expertId, date: dateString })
+          });
+          const googleData = await res.json();
+          if (googleData.busySlots && Array.isArray(googleData.busySlots)) {
+            const parsedSlots = googleData.busySlots.map((slot: any) => ({
+              start: new Date(slot.start),
+              end: new Date(slot.end)
+            }));
+            setGoogleBusySlots(parsedSlots);
+          } else {
+            setGoogleBusySlots([]);
+          }
+        } catch (err) {
+          console.error("Google Calendar fetch error:", err);
+          setGoogleBusySlots([]);
+        }
+        
       } catch (err) {
         console.error("Failed to load bookings:", err);
       }
@@ -220,59 +246,77 @@ export default function PublicProfilePage() {
           booking_date: dateString,
           start_time: selectedTimeSlot,
           end_time: endTimeSlot,
-          status: 'confirmed',
+          status: 'pending', // Wait for payment confirmation
+          payment_status: 'pending',
           meeting_link: meetingLink
         })
         .select()
         .single();
         
       if (error) throw error;
+
+      // Create Razorpay Order
+      const res = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+           amount: profile.hourly_rate || 500, // Fallback to 500 if not set
+           notes: { bookingId: booking.id }
+        }),
+      });
+      const orderData = await res.json();
+      if (orderData.error) throw new Error(orderData.error);
+
+      // Save Razorpay order ID to booking
+      await supabase.from('bookings').update({ razorpay_order_id: orderData.order.id }).eq('id', booking.id);
+
+      // Load Razorpay SDK
+      const loadScript = () => new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
       
-      // Show a highly custom, interactive Toast with the copy button!
-      const roomUrl = `${window.location.origin}/room/${booking.id}`;
+      const isLoaded = await loadScript();
+      if (!isLoaded) throw new Error("Razorpay SDK failed to load");
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '', // Needs to be added to .env.local
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: "Hourly Session",
+        description: `Session with ${fullName}`,
+        order_id: orderData.order.id,
+        handler: async function (response: any) {
+          // Success callback
+          toast.success("Payment successful!");
+          router.push(`/booking/success?booking_id=${booking.id}`);
+        },
+        prefill: {
+          name: user.user_metadata?.full_name || '',
+          email: user.email || '',
+        },
+        theme: {
+          color: "#0d9488", // Teal theme color
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (response: any) {
+         toast.error("Payment failed. Please try again.");
+      });
       
-      toast.custom((t) => (
-        <Box
-          sx={{
-            maxWidth: 400, width: '100%', bgcolor: 'background.paper',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
-            borderRadius: 3, p: 2, display: 'flex', flexDirection: 'column', gap: 1.5,
-            borderLeft: '4px solid', borderColor: 'success.main',
-            opacity: t.visible ? 1 : 0, transition: 'opacity 0.2s',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CheckCircleIcon color="success" />
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Session Booked!</Typography>
-          </Box>
-          <Typography variant="body2" color="text.secondary">
-            Your secure video room is ready. Save this link for your session:
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'action.hover', p: 1, borderRadius: 1, gap: 1 }}>
-            <Typography variant="caption" sx={{ flexGrow: 1, wordBreak: 'break-all', fontFamily: 'monospace' }}>
-              {roomUrl}
-            </Typography>
-            <IconButton 
-              size="small" 
-              color="primary"
-              onClick={async () => {
-                await navigator.clipboard.writeText(roomUrl);
-                toast.success("Link copied!", { id: 'copy-toast' });
-              }}
-            >
-              <ContentCopyIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        </Box>
-      ), { duration: 10000 });
-      
+      // Close booking state when modal opens, because they are effectively booked, just pending payment
+      setIsBooking(false);
       setSelectedTimeSlot(null);
+      rzp.open();
       
     } catch (err: any) {
       console.error(err);
       const { Toast } = await import('@/utils/toast');
-      Toast.error(err.message || 'Failed to book session');
-    } finally {
+      Toast.error(err.message || 'Failed to initialize payment');
       setIsBooking(false);
     }
   };
@@ -375,7 +419,7 @@ export default function PublicProfilePage() {
                   overflow: 'hidden',
                   border: '1px solid',
                   borderColor: 'divider',
-                  background: 'linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)',
+                  background: (theme) => theme.palette.mode === 'dark' ? 'linear-gradient(145deg, #1e293b 0%, #0f172a 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)',
                   boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
                 }}
               >
@@ -475,7 +519,26 @@ export default function PublicProfilePage() {
                   {timeSlots.length > 0 ? (
                     <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 4, maxHeight: 280, overflowY: 'auto', pr: 1, '&::-webkit-scrollbar': { width: 6 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 3 } }}>
                       {timeSlots.map((slot: string, idx: number) => {
-                        const isBooked = existingBookings.some(b => b.start_time === slot);
+                        let isBooked = existingBookings.some(b => b.start_time === slot);
+                        
+                        // Check Google Calendar overlap
+                        if (!isBooked && googleBusySlots.length > 0) {
+                          const slotStart = new Date(selectedFullDate!);
+                          const match = slot.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                          if (match) {
+                            let hours = parseInt(match[1]);
+                            if (match[3].toUpperCase() === "PM" && hours !== 12) hours += 12;
+                            if (match[3].toUpperCase() === "AM" && hours === 12) hours = 0;
+                            slotStart.setHours(hours, parseInt(match[2]), 0, 0);
+                            
+                            // Assume 1 hour session duration for overlap calculation
+                            const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+                            
+                            // Overlap condition: slotStart < busyEnd AND slotEnd > busyStart
+                            isBooked = googleBusySlots.some(busy => slotStart < busy.end && slotEnd > busy.start);
+                          }
+                        }
+
                         const isSelected = selectedTimeSlot === slot;
                         
                         return (

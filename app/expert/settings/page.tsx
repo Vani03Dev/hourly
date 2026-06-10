@@ -6,6 +6,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import PersonIcon from '@mui/icons-material/Person';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import StarIcon from '@mui/icons-material/Star';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import InfoIcon from '@mui/icons-material/Info';
 
 export default function ExpertSettingsPage() {
   const { user } = useAuth();
@@ -20,6 +23,7 @@ export default function ExpertSettingsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasGoogleCalendar, setHasGoogleCalendar] = useState(false);
 
   // Fetch actual profile data
   React.useEffect(() => {
@@ -47,6 +51,14 @@ export default function ExpertSettingsPage() {
           
           if (data.avatar_url) setAvatarUrl(data.avatar_url);
         }
+
+        const { data: integrations } = await supabase
+          .from('google_integrations')
+          .select('id')
+          .eq('expert_id', user.id)
+          .single();
+        if (integrations) setHasGoogleCalendar(true);
+
       } catch (error) {
         console.error("Error loading profile", error);
       } finally {
@@ -193,6 +205,16 @@ export default function ExpertSettingsPage() {
                   <ListItemText primary={<Typography sx={{ fontWeight: 'bold' }}>Featured Reviews</Typography>} />
                 </ListItemButton>
               </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton 
+                  selected={activeTab === "integrations"} 
+                  onMouseEnter={() => setActiveTab("integrations")}
+                  sx={{ py: 2, transition: 'all 0.3s', '&.Mui-selected': { bgcolor: 'secondary.main', color: 'white', '& .MuiListItemIcon-root': { color: 'white' } } }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}><CalendarMonthIcon color={activeTab === "integrations" ? "inherit" : "primary"} /></ListItemIcon>
+                  <ListItemText primary={<Typography sx={{ fontWeight: 'bold' }}>Integrations</Typography>} />
+                </ListItemButton>
+              </ListItem>
             </List>
           </Paper>
         </Grid>
@@ -278,6 +300,39 @@ export default function ExpertSettingsPage() {
             <Box sx={{ animation: 'fadeIn 0.3s' }}>
               <Paper elevation={1} sx={{ p: 4, borderRadius: 3, minHeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Typography color="text.secondary">You can manage featured reviews here once you complete a session.</Typography>
+              </Paper>
+            </Box>
+          )}
+
+          {activeTab === "integrations" && (
+            <Box sx={{ animation: 'fadeIn 0.3s' }}>
+              <Paper elevation={1} sx={{ p: 4, borderRadius: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>Integrations</Typography>
+                
+                <Box sx={{ p: 3, border: '1px solid', borderColor: 'divider', borderRadius: 3, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3, justifyContent: 'space-between', bgcolor: hasGoogleCalendar ? 'rgba(13,148,136,0.05)' : 'transparent' }}>
+                  <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+                      Google Calendar Sync {hasGoogleCalendar && <CheckCircleIcon color="success" fontSize="small" />}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                      Prevent double-booking. We will read your personal calendar and automatically block out busy time slots on your public booking page.
+                    </Typography>
+                  </Box>
+                  <Button 
+                    variant={hasGoogleCalendar ? "outlined" : "contained"} 
+                    color={hasGoogleCalendar ? "error" : "primary"}
+                    href={hasGoogleCalendar ? "#" : "/api/google/auth"}
+                    onClick={hasGoogleCalendar ? async () => {
+                      const { createClient } = await import('@/utils/supabase/client');
+                      await createClient().from('google_integrations').delete().eq('expert_id', user!.id);
+                      setHasGoogleCalendar(false);
+                    } : undefined}
+                    sx={{ flexShrink: 0, borderRadius: 2 }}
+                  >
+                    {hasGoogleCalendar ? 'Disconnect' : 'Connect Calendar'}
+                  </Button>
+                </Box>
+                
               </Paper>
             </Box>
           )}

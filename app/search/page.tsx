@@ -17,7 +17,8 @@ export default function SearchPage() {
   // Fetch real data from Supabase
   useEffect(() => {
     async function loadExperts() {
-      setLoading(true);
+       
+    setLoading(true);
       try {
         const { createClient } = await import('@/utils/supabase/client');
         const supabase = createClient();
