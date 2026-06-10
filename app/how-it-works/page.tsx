@@ -203,11 +203,52 @@ export default function HowItWorksPage() {
             <Typography variant="h6" sx={{ color: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.8)' : 'text.secondary', mb: 5, maxWidth: 600, mx: 'auto', fontWeight: 'normal' }}>
               Join thousands of professionals exchanging knowledge on Hourly today.
             </Typography>
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button component={Link} href="/search" variant="contained" color="secondary" sx={{ height: 36, px: 3, fontSize: '0.875rem', fontWeight: 'bold', boxShadow: '0 4px 12px -4px rgba(13, 148, 136, 0.4)', '&:hover': { boxShadow: '0 6px 16px -4px rgba(13, 148, 136, 0.6)' }, transition: 'all 0.2s', borderRadius: 50 }}>
-                Find an Expert <ArrowForwardIcon sx={{ ml: 1, fontSize: '1rem' }} />
+            <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Button 
+                component={Link} 
+                href="/search" 
+                variant="contained" 
+                color="secondary" 
+                size="large"
+                sx={{ 
+                  borderRadius: 8, 
+                  px: 4, 
+                  py: 1.5, 
+                  fontSize: '1rem',
+                  fontWeight: 'bold', 
+                  boxShadow: '0 8px 24px rgba(13, 148, 136, 0.4)', 
+                  transition: 'all 0.3s',
+                  '&:hover': { 
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 12px 28px rgba(13, 148, 136, 0.6)' 
+                  }
+                }}
+              >
+                Find an Expert <ArrowForwardIcon sx={{ ml: 1, fontSize: '1.2rem' }} />
               </Button>
-              <Button component={Link} href="/signup" variant="outlined" sx={{ height: 36, px: 3, fontSize: '0.875rem', fontWeight: 'bold', color: 'white', borderColor: 'rgba(255,255,255,0.4)', borderWidth: 1.5, '&:hover': { borderWidth: 1.5, borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' }, transition: 'all 0.2s', borderRadius: 50 }}>
+              <Button 
+                component={Link} 
+                href="/signup" 
+                variant="outlined" 
+                size="large"
+                sx={{ 
+                  borderRadius: 8, 
+                  px: 4, 
+                  py: 1.5, 
+                  fontSize: '1rem',
+                  fontWeight: 'bold', 
+                  color: 'white', 
+                  borderColor: 'rgba(255,255,255,0.4)', 
+                  borderWidth: 2, 
+                  transition: 'all 0.3s',
+                  '&:hover': { 
+                    borderWidth: 2, 
+                    borderColor: 'white', 
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    transform: 'translateY(-2px)'
+                  }
+                }}
+              >
                 Become an Expert
               </Button>
             </Box>

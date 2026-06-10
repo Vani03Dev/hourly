@@ -18,13 +18,16 @@ export function Hero() {
           
           <Grid size={{ xs: 12, lg: 6 }} sx={{ zIndex: 10 }}>
             <SlideUp delay={0.1}>
-              <Typography variant="h1" sx={{ mb: 3, lineHeight: 1.1, fontSize: { xs: '3rem', md: '4rem', lg: '4.5rem' }, letterSpacing: '-0.03em' }}>
-                Your Expertise, <br/><Typography component="span" sx={{ background: 'linear-gradient(45deg, #0D9488, #1E3A5F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: 'inherit', fontWeight: 'inherit', letterSpacing: 'inherit' }}>Monetized.</Typography>
+              <Typography variant="h1" sx={{ mb: 3, lineHeight: 1.1, fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' }, letterSpacing: '-0.03em', fontWeight: 900 }}>
+                Expert Advice, <br/>
+                <Typography component="span" sx={{ background: 'linear-gradient(45deg, #0D9488, #1E3A5F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: 'inherit', fontWeight: 'inherit', letterSpacing: 'inherit' }}>
+                  On Demand.
+                </Typography>
               </Typography>
             </SlideUp>
             <SlideUp delay={0.2}>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: { xs: '1.2rem', md: '1.4rem' }, lineHeight: 1.6, maxWidth: 500, fontWeight: 500 }}>
-                The easiest way to set up your storefront, offer 1:1 sessions, and get paid instantly.
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: { xs: '1.1rem', md: '1.3rem' }, lineHeight: 1.6, maxWidth: 500, fontWeight: 500 }}>
+                Book 1-on-1 video sessions with top professionals. Get the exact advice you need, or get paid to share your own expertise.
               </Typography>
             </SlideUp>
             
@@ -54,14 +57,7 @@ export function Hero() {
               </Stack>
             </SlideUp>
 
-            <FadeIn delay={0.4}>
-              <Stack direction="row" spacing={2} useFlexGap sx={{ mt: 2, alignItems: 'center', flexWrap: 'wrap' }}>
-                <Typography sx={{ fontWeight: 'bold' }} variant="overline" color="primary">TRUSTED BY</Typography>
-                <Chip label="FINRA" size="small" sx={{ fontWeight: 'bold', color: 'text.secondary' }} />
-                <Chip label="SEBI" size="small" sx={{ fontWeight: 'bold', color: 'text.secondary' }} />
-                <Chip label="AICPA" size="small" sx={{ fontWeight: 'bold', color: 'text.secondary' }} />
-              </Stack>
-            </FadeIn>
+
           </Grid>
 
           <Grid size={{ xs: 12, lg: 6 }} sx={{ position: 'relative', zIndex: 0 }}>

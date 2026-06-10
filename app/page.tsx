@@ -7,6 +7,7 @@ import { Categories } from "../components/home/Categories";
 import { Pricing } from "../components/home/Pricing";
 import { WhyHourly } from "../components/home/WhyHourly";
 import { Testimonials } from "../components/home/Testimonials";
+import { ExplainerVideo } from "../components/home/ExplainerVideo";
 
 import { Box, Typography, Container, Button, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
@@ -22,6 +23,7 @@ export default function Home() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Hero />
+      <ExplainerVideo />
       
       {!isOnboarded ? (
         <>
