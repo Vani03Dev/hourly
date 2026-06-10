@@ -13,26 +13,30 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import IosShareIcon from '@mui/icons-material/IosShare';
 import Link from "next/link";
-import { SlideUp } from "../../../components/shared/MotionWrapper";
+import { SlideUp } from "@/components/shared/MotionWrapper";
 import { motion } from "framer-motion";
-import { createClient } from "../../../utils/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 import { use } from "react";
+import { ShareProfileModal } from "@/components/profile/ShareProfileModal";
 
-export default function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
+export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const unwrappedParams = use(params);
-  const expertId = unwrappedParams.id;
+  const usernameParam = unwrappedParams.username;
   
   const [expert, setExpert] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchExpert() {
       try {
         const supabase = createClient();
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameParam);
+        
         const { data, error } = await supabase
           .from('expert_profiles')
           .select('*')
-          .eq('id', expertId)
+          .eq(isUUID ? 'id' : 'username', usernameParam)
           .single();
           
         if (error) throw error;
@@ -44,7 +48,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       }
     }
     fetchExpert();
-  }, [expertId]);
+  }, [usernameParam]);
 
   if (isLoading) {
     return (
@@ -68,9 +72,35 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const isOnline = true; // In a real app, calculate this or fetch from presence DB
   const perMinuteRate = expert.hourly_rate ? Math.round(expert.hourly_rate / 60) : 10;
 
+  const handleShareClick = async () => {
+    try {
+      // Use native share on mobile/supported devices if available
+      if (navigator.share && window.innerWidth <= 768) {
+        await navigator.share({ 
+          title: `Book a session with ${fullName} on Hourly`, 
+          url: window.location.href 
+        });
+      } else {
+        setIsShareModalOpen(true);
+      }
+    } catch (err: any) {
+      // Only open modal if it wasn't a deliberate user cancellation of the share sheet
+      if (err.name !== 'AbortError') {
+        setIsShareModalOpen(true);
+      }
+    }
+  };
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 12 }}>
+      {/* Share Modal */}
+      <ShareProfileModal 
+        open={isShareModalOpen} 
+        onClose={() => setIsShareModalOpen(false)} 
+        profileUrl={typeof window !== 'undefined' ? window.location.href : `https://hourly.com/${expert.username || expert.id}`}
+        profileName={fullName}
+      />
+
       {/* Cover Photo Area */}
       <Box 
         sx={{ 
@@ -83,9 +113,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         <Container maxWidth="sm" sx={{ height: '100%', position: 'relative' }}>
           <IconButton 
             sx={{ position: 'absolute', top: 16, right: 16, bgcolor: 'rgba(255,255,255,0.2)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
-            onClick={() => {
-              if (navigator.share) navigator.share({ title: expert.name, url: window.location.href });
-            }}
+            onClick={handleShareClick}
           >
             <IosShareIcon />
           </IconButton>
@@ -205,7 +233,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
               <Card 
                 elevation={0}
                 component={Link} 
-                href={`/book/${expert.id}`}
+                href={`/${expert.username || expert.id}/book`}
                 sx={{ 
                   textDecoration: 'none',
                   display: 'block',

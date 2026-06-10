@@ -26,7 +26,7 @@ export function WhyHourly() {
   ];
 
   return (
-    <Box sx={(theme) => ({ py: 12, bgcolor: theme.palette.mode === 'light' ? 'primary.main' : 'background.paper', color: 'common.white', overflow: 'hidden' })}>
+    <Box component="section" id="why-hourly" sx={(theme) => ({ py: 12, bgcolor: theme.palette.mode === 'light' ? 'primary.main' : 'background.paper', color: 'common.white', overflow: 'hidden' })}>
       <Container maxWidth="lg">
         <Grid container spacing={8} sx={{ alignItems: 'center' }}>
           

@@ -3,6 +3,7 @@
 import React from "react";
 import MailIcon from '@mui/icons-material/Mail';
 import { Box, Typography, Button, Divider } from "@mui/material";
+import { motion } from "framer-motion";
 
 interface WelcomePageProps {
   onContinueWithEmail: () => void;
@@ -27,6 +28,7 @@ export function WelcomePage({ onContinueWithEmail }: WelcomePageProps) {
       <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
         <Button 
           variant="outlined" 
+          fullWidth
           sx={{ height: 56, fontSize: '1rem', fontWeight: 'bold', color: 'text.primary', borderColor: 'grey.300', '&:hover': { bgcolor: 'background.default', borderColor: 'grey.400' }, display: 'flex', justifyContent: 'center', position: 'relative' }}
         >
           <Box component="svg" sx={{ width: 20, height: 20, position: 'absolute', left: 24 }} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -40,6 +42,7 @@ export function WelcomePage({ onContinueWithEmail }: WelcomePageProps) {
 
         <Button 
           variant="contained" 
+          fullWidth
           sx={{ height: 56, fontSize: '1rem', fontWeight: 'bold', bgcolor: '#0077b5', '&:hover': { bgcolor: '#006396' }, display: 'flex', justifyContent: 'center', position: 'relative' }}
         >
           <Typography sx={{ position: 'absolute', left: 24, fontWeight: 'bold', fontSize: '1.2rem' }}>in</Typography>
@@ -53,6 +56,7 @@ export function WelcomePage({ onContinueWithEmail }: WelcomePageProps) {
         <Button 
           variant="contained" 
           color="secondary"
+          fullWidth
           onClick={onContinueWithEmail}
           sx={{ height: 56, fontSize: '1rem', fontWeight: 'bold', position: 'relative' }}
         >

@@ -52,7 +52,7 @@ const steps = [
                </Grid>
              ))}
            </Grid>
-           <Box sx={{ mt: 3, height: 48, bgcolor: 'primary.main', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
+           <Box sx={{ mt: 3, height: 36, bgcolor: 'primary.main', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold', fontSize: '0.875rem' }}>
              Confirm Booking
            </Box>
         </Box>
@@ -203,11 +203,11 @@ export default function HowItWorksPage() {
             <Typography variant="h6" sx={{ color: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.8)' : 'text.secondary', mb: 5, maxWidth: 600, mx: 'auto', fontWeight: 'normal' }}>
               Join thousands of professionals exchanging knowledge on Hourly today.
             </Typography>
-            <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button component={Link} href="/search" variant="contained" color="secondary" sx={{ minWidth: 160, height: 48, px: 3, fontSize: '1rem', fontWeight: 'bold', boxShadow: '0 8px 24px -8px rgba(13, 148, 136, 0.5)', '&:hover': { boxShadow: '0 12px 28px -8px rgba(13, 148, 136, 0.7)', transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
-                Find an Expert <ArrowForwardIcon sx={{ ml: 1 }} fontSize="small" />
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Button component={Link} href="/search" variant="contained" color="secondary" sx={{ height: 36, px: 3, fontSize: '0.875rem', fontWeight: 'bold', boxShadow: '0 4px 12px -4px rgba(13, 148, 136, 0.4)', '&:hover': { boxShadow: '0 6px 16px -4px rgba(13, 148, 136, 0.6)' }, transition: 'all 0.2s', borderRadius: 50 }}>
+                Find an Expert <ArrowForwardIcon sx={{ ml: 1, fontSize: '1rem' }} />
               </Button>
-              <Button component={Link} href="/signup" variant="outlined" sx={{ minWidth: 160, height: 48, px: 3, fontSize: '1rem', fontWeight: 'bold', color: 'white', borderColor: 'rgba(255,255,255,0.3)', borderWidth: 2, '&:hover': { borderWidth: 2, borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)', transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+              <Button component={Link} href="/signup" variant="outlined" sx={{ height: 36, px: 3, fontSize: '0.875rem', fontWeight: 'bold', color: 'white', borderColor: 'rgba(255,255,255,0.4)', borderWidth: 1.5, '&:hover': { borderWidth: 1.5, borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' }, transition: 'all 0.2s', borderRadius: 50 }}>
                 Become an Expert
               </Button>
             </Box>

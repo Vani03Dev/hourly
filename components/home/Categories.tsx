@@ -23,7 +23,7 @@ export function Categories() {
   ];
 
   return (
-    <Box sx={{ py: 12, bgcolor: 'background.paper' }}>
+    <Box component="section" id="categories" sx={{ py: 12, bgcolor: 'background.paper' }}>
       <Container maxWidth="lg">
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', mb: 8 }}>
           <Box>

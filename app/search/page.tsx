@@ -33,7 +33,7 @@ export default function SearchPage() {
         
         // Map Supabase rows to our existing Expert interface
         const mappedExperts = data.map((row: any) => ({
-          id: row.id,
+          id: row.username || row.id,
           name: `${row.first_name || ''} ${row.last_name || ''}`.trim() || 'Expert',
           title: row.title || 'Professional',
           bio: row.bio || '',

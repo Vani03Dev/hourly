@@ -12,13 +12,22 @@ export function Testimonials() {
   ];
 
   return (
-    <Box sx={{ py: 12, bgcolor: 'background.default' }}>
+    <Box component="section" id="testimonials" sx={{ py: 12, bgcolor: 'background.default' }}>
       <Container maxWidth="lg">
         <Typography variant="h2" sx={{ textAlign: 'center', mb: 8 }}>What Our Users Say</Typography>
         <Grid container spacing={4}>
           {testimonials.map((test, index) => (
             <Grid size={{ xs: 12, md: 4 }} key={index}>
-              <Paper elevation={1} sx={{ p: 4, borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+              <Paper component="article" elevation={0} sx={{ 
+                p: 4, borderRadius: 4, height: '100%', display: 'flex', flexDirection: 'column',
+                border: '1px solid', borderColor: 'divider',
+                transition: 'all 0.3s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 12px 24px rgba(0,0,0,0.05)',
+                  borderColor: 'secondary.main'
+                }
+              }}>
                 <Box sx={{ display: 'flex', gap: 0.5, mb: 2 }}>
                   {[...Array(5)].map((_, i) => (
                     <StarIcon key={i} sx={{ color: '#F59E0B', fontSize: 20 }} />

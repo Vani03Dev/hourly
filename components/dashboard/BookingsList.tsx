@@ -91,7 +91,7 @@ export function BookingsList() {
                       >
                         Leave Review
                       </Button>
-                      <Button component={Link} href={`/profile/${booking.expertId}`} variant="outlined" color="primary" sx={{ fontWeight: 'bold', px: 3 }}>
+                      <Button component={Link} href={`/${booking.expertId}`} variant="outlined" color="primary" sx={{ fontWeight: 'bold', px: 3 }}>
                         Book Again
                       </Button>
                       <Button variant="outlined" color="primary" sx={{ fontWeight: 'bold', px: 3, ml: 'auto' }}>View Receipt</Button>

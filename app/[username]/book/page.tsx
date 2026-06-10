@@ -20,7 +20,10 @@ import { createClient } from '../../../utils/supabase/client';
 export default function PublicProfilePage() {
   const params = useParams();
   const router = useRouter();
-  const expertId = params.id as string;
+  const usernameParam = params.username as string;
+  
+  // We'll store the real expert ID here after fetching
+  const [expertId, setExpertId] = useState<string>('');
   
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
@@ -39,15 +42,17 @@ export default function PublicProfilePage() {
       try {
         
         const supabase = createClient();
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameParam);
         
         const { data, error } = await supabase
           .from('expert_profiles')
           .select('*')
-          .eq('id', expertId)
+          .eq(isUUID ? 'id' : 'username', usernameParam)
           .single();
           
         if (error) throw error;
         setProfile(data);
+        setExpertId(data.id);
         
         // Select today's date by default if available
         setSelectedDate(new Date().getDate());
@@ -58,8 +63,8 @@ export default function PublicProfilePage() {
       }
     }
     
-    if (expertId) loadExpertProfile();
-  }, [expertId]);
+    if (usernameParam) loadExpertProfile();
+  }, [usernameParam]);
 
   // Fetch bookings for the selected date
   useEffect(() => {
@@ -330,7 +335,7 @@ export default function PublicProfilePage() {
         <Box sx={{ mb: 4 }}>
           <Button 
             component={Link} 
-            href={`/profile/${expertId}`}
+            href={`/${usernameParam}`}
             startIcon={<Typography sx={{ fontSize: '1.2rem', lineHeight: 1 }}>←</Typography>}
             sx={{ color: 'text.secondary', fontWeight: 'bold', mb: 3, pl: 0, '&:hover': { bgcolor: 'transparent', color: 'text.primary' } }}
           >

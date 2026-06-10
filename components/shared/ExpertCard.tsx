@@ -77,7 +77,7 @@ export function ExpertCard({ expert }: ExpertCardProps) {
             Connect Now
           </Button>
         ) : (
-          <Button component={Link} href={`/book/${expert.id}`} variant="contained" color="primary" size="small" sx={{ borderRadius: 2 }}>
+          <Button component={Link} href={`/${expert.id}`} variant="contained" color="primary" size="small" sx={{ borderRadius: 2 }}>
             View Profile
           </Button>
         )}

@@ -8,6 +8,13 @@ import * as z from "zod";
 import { Toast } from "../../../utils/toast";
 
 const onboardingSchema = z.object({
+  username: z.string()
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username must be less than 30 characters")
+    .regex(/^[a-zA-Z0-9-]+$/, "Username can only contain letters, numbers, and hyphens")
+    .refine(val => !['login', 'signup', 'dashboard', 'search', 'book', 'room', 'api', 'admin', 'auth', 'expert'].includes(val.toLowerCase()), {
+      message: "This username is reserved"
+    }),
   title: z.string().min(5, "Title must be at least 5 characters (e.g., Senior Software Engineer)"),
   bio: z.string().min(20, "Bio must be at least 20 characters to help clients understand your expertise"),
   hourlyRate: z.number().min(100, "Hourly rate must be at least ₹100"),
@@ -53,6 +60,7 @@ export default function ExpertOnboardingPage() {
       const { submitExpertOnboarding } = await import('@/app/actions/expert');
       
       const formData = new FormData();
+      formData.append('username', data.username.toLowerCase());
       formData.append('title', data.title);
       formData.append('bio', data.bio);
       formData.append('hourlyRate', data.hourlyRate.toString());
@@ -98,6 +106,16 @@ export default function ExpertOnboardingPage() {
         }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             
+            <TextField
+              fullWidth
+              label="Username (hourly.com/username)"
+              placeholder="e.g. prashant"
+              variant="outlined"
+              {...register("username")}
+              error={!!errors.username}
+              helperText={errors.username?.message || "This will be your unique public URL."}
+            />
+
             <TextField
               fullWidth
               label="Professional Title"

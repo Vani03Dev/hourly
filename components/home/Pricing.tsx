@@ -54,10 +54,10 @@ export function Pricing() {
               </Box>
               
               <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 2, color: 'common.white' }}>
-                <Typography sx={{ fontSize: '6rem', fontWeight: 900, lineHeight: 1 }}>
+                <Typography sx={{ fontSize: '4.5rem', fontWeight: 900, lineHeight: 1 }}>
                   5
                 </Typography>
-                <Typography sx={{ fontSize: '3rem', fontWeight: 800, ml: 0.5 }}>
+                <Typography sx={{ fontSize: '2.5rem', fontWeight: 800, ml: 0.5 }}>
                   %
                 </Typography>
               </Box>

@@ -10,7 +10,7 @@ import { SlideUp } from "../shared/MotionWrapper";
 
 export function FeaturedExperts() {
   return (
-    <Box sx={{ py: 12, bgcolor: 'background.default' }}>
+    <Box component="section" id="featured-experts" sx={{ py: 12, bgcolor: 'background.default' }}>
       <Container maxWidth="lg">
         <SlideUp>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6 }}>
@@ -22,9 +22,18 @@ export function FeaturedExperts() {
           {mockExperts.slice(0, 3).map((expert, index) => (
             <Grid size={{ xs: 12, md: 4 }} key={expert.id}>
               <SlideUp delay={index * 0.1}>
-                <Paper elevation={2} sx={{ p: 4, borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Paper elevation={0} sx={(theme) => ({ 
+                  p: 4, borderRadius: 4, height: '100%', display: 'flex', flexDirection: 'column',
+                  bgcolor: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.7)' : 'rgba(30,30,30,0.7)',
+                  backdropFilter: 'blur(20px)', border: '1px solid', borderColor: 'divider',
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)'
+                  }
+                })}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Avatar src={expert.photo} sx={{ width: 80, height: 80 }} />
+                    <Avatar src={expert.photo} alt={expert.name} sx={{ width: 80, height: 80, border: '2px solid', borderColor: 'primary.main' }} />
                     <Typography sx={{ fontWeight: 'bold' }} variant="h6" color="primary">₹{expert.price}<Typography component="span" variant="caption" color="text.secondary">/hr</Typography></Typography>
                   </Box>
                   <Typography sx={{ fontWeight: 'bold' }} variant="h6" gutterBottom>{expert.name}</Typography>
@@ -35,7 +44,7 @@ export function FeaturedExperts() {
                     <Typography variant="body2" color="text.secondary">({expert.sessions} sessions)</Typography>
                   </Box>
                   <Box sx={{ mt: 'auto' }}>
-                    <Button component={Link} href={`/profile/${expert.id}`} variant="outlined" fullWidth sx={{ borderRadius: 2 }}>
+                    <Button component={Link} href={`/${expert.id}`} variant="outlined" fullWidth sx={{ borderRadius: 2 }}>
                       View Profile
                     </Button>
                   </Box>

@@ -64,6 +64,7 @@ export function SignupForm() {
         email: data.email,
         password: data.password,
         options: {
+          emailRedirectTo: `${location.origin}/auth/callback`,
           data: {
             first_name: data.name.split(' ')[0] || '',
             last_name: data.name.split(' ').slice(1).join(' ') || '',
@@ -107,7 +108,7 @@ export function SignupForm() {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 600, bgcolor: 'background.paper', p: { xs: 3, md: 5 }, borderRadius: 3, boxShadow: '0 8px 30px rgb(0,0,0,0.08)', border: 1, borderColor: 'grey.100' }}>
+    <Box sx={{ width: '100%', maxWidth: 600, bgcolor: 'transparent' }}>
       
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, position: 'relative' }}>
         {activeStep > 0 && (
@@ -275,6 +276,7 @@ export function SignupForm() {
             fontWeight: 'bold', 
             color: 'text.primary', 
             borderColor: 'divider',
+            transition: 'all 0.2s',
             '&:hover': { borderColor: 'text.primary', bgcolor: 'action.hover' },
             mb: 2
           }}

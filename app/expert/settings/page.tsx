@@ -17,6 +17,7 @@ export default function ExpertSettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [title, setTitle] = useState("");
   const [rate, setRate] = useState("");
   const [bio, setBio] = useState("");
@@ -41,6 +42,7 @@ export default function ExpertSettingsPage() {
           .single();
           
         if (data) {
+          setUsername(data.username || "");
           setTitle(data.title || "");
           setBio(data.bio || "");
           setRate(data.hourly_rate ? data.hourly_rate.toString() : "");
@@ -78,6 +80,7 @@ export default function ExpertSettingsPage() {
       const { error } = await supabase
         .from('expert_profiles')
         .update({
+          username: username.toLowerCase(),
           first_name: firstName,
           last_name: lastName,
           title: title,
@@ -92,7 +95,11 @@ export default function ExpertSettingsPage() {
     } catch (error: any) {
       console.error(error);
       const { Toast } = await import('../../../utils/toast');
-      Toast.error(error.message || 'Failed to save settings');
+      if (error.code === '23505' && error.message.includes('username')) {
+        Toast.error('This username is already taken.');
+      } else {
+        Toast.error(error.message || 'Failed to save settings');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -255,6 +262,7 @@ export default function ExpertSettingsPage() {
                   <Paper elevation={1} sx={{ p: 4, borderRadius: 3 }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>Basic Details</Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <TextField label="Username (hourly.com/username)" fullWidth value={username} onChange={(e) => setUsername(e.target.value.toLowerCase())} helperText="Changing this will break your existing profile links." />
                       <Box sx={{ display: 'flex', gap: 2 }}>
                         <TextField label="First Name" fullWidth value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                         <TextField label="Last Name" fullWidth value={lastName} onChange={(e) => setLastName(e.target.value)} />

@@ -95,17 +95,20 @@ export function HowItWorks() {
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 4, md: 8 }, alignItems: 'center' }}>
           
           {/* Left Column: Interactive Steps List */}
-          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1, width: '100%' }}>
             {steps.map((step, index) => {
               const isActive = index === activeStep;
               return (
                 <Box
+                  component={motion.div}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                   key={step.id}
                   onMouseEnter={() => setActiveStep(index)}
                   onClick={() => setActiveStep(index)}
                   sx={{
-                    p: 3,
-                    borderRadius: 4,
+                    p: 1.5,
+                    borderRadius: 2,
                     cursor: 'pointer',
                     border: '1px solid',
                     borderColor: isActive ? 'secondary.main' : 'transparent',
@@ -121,7 +124,7 @@ export function HowItWorks() {
                     <Box sx={{ 
                       color: isActive ? 'white' : 'text.secondary', 
                       bgcolor: isActive ? 'secondary.main' : 'action.selected',
-                      width: 48, height: 48, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: 40, height: 40, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.3s' 
                     }}>
                       {step.icon}

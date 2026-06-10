@@ -37,6 +37,7 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
       data: {
         first_name: firstName,
         last_name: lastName,
@@ -46,6 +47,33 @@ export async function signup(formData: FormData) {
 
   if (error) {
     return { error: error.message }
+  }
+
+  // Send a welcome email via Resend if API key is present
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const { Resend } = await import('resend');
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const emailTemplatePath = path.join(process.cwd(), 'emails', 'WelcomeEmail.html');
+      let htmlContent = fs.readFileSync(emailTemplatePath, 'utf8');
+      
+      // Basic substitution
+      htmlContent = htmlContent.replace(/{{name}}/g, firstName || 'there');
+      
+      const fromEmail = 'onboarding@resend.dev'; // Default testing email for Resend
+      
+      await resend.emails.send({
+        from: `Hourly <${fromEmail}>`,
+        to: email,
+        subject: 'Welcome to Hourly!',
+        html: htmlContent,
+      });
+    } catch (e) {
+      console.error('Failed to send welcome email via Resend:', e);
+    }
   }
 
   // A redirect might not be immediate if email confirmation is required,

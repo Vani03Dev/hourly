@@ -44,6 +44,7 @@ export const metadata: Metadata = {
     title: "Hourly | Rent Expertise by the Hour",
     description: "Peer-to-peer micro-consulting from credentialed professionals.",
     creator: "@hourlyapp",
+    images: ["https://hourly.app/og-image.jpg"],
   },
   robots: {
     index: true,
@@ -66,9 +67,21 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Hourly',
+    url: 'https://hourly.app',
+    description: 'Peer-to-peer micro-consulting from credentialed professionals.',
+  };
+
   return (
     <html lang="en" className={plusJakartaSans.variable}>
       <body className={`flex flex-col min-h-screen ${plusJakartaSans.className}`} style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif' }}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ThemeRegistry>
           <ReduxProvider>
             <AuthProvider>

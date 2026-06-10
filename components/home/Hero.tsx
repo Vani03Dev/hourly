@@ -12,14 +12,14 @@ export function Hero() {
   const { isAuthenticated, isOnboarded, user } = useSelector((state: RootState) => state.auth);
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 64px)', bgcolor: 'background.default', display: 'flex', alignItems: 'center', py: { xs: 8, md: 0 }, overflow: 'hidden' }}>
+    <Box component="section" id="hero" sx={{ minHeight: 'calc(100vh - 64px)', bgcolor: 'background.default', display: 'flex', alignItems: 'center', py: { xs: 8, md: 0 }, overflow: 'hidden', position: 'relative' }}>
       <Container maxWidth="lg">
         <Grid container spacing={6} sx={{ alignItems: 'center' }}>
           
           <Grid size={{ xs: 12, lg: 6 }} sx={{ zIndex: 10 }}>
             <SlideUp delay={0.1}>
               <Typography variant="h1" sx={{ mb: 3, lineHeight: 1.1, fontSize: { xs: '3rem', md: '4rem', lg: '4.5rem' }, letterSpacing: '-0.03em' }}>
-                Your Expertise, <br/><Typography component="span" sx={{ color: 'primary.main', fontSize: 'inherit', fontWeight: 'inherit', letterSpacing: 'inherit' }}>Monetized.</Typography>
+                Your Expertise, <br/><Typography component="span" sx={{ background: 'linear-gradient(45deg, #0D9488, #1E3A5F)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: 'inherit', fontWeight: 'inherit', letterSpacing: 'inherit' }}>Monetized.</Typography>
               </Typography>
             </SlideUp>
             <SlideUp delay={0.2}>
@@ -36,7 +36,7 @@ export function Hero() {
                       Go to Dashboard
                     </Button>
                     {user && (
-                      <Button component={Link} href={`/book/${user.id}`} variant="outlined" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', borderWidth: 2, '&:hover': { borderWidth: 2, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+                      <Button component={Link} href={`/${user.id}`} variant="outlined" color="primary" size="large" sx={{ minWidth: 200, height: 52, fontSize: '1.125rem', fontWeight: 'bold', borderWidth: 2, '&:hover': { borderWidth: 2, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
                         View Public Profile
                       </Button>
                     )}

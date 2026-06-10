@@ -14,13 +14,14 @@ export async function submitExpertOnboarding(formData: FormData) {
     }
 
     // Extract form data
+    const username = formData.get('username') as string;
     const title = formData.get('title') as string;
     const bio = formData.get('bio') as string;
     const hourlyRate = parseInt(formData.get('hourlyRate') as string, 10);
     const tagsString = formData.get('tags') as string;
     
     // Validate
-    if (!title || !bio || !hourlyRate || !tagsString) {
+    if (!username || !title || !bio || !hourlyRate || !tagsString) {
       return { error: 'Missing required fields' };
     }
 
@@ -36,6 +37,7 @@ export async function submitExpertOnboarding(formData: FormData) {
       .from('expert_profiles')
       .upsert({
         id: user.id,
+        username,
         title,
         bio,
         hourly_rate: hourlyRate,
@@ -46,6 +48,9 @@ export async function submitExpertOnboarding(formData: FormData) {
 
     if (dbError) {
       console.error("Database Error:", dbError);
+      if (dbError.code === '23505' && dbError.message.includes('username')) {
+        return { error: 'This username is already taken. Please choose another one.' };
+      }
       return { error: `Database Error: ${dbError.message}` };
     }
 

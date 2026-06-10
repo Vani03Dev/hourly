@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Box, Paper, Typography, TextField, Button, Divider } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Paper, Typography, TextField, Button, Divider, IconButton, InputAdornment } from "@mui/material";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -10,6 +10,8 @@ import * as z from "zod";
 import { useRouter } from "next/navigation";
 import { Toast } from "../../utils/toast";
 import { createClient } from '../../utils/supabase/client';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -20,6 +22,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -30,9 +33,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      
       const supabase = createClient();
-      
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
@@ -50,19 +51,74 @@ export default function LoginPage() {
   };
 
   return (
-    <Box sx={{ minHeight: 'calc(100vh - 64px)', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center', py: 6, px: { xs: 2, md: 3 } }}>
+    <Box sx={{ 
+      minHeight: 'calc(100vh - 64px)', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      py: { xs: 4, md: 8 }, 
+      px: { xs: 2, md: 4 },
+      position: 'relative',
+      overflow: 'hidden',
+      bgcolor: 'background.default'
+    }}>
+      {/* Animated Background Elements */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: 'absolute',
+          top: '-20%',
+          left: '-10%',
+          width: '60vw',
+          height: '60vw',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 70%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }}
+      />
+      <motion.div
+        animate={{ scale: [1, 1.5, 1], rotate: [0, -90, 0] }}
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        style={{
+          position: 'absolute',
+          bottom: '-20%',
+          right: '-10%',
+          width: '50vw',
+          height: '50vw',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(45, 212, 191, 0.15) 0%, transparent 70%)',
+          zIndex: 0,
+          pointerEvents: 'none'
+        }}
+      />
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        style={{ width: '100%', maxWidth: 440 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        style={{ width: '100%', maxWidth: 480, position: 'relative', zIndex: 1 }}
       >
-        <Paper elevation={4} sx={{ p: { xs: 4, sm: 5 }, borderRadius: 4, bgcolor: 'background.paper', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.1)' }}>
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Typography sx={{ fontWeight: 900, fontSize: '2rem', lineHeight: 1, letterSpacing: '-0.02em', color: 'text.primary', mb: 1 }}>
-              Welcome back<Box component="span" sx={{ color: 'secondary.main' }}>.</Box>
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
+        <Paper elevation={0} sx={{ 
+          p: { xs: 4, sm: 6 }, 
+          borderRadius: 4, 
+          bgcolor: 'background.paper',
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 20px 40px -10px rgba(0,0,0,0.08)'
+        }}>
+          <Box sx={{ textAlign: 'center', mb: 5 }}>
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+              <Typography sx={{ fontWeight: 900, fontSize: '2.5rem', lineHeight: 1.2, letterSpacing: '-0.02em', color: 'text.primary', mb: 1 }}>
+                Welcome back<Box component="span" sx={{ color: 'primary.main' }}>.</Box>
+              </Typography>
+            </motion.div>
+            <Typography variant="body1" color="text.secondary">
               Enter your details to access your account.
             </Typography>
           </Box>
@@ -77,20 +133,47 @@ export default function LoginPage() {
                 {...register("email")}
                 error={!!errors.email}
                 helperText={errors.email?.message}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    transition: 'all 0.2s ease-in-out',
+                    '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(96, 165, 250, 0.2)' }
+                  }
+                }}
               />
               <TextField
                 fullWidth
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 variant="outlined"
                 {...register("password")}
                 error={!!errors.password}
                 helperText={errors.password?.message}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={() => setShowPassword(!showPassword)}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    transition: 'all 0.2s ease-in-out',
+                    '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(96, 165, 250, 0.2)' }
+                  }
+                }}
               />
               
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1 }}>
                 <Link href="#" style={{ textDecoration: 'none' }}>
-                  <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'secondary.main', '&:hover': { textDecoration: 'underline' } }}>
+                  <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', transition: 'color 0.2s', '&:hover': { color: 'primary.main' } }}>
                     Forgot password?
                   </Typography>
                 </Link>
@@ -101,8 +184,9 @@ export default function LoginPage() {
                 variant="contained"
                 color="primary"
                 size="large"
+                fullWidth
                 disabled={isSubmitting}
-                sx={{ py: 1.5, borderRadius: 2, fontWeight: 'bold', fontSize: '1rem', mt: 1 }}
+                sx={{ py: 1.5, fontSize: '1.1rem', mt: 1 }}
               >
                 {isSubmitting ? 'Signing in...' : 'Sign In'}
               </Button>
@@ -119,7 +203,6 @@ export default function LoginPage() {
             fullWidth
             variant="outlined"
             onClick={async () => {
-              
               const supabase = createClient();
               await supabase.auth.signInWithOAuth({
                 provider: 'google',
@@ -130,11 +213,8 @@ export default function LoginPage() {
             }}
             sx={{ 
               py: 1.5, 
-              borderRadius: 2, 
-              fontWeight: 'bold', 
               color: 'text.primary', 
               borderColor: 'divider',
-              '&:hover': { borderColor: 'text.primary', bgcolor: 'action.hover' }
             }}
           >
             <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" sx={{ width: 20, height: 20, mr: 1.5 }} />
@@ -145,7 +225,7 @@ export default function LoginPage() {
             <Typography variant="body2" color="text.secondary">
               Don&apos;t have an account?{' '}
               <Link href="/signup" style={{ textDecoration: 'none' }}>
-                <Typography component="span" variant="body2" sx={{ fontWeight: 'bold', color: 'secondary.main', '&:hover': { textDecoration: 'underline' } }}>
+                <Typography component="span" variant="body2" sx={{ fontWeight: 'bold', color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
                   Sign up
                 </Typography>
               </Link>
@@ -156,3 +236,4 @@ export default function LoginPage() {
     </Box>
   );
 }
+
