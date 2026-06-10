@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
-import { getBookingConfirmationEmailHtml, getExpertBookingNotificationHtml } from '@/utils/emailTemplates';
+import { getBookingConfirmationEmailHtml, getExpertBookingNotificationHtml } from '../../../../utils/emailTemplates';
 
 export async function POST(req: Request) {
   try {

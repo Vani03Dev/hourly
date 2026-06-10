@@ -5,8 +5,8 @@ import { Container, Paper, Typography, Box, Switch, FormControlLabel, Select, Me
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventBusyIcon from '@mui/icons-material/EventBusy';
-import { useAuth } from "@/contexts/AuthContext";
-import { createClient } from '@/utils/supabase/client';
+import { useAuth } from "../../../contexts/AuthContext";
+import { createClient } from '../../../utils/supabase/client';
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -208,7 +208,7 @@ export default function ExpertAvailabilityPage() {
         })
         .eq('id', user.id);
         
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       if (error) {
         Toast.error("Failed to save schedule");
       } else {

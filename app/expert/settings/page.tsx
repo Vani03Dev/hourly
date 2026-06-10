@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import { Container, Paper, Typography, Box, TextField, Button, Grid, Avatar, InputAdornment, List, ListItem, ListItemButton, ListItemText, ListItemIcon } from "@mui/material";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import PersonIcon from '@mui/icons-material/Person';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import StarIcon from '@mui/icons-material/Star';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoIcon from '@mui/icons-material/Info';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 
 export default function ExpertSettingsPage() {
   const { user } = useAuth();
@@ -87,11 +87,11 @@ export default function ExpertSettingsPage() {
         .eq('id', user.id);
         
       if (error) throw error;
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       Toast.success('Settings saved successfully!');
     } catch (error: any) {
       console.error(error);
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       Toast.error(error.message || 'Failed to save settings');
     } finally {
       setIsSaving(false);
@@ -106,7 +106,7 @@ export default function ExpertSettingsPage() {
       
       // Validate file size (Max 2MB)
       if (file.size > 2 * 1024 * 1024) {
-        const { Toast } = await import('@/utils/toast');
+        const { Toast } = await import('../../../utils/toast');
         Toast.error('File size must be less than 2MB');
         return;
       }
@@ -139,12 +139,12 @@ export default function ExpertSettingsPage() {
       if (updateError) throw updateError;
 
       setAvatarUrl(publicUrl);
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       Toast.success('Profile photo updated!');
       
     } catch (error: any) {
       console.error(error);
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       Toast.error(error.message || 'Failed to upload photo');
     } finally {
       setIsUploading(false);

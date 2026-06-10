@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../utils/supabase/client';
 
 type Notification = {
   id: string;

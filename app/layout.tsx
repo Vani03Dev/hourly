@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { BottomNav } from "@/components/layout/BottomNav";
-import { ThemeRegistry } from "@/components/ThemeRegistry";
+import { AuthProvider } from "../contexts/AuthContext";
+import { Header } from "../components/layout/Header";
+import { Footer } from "../components/layout/Footer";
+import { BottomNav } from "../components/layout/BottomNav";
+import { ThemeRegistry } from "../components/ThemeRegistry";
 import { Toaster } from "react-hot-toast";
 
 import { Plus_Jakarta_Sans } from "next/font/google";
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { NotificationsProvider } from "@/contexts/NotificationsContext";
+import { NotificationsProvider } from "../contexts/NotificationsContext";
 import { ReduxProvider } from "@/store/ReduxProvider";
 
 export default function RootLayout({

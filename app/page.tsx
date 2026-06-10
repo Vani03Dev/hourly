@@ -1,18 +1,18 @@
 "use client";
 
-import { Hero } from "@/components/home/Hero";
-import { HowItWorks } from "@/components/home/HowItWorks";
-import { FeaturedExperts } from "@/components/home/FeaturedExperts";
-import { Categories } from "@/components/home/Categories";
-import { Pricing } from "@/components/home/Pricing";
-import { WhyHourly } from "@/components/home/WhyHourly";
-import { Testimonials } from "@/components/home/Testimonials";
+import { Hero } from "../components/home/Hero";
+import { HowItWorks } from "../components/home/HowItWorks";
+import { FeaturedExperts } from "../components/home/FeaturedExperts";
+import { Categories } from "../components/home/Categories";
+import { Pricing } from "../components/home/Pricing";
+import { WhyHourly } from "../components/home/WhyHourly";
+import { Testimonials } from "../components/home/Testimonials";
 
 import { Box, Typography, Container, Button, Paper } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import Link from "next/link";
-import { SlideUp } from "@/components/shared/MotionWrapper";
+import { SlideUp } from "../components/shared/MotionWrapper";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import React from "react";
 

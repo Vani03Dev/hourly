@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Box, Container, Typography, Grid, Select, MenuItem, Pagination, FormControl, } from "@mui/material";
-import { SearchFilters } from "@/components/search/SearchFilters";
-import { ExpertGrid } from "@/components/search/ExpertGrid";
+import { SearchFilters } from "../../components/search/SearchFilters";
+import { ExpertGrid } from "../../components/search/ExpertGrid";
 import { mockExperts } from "@/lib/mock-data";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../utils/supabase/client';
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");

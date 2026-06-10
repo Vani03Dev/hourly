@@ -14,8 +14,8 @@ import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { useAuth } from "@/contexts/AuthContext";
-import { createClient } from '@/utils/supabase/client';
+import { useAuth } from "../../../contexts/AuthContext";
+import { createClient } from '../../../utils/supabase/client';
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -215,7 +215,7 @@ export default function PublicProfilePage() {
 
   const handleBookSession = async () => {
     if (!user) {
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       Toast.error('Please log in to book a session');
       return;
     }
@@ -316,7 +316,7 @@ export default function PublicProfilePage() {
       
     } catch (err: any) {
       console.error(err);
-      const { Toast } = await import('@/utils/toast');
+      const { Toast } = await import('../../../utils/toast');
       Toast.error(err.message || 'Failed to initialize payment');
       setIsBooking(false);
     }

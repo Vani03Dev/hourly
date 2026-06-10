@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import { Box } from "@mui/material";
-import { WelcomePage } from "@/components/signup/WelcomePage";
-import { SignupForm } from "@/components/signup/SignupForm";
+import { WelcomePage } from "../../components/signup/WelcomePage";
+import { SignupForm } from "../../components/signup/SignupForm";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function SignupPage() {

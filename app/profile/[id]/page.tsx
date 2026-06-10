@@ -13,7 +13,7 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
-import { SlideUp, FadeIn } from "@/components/shared/MotionWrapper";
+import { SlideUp, FadeIn } from "../../../components/shared/MotionWrapper";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProfilePage({ params }: { params: { id: string } }) {

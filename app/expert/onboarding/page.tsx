@@ -5,7 +5,7 @@ import { Box, Container, Typography, TextField, Button, Paper, Chip } from "@mui
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Toast } from "@/utils/toast";
+import { Toast } from "../../../utils/toast";
 
 const onboardingSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters (e.g., Senior Software Engineer)"),

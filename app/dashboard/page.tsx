@@ -1,7 +1,7 @@
 import React from "react";
-import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
-import { UpcomingSection } from "@/components/dashboard/UpcomingSection";
-import { BookingsList } from "@/components/dashboard/BookingsList";
+import { DashboardHeader } from "../../components/dashboard/DashboardHeader";
+import { UpcomingSection } from "../../components/dashboard/UpcomingSection";
+import { BookingsList } from "../../components/dashboard/BookingsList";
 
 import { Box } from "@mui/material";
 

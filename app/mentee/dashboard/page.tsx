@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { Container, Typography, Box, Paper, Grid, Button, Avatar, Chip, CircularProgress, Divider } from "@mui/material";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import VideocamIcon from '@mui/icons-material/Videocam';
 import EventIcon from '@mui/icons-material/Event';
 import Link from "next/link";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 
 export default function MenteeDashboardPage() {
   const { user } = useAuth();

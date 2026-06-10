@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "../utils/supabase/client";
 import { useDispatch } from "react-redux";
 import { setAuth, clearAuth } from "@/store/slices/authSlice";
 

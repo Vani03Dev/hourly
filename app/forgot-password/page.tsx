@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Container, Box, Typography, TextField, Button, Paper } from "@mui/material";
-import { Toast } from "@/utils/toast";
+import { Toast } from "../../utils/toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";

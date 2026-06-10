@@ -10,7 +10,7 @@ import confetti from "canvas-confetti";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { Suspense } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 
 function BookingSuccessContent() {
   const searchParams = useSearchParams();

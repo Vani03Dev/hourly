@@ -5,10 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { Box, Typography, Button, TextField, Dialog, DialogTitle, DialogContent, Stepper, Step, StepLabel, IconButton, Divider } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../utils/supabase/client';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 const signupSchema = z.object({
@@ -74,13 +74,13 @@ export function SignupForm() {
       });
 
       if (error) {
-        import('@/utils/toast').then(({ Toast }) => Toast.error(error.message));
+        import('../../utils/toast').then(({ Toast }) => Toast.error(error.message));
       } else {
-        import('@/utils/toast').then(({ Toast }) => Toast.success('Account created successfully!'));
+        import('../../utils/toast').then(({ Toast }) => Toast.success('Account created successfully!'));
         router.push('/expert/dashboard');
       }
     } catch (error) {
-      import('@/utils/toast').then(({ Toast }) => Toast.error('An unexpected error occurred.'));
+      import('../../utils/toast').then(({ Toast }) => Toast.error('An unexpected error occurred.'));
     }
   };
 

@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useRouter } from "next/navigation";
-import { Toast } from "@/utils/toast";
-import { createClient } from '@/utils/supabase/client';
+import { Toast } from "../../utils/toast";
+import { createClient } from '../../utils/supabase/client';
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),

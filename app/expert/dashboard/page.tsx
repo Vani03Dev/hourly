@@ -8,9 +8,9 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import StarIcon from '@mui/icons-material/Star';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 
 export default function ExpertDashboardPage() {
   const { user } = useAuth();

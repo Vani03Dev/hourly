@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Box, CircularProgress, Typography, Container, Paper, Button } from "@mui/material";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import Link from "next/link";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { JitsiMeeting } from '@jitsi/react-sdk';
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../../utils/supabase/client';
 
 export default function VideoRoomPage() {
   const params = useParams();

@@ -8,12 +8,12 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useColorMode } from "@/components/ThemeRegistry";
-import { useNotifications } from "@/contexts/NotificationsContext";
+import { useColorMode } from "../../components/ThemeRegistry";
+import { useNotifications } from "../../contexts/NotificationsContext";
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { createClient } from '@/utils/supabase/client';
+import { createClient } from '../../utils/supabase/client';
 
 export function Header() {
   const { mode, toggleColorMode } = useColorMode();
