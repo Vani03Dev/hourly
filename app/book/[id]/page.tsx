@@ -523,7 +523,7 @@ export default function PublicProfilePage() {
                         
                         // Check Google Calendar overlap
                         if (!isBooked && googleBusySlots.length > 0) {
-                          const slotStart = new Date(selectedFullDate!);
+                          const slotStart = new Date(selectedDate!);
                           const match = slot.match(/(\d+):(\d+)\s*(AM|PM)/i);
                           if (match) {
                             let hours = parseInt(match[1]);

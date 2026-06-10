@@ -9,8 +9,9 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import confetti from "canvas-confetti";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { Suspense } from 'react';
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const bookingId = searchParams.get("booking_id");
@@ -171,5 +172,17 @@ export default function BookingSuccessPage() {
         </Paper>
       </Container>
     </Box>
+  );
+}
+
+export default function BookingSuccess() {
+  return (
+    <Suspense fallback={
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', bgcolor: '#f8fafc' }}>
+        <CircularProgress />
+      </Box>
+    }>
+      <BookingSuccessContent />
+    </Suspense>
   );
 }

@@ -285,7 +285,7 @@ export default function ExpertDashboardPage() {
             fullWidth
             label="New Date"
             type="date"
-            InputLabelProps={{ shrink: true }}
+            slotProps={{ inputLabel: { shrink: true } }}
             value={newDate}
             onChange={(e) => setNewDate(e.target.value)}
             sx={{ mb: 2 }}

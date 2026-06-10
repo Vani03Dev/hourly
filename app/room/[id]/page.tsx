@@ -134,7 +134,8 @@ export default function VideoRoomPage() {
         userInfo={{
           displayName: user?.user_metadata?.first_name 
             ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}` 
-            : user.email || 'Hourly User'
+            : user?.email || 'Hourly User',
+          email: user?.email || 'anonymous@hourly.app'
         }}
         onApiReady={(externalApi) => {
           // Listen for the hangup event to safely close/redirect without hitting the Jitsi ad
