@@ -18,13 +18,13 @@ export function Hero() {
           
           <Grid size={{ xs: 12, lg: 6 }} sx={{ zIndex: 10 }}>
             <SlideUp delay={0.1}>
-              <Typography variant="h1" sx={{ mb: 3, lineHeight: 1.1, fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4rem' } }}>
-                Rent Expertise by the Hour
+              <Typography variant="h1" sx={{ mb: 3, lineHeight: 1.1, fontSize: { xs: '3rem', md: '4rem', lg: '4.5rem' }, letterSpacing: '-0.03em' }}>
+                Your Expertise, <br/><Typography component="span" sx={{ color: 'primary.main', fontSize: 'inherit', fontWeight: 'inherit', letterSpacing: 'inherit' }}>Monetized.</Typography>
               </Typography>
             </SlideUp>
             <SlideUp delay={0.2}>
-              <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: { xs: '1.125rem', md: '1.375rem' }, lineHeight: 1.6, maxWidth: 600 }}>
-                Peer-to-peer micro-consulting from credentialed professionals. Book sessions in seconds.
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 5, fontSize: { xs: '1.2rem', md: '1.4rem' }, lineHeight: 1.6, maxWidth: 500, fontWeight: 500 }}>
+                The easiest way to set up your storefront, offer 1:1 sessions, and get paid instantly.
               </Typography>
             </SlideUp>
             
@@ -75,50 +75,39 @@ export function Hero() {
             
             <SlideUp delay={0.4}>
               <Box sx={{ 
-                position: 'relative', width: '100%', maxWidth: 600, aspectRatio: '16/10', 
-                borderRadius: 3, overflow: 'hidden', boxShadow: 6, border: '1px solid', borderColor: 'divider', 
-                bgcolor: 'background.paper', ml: { lg: 4 }
+                position: 'relative', width: '100%', maxWidth: 360, margin: '0 auto',
+                borderRadius: '40px', overflow: 'hidden', boxShadow: '0 24px 60px -12px rgba(0,0,0,0.15)', 
+                border: '8px solid', borderColor: 'background.paper', 
+                bgcolor: 'background.default', ml: { lg: 'auto' }, mr: { lg: 0 }
               }}>
-                <Box sx={{ position: 'absolute', top: 0, width: '100%', height: 24, bgcolor: 'action.hover', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', px: 1.5, gap: 1 }}>
-                  <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#ef4444' }} />
-                  <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#facc15' }} />
-                  <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#4ade80' }} />
-                </Box>
-                <Box sx={{ position: 'absolute', inset: 0, top: 24, display: 'flex', bgcolor: 'background.default' }}>
-                  <Box sx={{ width: '25%', bgcolor: 'background.paper', borderRight: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Box sx={{ width: '80%', height: 16, bgcolor: 'grey.300', borderRadius: 1, mb: 2 }} />
-                    <Box sx={{ width: '60%', height: 12, bgcolor: 'primary.light', borderRadius: 1, opacity: 0.5 }} />
-                    <Box sx={{ width: '70%', height: 12, bgcolor: 'grey.200', borderRadius: 1 }} />
-                    <Box sx={{ width: '65%', height: 12, bgcolor: 'grey.200', borderRadius: 1 }} />
-                    <Box sx={{ width: '50%', height: 12, bgcolor: 'grey.200', borderRadius: 1 }} />
+                {/* Mobile Mockup Header */}
+                <Box sx={{ height: 120, bgcolor: 'primary.main', backgroundImage: 'linear-gradient(120deg, #1E3A5F 0%, #0D9488 100%)' }} />
+                
+                {/* Mockup Profile */}
+                <Box sx={{ px: 3, pb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', mt: -5 }}>
+                  <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: 'background.paper', border: '4px solid', borderColor: 'background.paper', mb: 2, overflow: 'hidden' }}>
+                    <Box sx={{ width: '100%', height: '100%', bgcolor: 'secondary.main', opacity: 0.8 }} />
                   </Box>
-                  <Box sx={{ width: '75%', p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Box sx={{ width: '40%', height: 20, bgcolor: 'grey.300', borderRadius: 1 }} />
-                      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <Box sx={{ width: 16, height: 16, borderRadius: '50%', bgcolor: 'grey.300' }} />
-                        <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: 'secondary.main', opacity: 0.8 }} />
+                  <Box sx={{ width: '60%', height: 20, bgcolor: 'text.primary', borderRadius: 4, mb: 1.5, opacity: 0.9 }} />
+                  <Box sx={{ width: '80%', height: 12, bgcolor: 'text.secondary', borderRadius: 4, mb: 3, opacity: 0.5 }} />
+                  
+                  {/* Mockup Cards */}
+                  <Stack spacing={1.5} sx={{ width: '100%' }}>
+                    <Box sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2, bgcolor: 'background.paper' }}>
+                      <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: 'rgba(13,148,136,0.1)' }} />
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Box sx={{ width: '70%', height: 14, bgcolor: 'text.primary', borderRadius: 4, mb: 1, opacity: 0.8 }} />
+                        <Box sx={{ width: '40%', height: 10, bgcolor: 'text.secondary', borderRadius: 4, opacity: 0.4 }} />
                       </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Box sx={{ flex: 1, height: 80, bgcolor: 'background.paper', borderRadius: 2, border: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <Box sx={{ width: '40%', height: 10, bgcolor: 'grey.200', borderRadius: 1 }} />
-                        <Box sx={{ width: '80%', height: 24, bgcolor: 'primary.main', borderRadius: 1 }} />
-                      </Box>
-                      <Box sx={{ flex: 1, height: 80, bgcolor: 'background.paper', borderRadius: 2, border: 1, borderColor: 'divider', p: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <Box sx={{ width: '40%', height: 10, bgcolor: 'grey.200', borderRadius: 1 }} />
-                        <Box sx={{ width: '60%', height: 24, bgcolor: 'secondary.main', borderRadius: 1 }} />
+                    <Box sx={{ p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', gap: 2, bgcolor: 'background.paper' }}>
+                      <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: 'rgba(30, 58, 95, 0.05)' }} />
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Box sx={{ width: '60%', height: 14, bgcolor: 'text.primary', borderRadius: 4, mb: 1, opacity: 0.8 }} />
+                        <Box sx={{ width: '30%', height: 10, bgcolor: 'text.secondary', borderRadius: 4, opacity: 0.4 }} />
                       </Box>
                     </Box>
-                    <Box sx={{ flex: 1, bgcolor: 'background.paper', borderRadius: 2, border: 1, borderColor: 'divider', p: 2, display: 'flex', alignItems: 'flex-end', gap: 1.5, minHeight: 120 }}>
-                       <Box sx={{ flex: 1, height: '40%', bgcolor: 'primary.light', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-                       <Box sx={{ flex: 1, height: '70%', bgcolor: 'primary.main', borderRadius: '4px 4px 0 0', opacity: 0.8 }} />
-                       <Box sx={{ flex: 1, height: '50%', bgcolor: 'primary.light', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-                       <Box sx={{ flex: 1, height: '90%', bgcolor: 'primary.main', borderRadius: '4px 4px 0 0', opacity: 1 }} />
-                       <Box sx={{ flex: 1, height: '60%', bgcolor: 'primary.light', borderRadius: '4px 4px 0 0', opacity: 0.6 }} />
-                       <Box sx={{ flex: 1, height: '80%', bgcolor: 'secondary.main', borderRadius: '4px 4px 0 0', opacity: 0.8 }} />
-                    </Box>
-                  </Box>
+                  </Stack>
                 </Box>
               </Box>
             </SlideUp>

@@ -12,14 +12,14 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
       main: mode === 'light' ? '#0D9488' : '#2DD4BF', // Brighter teal for dark mode visibility
     },
     background: {
-      default: mode === 'light' ? '#F9FAFB' : '#000000', // True black
-      paper: mode === 'light' ? '#FFFFFF' : '#111111', // Very dark grey
+      default: mode === 'light' ? '#FAFAFA' : '#0A0A0A', // Ultra clean backgrounds
+      paper: mode === 'light' ? '#FFFFFF' : '#141414', // High contrast cards
     },
     text: {
       primary: mode === 'light' ? '#374151' : '#EDEDED',
       secondary: mode === 'light' ? '#6B7280' : '#A1A1AA',
     },
-    divider: mode === 'light' ? '#E5E7EB' : 'rgba(255,255,255,0.1)',
+    divider: mode === 'light' ? '#F3F4F6' : 'rgba(255,255,255,0.08)',
     success: {
       main: '#10B981',
     },
@@ -60,7 +60,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     },
   },
   shape: {
-    borderRadius: 16, // Softer global border radius
+    borderRadius: 20, // Modern large border radius
   },
   components: {
     MuiOutlinedInput: {
@@ -74,11 +74,13 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
       styleOverrides: {
         root: {
           borderRadius: 50, // Pill shaped buttons globally
-          padding: '10px 24px',
+          padding: '12px 28px',
           boxShadow: 'none',
-          transition: 'all 0.2s ease-in-out',
+          textTransform: 'none',
+          fontWeight: 700,
+          transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
             transform: 'translateY(-2px)'
           },
         },
@@ -86,16 +88,19 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     },
     MuiCard: {
       styleOverrides: {
-        root: {
-          borderRadius: 16,
-          backgroundImage: 'none', // Remove weird overlay in dark mode MUI
-        },
+        root: ({ theme }) => ({
+          borderRadius: 24,
+          backgroundImage: 'none', 
+          boxShadow: theme.palette.mode === 'light' ? '0 12px 40px -12px rgba(0,0,0,0.05)' : '0 12px 40px -12px rgba(0,0,0,0.5)',
+          border: `1px solid ${theme.palette.divider}`,
+        }),
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+          borderRadius: 24,
         }
       }
     }

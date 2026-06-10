@@ -323,294 +323,216 @@ export default function PublicProfilePage() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      {/* HEADER BANNER */}
-      <Box sx={{ height: 200, bgcolor: 'primary.main', position: 'relative', overflow: 'hidden' }}>
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, backgroundImage: 'radial-gradient(circle at 20% 150%, #ffffff 0%, transparent 50%)' }} />
-      </Box>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', flexDirection: 'column', alignItems: 'center', py: { xs: 4, md: 8 } }}>
+      <Container maxWidth="sm">
+        
+        {/* Back button and Expert Header */}
+        <Box sx={{ mb: 4 }}>
+          <Button 
+            component={Link} 
+            href={`/profile/${expertId}`}
+            startIcon={<Typography sx={{ fontSize: '1.2rem', lineHeight: 1 }}>←</Typography>}
+            sx={{ color: 'text.secondary', fontWeight: 'bold', mb: 3, pl: 0, '&:hover': { bgcolor: 'transparent', color: 'text.primary' } }}
+          >
+            Back to profile
+          </Button>
 
-      <Container maxWidth="lg" sx={{ pb: 12 }}>
-        <Grid container spacing={6} sx={{ mt: -10 }}>
-          
-          {/* LEFT COLUMN: Profile Info */}
-          <Grid size={{ xs: 12, md: 7 }}>
-            <Paper elevation={0} sx={{ p: 0, bgcolor: 'transparent' }}>
-              <Avatar 
-                src={profile.avatar_url}
-                sx={{ 
-                  width: 160, 
-                  height: 160, 
-                  border: '6px solid', 
-                  borderColor: 'background.default',
-                  bgcolor: 'secondary.main',
-                  fontSize: '4rem',
-                  mb: 3,
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
-                }}
-              >
-                {!profile.avatar_url && fullName.charAt(0)}
-              </Avatar>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Avatar src={profile.avatar_url} sx={{ width: 64, height: 64, border: '2px solid', borderColor: 'divider' }}>
+              {!profile.avatar_url && fullName.charAt(0)}
+            </Avatar>
+            <Box>
+              <Typography variant="h5" sx={{ fontWeight: 900 }}>1:1 Video Consultation</Typography>
+              <Typography variant="body1" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                with {fullName} • <AccessTimeIcon fontSize="small" /> 30 mins
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
 
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h3" sx={{ fontWeight: 800, mb: 1, letterSpacing: '-0.02em' }}>
-                  {fullName}
-                </Typography>
-                <Typography variant="h5" color="text.secondary" sx={{ fontWeight: 500, mb: 3 }}>
-                  {profile.title || "Professional Expert"}
-                </Typography>
+        {/* Booking Widget */}
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            borderRadius: 4, 
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'background.paper',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Calendar Header */}
+          <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'rgba(13,148,136,0.02)' }}>
+            <Typography variant="h6" sx={{ fontWeight: 800 }}>Select Date & Time</Typography>
+          </Box>
+
+          <Box sx={{ p: { xs: 2, sm: 4 } }}>
+            {/* Calendar Controls */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '1.1rem' }}>
+                {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton size="small" disabled sx={{ border: '1px solid', borderColor: 'divider' }}><Typography sx={{ fontWeight: 'bold', fontSize: '1rem' }}>{"<"}</Typography></IconButton>
+                <IconButton size="small" sx={{ border: '1px solid', borderColor: 'divider' }}><Typography sx={{ fontWeight: 'bold', fontSize: '1rem' }}>{">"}</Typography></IconButton>
+              </Box>
+            </Box>
+
+            {/* Calendar Grid */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, mb: 4 }}>
+              {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(d => (
+                <Typography key={d} align="center" variant="caption" sx={{ fontWeight: 800, color: 'text.disabled', mb: 1 }}>{d}</Typography>
+              ))}
+              
+              {/* Empty days padding */}
+              {Array.from({ length: firstDayIndex }).map((_, i) => (
+                <Box key={`empty-${i}`} />
+              ))}
+              
+              {/* Actual dates */}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const dateNum = i + 1;
+                const today = now.getDate();
+                const isPastDate = dateNum < today;
+                const isSelected = selectedDate === dateNum;
                 
-                <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <StarIcon sx={{ color: '#F59E0B' }} />
-                    <Typography sx={{ fontWeight: 'bold' }}>5.0 <Typography component="span" color="text.secondary" variant="body2">(12 Reviews)</Typography></Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <LocationOnIcon color="action" />
-                    <Typography color="text.secondary" sx={{ fontWeight: 'medium' }}>Remote</Typography>
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <VideoCameraFrontIcon color="action" />
-                    <Typography color="text.secondary" sx={{ fontWeight: 'medium' }}>Google Meet</Typography>
-                  </Box>
-                </Box>
-              </Box>
+                // Check availability
+                const currentDate = new Date(currentYear, currentMonth, dateNum);
+                const dayName = fullDayNames[currentDate.getDay()];
+                const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dateNum).padStart(2, '0')}`;
+                
+                let isAvailable = false;
+                const overrides = profile.date_overrides || {};
+                if (overrides[dateString] !== undefined) {
+                  isAvailable = overrides[dateString].length > 0;
+                } else {
+                  const weekly = profile.weekly_schedule || {};
+                  isAvailable = (weekly[dayName] || []).length > 0;
+                }
+                
+                const canSelect = isAvailable && !isPastDate;
 
-              <Divider sx={{ mb: 5 }} />
-
-              <Box sx={{ mb: 6 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>About Me</Typography>
-                <Typography variant="body1" sx={{ whiteSpace: 'pre-line', lineHeight: 1.8, color: 'text.secondary', fontSize: '1.05rem' }}>
-                  {profile.bio || "This expert hasn't added a bio yet."}
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 6 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>Areas of Expertise</Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
-                  {(profile.tags || []).map((tag: string) => (
-                    <Chip 
-                      key={tag} 
-                      label={tag} 
-                      sx={{ 
-                        bgcolor: 'rgba(13,148,136,0.1)', 
-                        color: 'secondary.dark', 
-                        fontWeight: 'bold',
-                        px: 1,
-                        py: 2.5,
-                        borderRadius: 3,
-                        fontSize: '0.9rem'
-                      }} 
-                    />
-                  ))}
-                  {(!profile.tags || profile.tags.length === 0) && (
-                    <Typography variant="body2" color="text.secondary">No expertise tags added.</Typography>
-                  )}
-                </Box>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* RIGHT COLUMN: Booking Calendar */}
-          <Grid size={{ xs: 12, md: 5 }}>
-            <Box sx={{ position: 'sticky', top: 32 }}>
-              <Paper 
-                elevation={4} 
-                sx={{ 
-                  borderRadius: 4, 
-                  overflow: 'hidden',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  background: (theme) => theme.palette.mode === 'dark' ? 'linear-gradient(145deg, #1e293b 0%, #0f172a 100%)' : 'linear-gradient(145deg, #ffffff 0%, #f0fdf4 100%)',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.08)'
-                }}
-              >
-                {/* Price Banner */}
-                <Box sx={{ p: 4, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: 'rgba(13,148,136,0.02)' }}>
-                  <Box>
-                    <Typography variant="h4" sx={{ fontWeight: 800, color: 'primary.main' }}>
-                      ₹{profile.hourly_rate || 0}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'medium' }}>
-                      per 30-min session
-                    </Typography>
-                  </Box>
-                  <AccessTimeIcon sx={{ fontSize: '2.5rem', color: 'secondary.main', opacity: 0.5 }} />
-                </Box>
-
-                {/* Calendar */}
-                <Box sx={{ p: 4 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 3 }}>Select a Date</Typography>
-                  
-                  <Box sx={{ mb: 4, bgcolor: 'background.default', p: 2.5, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                      <Typography sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
-                        {new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}
-                      </Typography>
-                      <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Typography variant="body2" sx={{ color: 'text.disabled', fontWeight: 'bold', cursor: 'not-allowed' }}>{"<"}</Typography>
-                        <Typography variant="body2" sx={{ color: 'secondary.main', fontWeight: 'bold', cursor: 'pointer' }}>{">"}</Typography>
-                      </Box>
-                    </Box>
-
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1 }}>
-                      {["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"].map(d => (
-                        <Typography key={d} align="center" variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', mb: 1 }}>{d}</Typography>
-                      ))}
-                      
-                      {/* Empty days padding */}
-                      {Array.from({ length: firstDayIndex }).map((_, i) => (
-                        <Box key={`empty-${i}`} />
-                      ))}
-                      
-                      {/* Actual dates */}
-                      {Array.from({ length: daysInMonth }).map((_, i) => {
-                        const dateNum = i + 1;
-                        const today = now.getDate();
-                        const isPastDate = dateNum < today;
-                        const isSelected = selectedDate === dateNum;
-                        
-                        // Check availability for this date
-                        const currentDate = new Date(currentYear, currentMonth, dateNum);
-                        const dayName = fullDayNames[currentDate.getDay()];
-                        const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dateNum).padStart(2, '0')}`;
-                        
-                        let isAvailable = false;
-                        const overrides = profile.date_overrides || {};
-                        if (overrides[dateString] !== undefined) {
-                          isAvailable = overrides[dateString].length > 0;
-                        } else {
-                          const weekly = profile.weekly_schedule || {};
-                          isAvailable = (weekly[dayName] || []).length > 0;
-                        }
-                        
-                        const canSelect = isAvailable && !isPastDate;
-
-                        return (
-                          <Box 
-                            key={`date-${dateNum}`} 
-                            onClick={() => canSelect && setSelectedDate(dateNum)}
-                            sx={{ 
-                              position: 'relative',
-                              aspectRatio: '1', 
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              justifyContent: 'center',
-                              borderRadius: '50%',
-                              fontSize: '0.9rem',
-                              bgcolor: isSelected ? 'secondary.main' : canSelect ? 'rgba(13,148,136,0.05)' : 'transparent',
-                              color: isPastDate ? 'text.disabled' : isSelected ? 'white' : isAvailable ? 'text.primary' : 'text.disabled',
-                              fontWeight: canSelect || isSelected ? 'bold' : 'normal',
-                              cursor: isPastDate ? 'not-allowed' : isAvailable ? 'pointer' : 'default',
-                              opacity: isPastDate ? 0.3 : 1,
-                              transition: 'all 0.2s',
-                              border: '1px solid',
-                              borderColor: isSelected ? 'secondary.main' : canSelect ? 'rgba(13,148,136,0.1)' : 'transparent',
-                              '&:hover': canSelect && !isSelected ? { bgcolor: 'rgba(13,148,136,0.15)', transform: 'scale(1.1)' } : {}
-                            }}
-                          >
-                            {dateNum}
-                          </Box>
-                        );
-                      })}
-                    </Box>
-                  </Box>
-
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Available Times</Typography>
-                  
-                  {timeSlots.length > 0 ? (
-                    <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 4, maxHeight: 280, overflowY: 'auto', pr: 1, '&::-webkit-scrollbar': { width: 6 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 3 } }}>
-                      {timeSlots.map((slot: string, idx: number) => {
-                        let isBooked = existingBookings.some(b => b.start_time === slot);
-                        
-                        // Check Google Calendar overlap
-                        if (!isBooked && googleBusySlots.length > 0) {
-                          const slotStart = new Date(selectedDate!);
-                          const match = slot.match(/(\d+):(\d+)\s*(AM|PM)/i);
-                          if (match) {
-                            let hours = parseInt(match[1]);
-                            if (match[3].toUpperCase() === "PM" && hours !== 12) hours += 12;
-                            if (match[3].toUpperCase() === "AM" && hours === 12) hours = 0;
-                            slotStart.setHours(hours, parseInt(match[2]), 0, 0);
-                            
-                            // Assume 1 hour session duration for overlap calculation
-                            const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
-                            
-                            // Overlap condition: slotStart < busyEnd AND slotEnd > busyStart
-                            isBooked = googleBusySlots.some(busy => slotStart < busy.end && slotEnd > busy.start);
-                          }
-                        }
-
-                        const isSelected = selectedTimeSlot === slot;
-                        
-                        return (
-                          <Button
-                            key={idx}
-                            variant={isSelected ? "contained" : "outlined"}
-                            color={isSelected ? "secondary" : "secondary"}
-                            disabled={isBooked}
-                            onClick={() => setSelectedTimeSlot(slot)}
-                            sx={{ 
-                              borderRadius: 3, 
-                              py: 1.5, 
-                              fontWeight: 800,
-                              fontSize: '0.85rem',
-                              borderWidth: isSelected ? 0 : 1,
-                              borderColor: isSelected ? 'transparent' : 'rgba(0,0,0,0.1)',
-                              color: isBooked ? 'text.disabled' : isSelected ? 'white' : 'text.primary',
-                              textDecoration: isBooked ? 'line-through' : 'none',
-                              bgcolor: isSelected ? 'secondary.main' : 'background.paper',
-                              boxShadow: isSelected ? '0 4px 14px rgba(13, 148, 136, 0.4)' : '0 2px 4px rgba(0,0,0,0.02)',
-                              transition: 'all 0.2s',
-                              '&:hover': { 
-                                borderWidth: isSelected ? 0 : 1, 
-                                borderColor: isBooked ? 'transparent' : 'secondary.main',
-                                bgcolor: isBooked ? 'transparent' : isSelected ? 'secondary.dark' : 'rgba(13,148,136,0.05)',
-                                transform: isBooked ? 'none' : 'translateY(-2px)'
-                              }
-                            }}
-                          >
-                            {slot}
-                          </Button>
-                        );
-                      })}
-                    </Box>
-                  ) : (
-                    <Box sx={{ p: 3, textAlign: 'center', bgcolor: 'action.hover', borderRadius: 3, mb: 4 }}>
-                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
-                        No availability on this date.
-                      </Typography>
-                    </Box>
-                  )}
-
-                  <Button 
-                    variant="contained" 
-                    color="primary" 
-                    size="large" 
-                    fullWidth 
-                    onClick={handleBookSession}
-                    disabled={!selectedDate || !selectedTimeSlot || isBooking}
+                return (
+                  <Box 
+                    key={`date-${dateNum}`} 
+                    onClick={() => canSelect && setSelectedDate(dateNum)}
                     sx={{ 
-                      py: 2, 
-                      borderRadius: 3, 
-                      fontSize: '1.1rem', 
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      boxShadow: '0 8px 24px rgba(15,23,42,0.15)'
+                      aspectRatio: '1', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      borderRadius: 2,
+                      fontSize: '1rem',
+                      fontWeight: isSelected ? 900 : canSelect ? 700 : 500,
+                      bgcolor: isSelected ? 'secondary.main' : canSelect ? 'rgba(13,148,136,0.04)' : 'transparent',
+                      color: isPastDate ? 'text.disabled' : isSelected ? 'white' : isAvailable ? 'text.primary' : 'text.disabled',
+                      cursor: isPastDate ? 'not-allowed' : isAvailable ? 'pointer' : 'default',
+                      border: '2px solid',
+                      borderColor: isSelected ? 'secondary.main' : 'transparent',
+                      transition: 'all 0.1s',
+                      '&:hover': canSelect && !isSelected ? { borderColor: 'secondary.light', bgcolor: 'rgba(13,148,136,0.08)' } : {}
                     }}
                   >
-                    {isBooking ? "Confirming..." : "Confirm & Book Session"}
-                  </Button>
-
-                  <Typography variant="caption" color="text.secondary" align="center" component="p" sx={{ mt: 2 }}>
-                    Times shown in {profile.timezone === 'asia_kolkata' ? 'India Standard Time (IST)' : profile.timezone || 'Local Time'}
-                  </Typography>
-
-                </Box>
-              </Paper>
+                    {dateNum}
+                  </Box>
+                );
+              })}
             </Box>
-          </Grid>
 
-        </Grid>
+            <Divider sx={{ my: 4 }} />
+
+            {/* Time Slots */}
+            <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 2 }}>
+              {selectedDate ? `Available Times for ${new Date(currentYear, currentMonth, selectedDate).toLocaleDateString('default', { weekday: 'short', month: 'short', day: 'numeric'})}` : "Select a date"}
+            </Typography>
+            
+            {selectedDate && timeSlots.length > 0 ? (
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 4 }}>
+                {timeSlots.map((slot: string, idx: number) => {
+                  let isBooked = existingBookings.some(b => b.start_time === slot);
+                  
+                  // Google Calendar overlap logic
+                  if (!isBooked && googleBusySlots.length > 0) {
+                    const slotStart = new Date(currentYear, currentMonth, selectedDate);
+                    const match = slot.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                    if (match) {
+                      let hours = parseInt(match[1]);
+                      if (match[3].toUpperCase() === "PM" && hours !== 12) hours += 12;
+                      if (match[3].toUpperCase() === "AM" && hours === 12) hours = 0;
+                      slotStart.setHours(hours, parseInt(match[2]), 0, 0);
+                      const slotEnd = new Date(slotStart.getTime() + 60 * 60 * 1000);
+                      isBooked = googleBusySlots.some(busy => slotStart < busy.end && slotEnd > busy.start);
+                    }
+                  }
+
+                  const isSelected = selectedTimeSlot === slot;
+                  
+                  return (
+                    <Button
+                      key={idx}
+                      variant="outlined"
+                      disabled={isBooked}
+                      onClick={() => setSelectedTimeSlot(slot)}
+                      sx={{ 
+                        borderRadius: 2, 
+                        py: 1.5, 
+                        fontWeight: 800,
+                        fontSize: '0.9rem',
+                        borderWidth: 2,
+                        borderColor: isSelected ? 'secondary.main' : 'divider',
+                        color: isBooked ? 'text.disabled' : isSelected ? 'secondary.main' : 'text.primary',
+                        textDecoration: isBooked ? 'line-through' : 'none',
+                        bgcolor: isSelected ? 'rgba(13,148,136,0.05)' : 'transparent',
+                        '&:hover': { 
+                          borderWidth: 2,
+                          borderColor: isBooked ? 'transparent' : 'secondary.main',
+                          bgcolor: isBooked ? 'transparent' : 'rgba(13,148,136,0.05)',
+                        }
+                      }}
+                    >
+                      {slot}
+                    </Button>
+                  );
+                })}
+              </Box>
+            ) : selectedDate ? (
+              <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', mb: 4 }}>
+                No slots available on this date.
+              </Typography>
+            ) : null}
+
+            {/* Footer / CTA */}
+            <Box sx={{ mt: 2, p: 3, bgcolor: 'background.default', borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography sx={{ fontWeight: 800 }}>Total Price</Typography>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: 'text.primary' }}>₹{profile.hourly_rate || 500}</Typography>
+              </Box>
+              
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                size="large" 
+                fullWidth 
+                onClick={handleBookSession}
+                disabled={!selectedDate || !selectedTimeSlot || isBooking}
+                sx={{ 
+                  py: 2, 
+                  borderRadius: 50, 
+                  fontSize: '1.1rem', 
+                  fontWeight: 800,
+                  boxShadow: '0 8px 24px rgba(13, 148, 136, 0.25)',
+                  '&:disabled': {
+                    bgcolor: 'action.disabledBackground',
+                    boxShadow: 'none'
+                  }
+                }}
+              >
+                {isBooking ? "Processing..." : "Continue to Payment"}
+              </Button>
+            </Box>
+            
+          </Box>
+        </Paper>
       </Container>
     </Box>
   );
