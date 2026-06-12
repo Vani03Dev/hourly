@@ -1,87 +1,139 @@
-"use client";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { MapPin, ShieldCheck, Star, Zap, Clock, CheckCircle2 } from 'lucide-react';
+import { Button } from '../ui/Button';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
-import React from "react";
-import { Card, CardContent, CardActions, Typography, Avatar, Box, Chip, Button, Divider, IconButton } from "@mui/material";
-import { Expert } from "@/types";
-import Link from "next/link";
-import StarIcon from '@mui/icons-material/Star';
-import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
-import VideocamIcon from '@mui/icons-material/Videocam';
+export interface ExpertData {
+  id: string;
+  name: string;
+  title: string;
+  avatarUrl?: string;
+  photo?: string;
+  location: string;
+  timezone?: string;
+  isVerified?: boolean;
+  isElite?: boolean;
+  isOnline?: boolean;
+  availability?: string;
+  nextAvailability?: string;
+  specializations?: string[];
+  credentials?: string[];
+  rating?: number;
+  sessionCount?: number;
+  sessions?: number;
+  responseTime?: string;
+  price: number;
+  usdPrice?: number;
+}
 
 interface ExpertCardProps {
-  expert: Expert;
+  expert: ExpertData;
 }
 
-export function ExpertCard({ expert }: ExpertCardProps) {
+export const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
+  const { currency } = useCurrency();
+
   return (
-    <Card elevation={2} sx={{ 
-      height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 3,
-      transition: 'transform 0.2s, box-shadow 0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 }
-    }}>
-      <CardContent sx={{ flexGrow: 1, p: 3 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-          <Box sx={{ position: 'relative' }}>
-            <Avatar src={expert.photo} sx={{ width: 80, height: 80 }} />
-            {expert.isOnline && (
-              <Box sx={{ 
-                position: 'absolute', bottom: 4, right: 4, width: 14, height: 14, 
-                bgcolor: '#10B981', borderRadius: '50%', border: '2px solid', borderColor: 'background.paper',
-                animation: 'pulse 2s infinite',
-                '@keyframes pulse': {
-                  '0%': { boxShadow: '0 0 0 0 rgba(16, 185, 129, 0.7)' },
-                  '70%': { boxShadow: '0 0 0 6px rgba(16, 185, 129, 0)' },
-                  '100%': { boxShadow: '0 0 0 0 rgba(16, 185, 129, 0)' }
-                }
-              }} />
-            )}
-          </Box>
-          <Box sx={{ textAlign: 'right', display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-            <Typography sx={{ fontWeight: 'bold', lineHeight: 1 }} variant="h5" color="primary">₹{expert.price}</Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 'bold' }}>/ session</Typography>
-          </Box>
-        </Box>
-        
-        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5 }}>{expert.name}</Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, minHeight: 40 }}>{expert.title}</Typography>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
-          <StarIcon sx={{ color: '#F59E0B', fontSize: 18 }} />
-          <Typography sx={{ fontWeight: 'bold' }} variant="body2">{expert.rating}</Typography>
-          <Typography variant="body2" color="text.secondary">({expert.sessions} reviews)</Typography>
-        </Box>
-        
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 3 }}>
-          {expert.credentials.slice(0, 2).map(cred => (
-            <Chip key={cred} label={cred} size="small" variant="outlined" sx={{ borderRadius: 1 }} />
-          ))}
-          {expert.credentials.length > 2 && (
-            <Chip label={`+${expert.credentials.length - 2}`} size="small" variant="outlined" sx={{ borderRadius: 1 }} />
-          )}
-        </Box>
-      </CardContent>
+    <div className="bg-white border border-border rounded-[16px] p-6 relative flex flex-col h-full hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-teal-DEFAULT/40 transition-all duration-300 group">
       
-      <Divider />
-      
-      <CardActions sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <IconButton size="small" sx={{ bgcolor: 'rgba(30, 58, 95, 0.1)', color: 'primary.main', borderRadius: 2, '&:hover': { bgcolor: 'primary.main', color: 'white', transform: 'scale(1.05)' }, transition: 'all 0.2s' }}>
-            <VideocamIcon fontSize="small" />
-          </IconButton>
-          <IconButton size="small" sx={{ bgcolor: 'rgba(13, 148, 136, 0.1)', color: 'secondary.main', borderRadius: 2, '&:hover': { bgcolor: 'secondary.main', color: 'white', transform: 'scale(1.05)' }, transition: 'all 0.2s' }}>
-            <ChatBubbleOutlinedIcon fontSize="small" />
-          </IconButton>
-        </Box>
-        
-        {expert.isOnline ? (
-          <Button component={Link} href={`/room/${expert.id}`} variant="contained" size="small" sx={{ borderRadius: 2, bgcolor: '#10B981', color: 'white', '&:hover': { bgcolor: '#059669' }, fontWeight: 'bold', px: 2 }}>
-            Connect Now
-          </Button>
-        ) : (
-          <Button component={Link} href={`/${expert.id}`} variant="contained" color="primary" size="small" sx={{ borderRadius: 2 }}>
-            View Profile
-          </Button>
+      {/* ONLINE STATUS DOT (Top Right Corner) */}
+      <div className="absolute top-4 right-4 flex items-center gap-1.5">
+        {expert.isOnline && (
+          <>
+            <span className="w-2 h-2 rounded-full bg-green-DEFAULT animate-pulse" />
+            <span className="text-[11px] font-semibold text-green-DEFAULT uppercase tracking-wider">Online</span>
+          </>
         )}
-      </CardActions>
-    </Card>
+      </div>
+
+      {/* HEADER: AVATAR & INFO */}
+      <div className="flex gap-4">
+        <div className="relative shrink-0">
+          {(expert.avatarUrl || expert.photo) ? (
+            <Image 
+              src={expert.avatarUrl || expert.photo || ''} 
+              alt={expert.name} 
+              width={64} 
+              height={64} 
+              className="w-16 h-16 rounded-full object-cover border border-border"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-surface-2 border border-border flex items-center justify-center text-navy-DEFAULT font-bold text-[20px]">
+              {expert.name.charAt(0)}
+            </div>
+          )}
+        </div>
+
+        <div className="flex flex-col flex-1 min-w-0 pt-1">
+          <div className="flex items-center gap-2">
+            <h3 className="text-[18px] font-bold text-navy-DEFAULT truncate">{expert.name}</h3>
+            {expert.isVerified && (
+              <ShieldCheck className="w-[18px] h-[18px] text-teal-DEFAULT shrink-0" />
+            )}
+          </div>
+          
+          <p className="text-[13px] text-text-sub mt-0.5 line-clamp-1 font-medium">{expert.title}</p>
+          
+          <div className="flex items-center gap-2 text-[12px] text-text-muted mt-1.5">
+            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{expert.location}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* SPECIALIZATIONS */}
+      <div className="flex flex-wrap gap-2 mt-5">
+        {(expert.specializations || expert.credentials || []).slice(0, 3).map((spec, i) => (
+          <span key={i} className="bg-surface-2 text-navy-DEFAULT text-[11px] font-semibold px-2.5 py-1 rounded-md border border-border/50">
+            {spec}
+          </span>
+        ))}
+        {(expert.specializations || expert.credentials || []).length > 3 && (
+          <span className="text-text-muted text-[11px] font-semibold px-1 py-1">
+            +{(expert.specializations || expert.credentials || []).length - 3}
+          </span>
+        )}
+      </div>
+
+      {/* TRUST & AVAILABILITY GRID */}
+      <div className="grid grid-cols-2 gap-y-2 mt-6 pt-5 border-t border-border/60">
+        <div className="flex items-center gap-1.5 text-[12px] text-text-sub">
+          <CheckCircle2 className="w-3.5 h-3.5 text-teal-DEFAULT" /> KYC Verified
+        </div>
+        <div className="flex items-center gap-1.5 text-[12px] text-text-sub">
+          <CheckCircle2 className="w-3.5 h-3.5 text-teal-DEFAULT" /> NDA Ready
+        </div>
+        
+        <div className="flex items-center gap-1.5 text-[12px] font-medium mt-1">
+          {expert.availability === 'now' ? (
+            <span className="text-green-DEFAULT flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 fill-current" /> Available Now</span>
+          ) : expert.availability === 'today' ? (
+            <span className="text-teal-DEFAULT flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Available Today</span>
+          ) : (
+             <span className="text-text-muted flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Book Next Week</span>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-grow"></div>
+
+      {/* PRICE & ACTION */}
+      <div className="mt-6 pt-4 flex items-center justify-between">
+        <div className="flex flex-col">
+          <span className="text-[11px] text-text-muted font-medium uppercase tracking-wider mb-0.5">Session Rate</span>
+          <div className="flex items-baseline gap-1">
+            <span className="text-[20px] font-bold text-navy-DEFAULT font-mono">
+              ₹{expert.price.toLocaleString('en-IN')}
+            </span>
+            <span className="text-[13px] text-text-sub font-medium">/hr</span>
+          </div>
+        </div>
+        
+        <Button variant="primary" className="bg-navy-DEFAULT hover:bg-navy-dark text-white rounded-xl shadow-md group-hover:bg-teal-DEFAULT transition-colors px-6" asChild>
+          <Link href={`/book/${expert.id}`}>Book Now</Link>
+        </Button>
+      </div>
+    </div>
   );
-}
+};

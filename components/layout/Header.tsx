@@ -2,358 +2,204 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { AppBar, Toolbar, Typography, Button, Stack, Box, Container, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Divider, Badge, Popover } from "@mui/material";
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useColorMode } from "../../components/ThemeRegistry";
-import { useNotifications } from "../../contexts/NotificationsContext";
-
+import { Zap, Search, Bell, Wallet, CalendarCheck, Building2, Settings, LogOut, Menu, X, LayoutDashboard, User as UserIcon, CreditCard } from "lucide-react";
 import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { createClient } from '../../utils/supabase/client';
+import { RootState } from "../../store/store";
+import { createClient } from "../../utils/supabase/client";
+import { useCurrency } from "../../contexts/CurrencyContext";
+import { Button } from "../ui/Button";
+
+const CURRENCIES = {
+  INR: "🇮🇳 INR",
+  USD: "🇺🇸 USD",
+  GBP: "🇬🇧 GBP",
+  AED: "🇦🇪 AED",
+  SGD: "🇸🇬 SGD"
+};
 
 export function Header() {
-  const { mode, toggleColorMode } = useColorMode();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  
-  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
-
-  const handleNotificationClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleNotificationClose = () => {
-    setAnchorEl(null);
-  };
-  
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
-  
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.auth.user);
   
-  const navItems = [
-    { label: "Explore", href: "/search" },
-    { label: "Categories", href: "/search" },
-    { label: "How it Works", href: "/how-it-works" },
-  ];
+  // We can infer the role from the user metadata if available, or fall back to 'company'
+  const role = user?.user_metadata?.role || 'company';
 
   const handleLogout = async () => {
-    
     const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = '/login';
+    setAvatarDropdown(false);
   };
+  const { currency, setCurrency } = useCurrency();
+  
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [currencyDropdown, setCurrencyDropdown] = useState(false);
+  const [avatarDropdown, setAvatarDropdown] = useState(false);
 
   return (
-    <AppBar 
-      position="sticky" 
-      elevation={0} 
-      sx={{ 
-        bgcolor: mode === 'light' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)', 
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid', 
-        borderColor: mode === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.08)',
-        zIndex: 1100
-      }}
-    >
-      <Container maxWidth="xl">
-        <Toolbar disableGutters sx={{ justifyContent: 'space-between', height: 76 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Link href="/" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column' }}>
-              <Box sx={{ transition: 'transform 0.2s', '&:hover': { transform: 'scale(1.02)' } }}>
-                <Typography sx={{ fontWeight: 900, fontSize: '1.75rem', lineHeight: 1, letterSpacing: '-0.02em', color: 'primary.main' }}>
-                  Hourly<Box component="span" sx={{ color: 'secondary.main' }}>.</Box>
-                </Typography>
-                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: 0.5, mt: 0.5 }}>
-                  Expertise on Demand
-                </Typography>
-              </Box>
-            </Link>
-            
-            <Stack direction="row" spacing={1} sx={{ display: { xs: 'none', md: 'flex' } }}>
-              {navItems.map((item) => (
-                <Button 
-                  key={item.label}
-                  component={Link} 
-                  href={item.href} 
-                  disableRipple
-                  sx={{ 
-                    color: 'text.secondary', 
-                    fontWeight: 600, 
-                    px: 2, 
-                    py: 1, 
-                    borderRadius: 2,
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      bottom: 0,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: 0,
-                      height: 3,
-                      bgcolor: 'secondary.main',
-                      transition: 'width 0.3s ease',
-                      borderRadius: '4px 4px 0 0'
-                    },
-                    '&:hover': { 
-                      bgcolor: 'transparent',
-                      color: 'primary.main',
-                      '&::before': { width: '80%' }
-                    } 
-                  }}
+    <>
+      <header className="sticky top-0 z-50 h-[64px] bg-white/80 backdrop-blur-md shadow-xs border-b border-border flex items-center justify-center w-full">
+        <div className="flex items-center justify-between px-6 md:px-8 w-full max-w-[1280px]">
+          {/* LEFT */}
+          <div className="flex items-center gap-2">
+          <Zap className="w-[20px] h-[20px] text-teal-DEFAULT" />
+          <Link href="/" className="text-[28px] font-bold text-navy-DEFAULT font-sans">
+            Hourly
+          </Link>
+        </div>
+
+        {/* CENTER (desktop) */}
+        <div className="hidden md:flex flex-1 max-w-[320px] mx-6">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-text-muted" />
+            <input
+              type="text"
+              placeholder="Search expertise or describe your problem..."
+              className="w-full h-[40px] pl-10 pr-4 rounded-[6px] border border-border bg-white text-[14px] focus:outline-none focus:border-teal-DEFAULT focus:ring-2 focus:ring-teal-DEFAULT/15 transition-all"
+            />
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="hidden md:flex items-center gap-4">
+          {!isAuthenticated ? (
+            <>
+              <Link href="/experts" className="text-[14px] font-medium text-text-sub hover:text-navy-DEFAULT">
+                For Experts
+              </Link>
+              
+              <div className="w-[1px] h-[20px] bg-border mx-2" />
+              
+              {/* Currency Selector */}
+              <div className="relative">
+                <button 
+                  onClick={() => setCurrencyDropdown(!currencyDropdown)}
+                  className="flex items-center text-[14px] text-text-body hover:bg-surface-DEFAULT px-2 py-1 rounded"
                 >
-                  {item.label}
-                </Button>
-              ))}
-            </Stack>
-          </Box>
+                  {CURRENCIES[currency]}
+                </button>
+                {currencyDropdown && (
+                  <div className="absolute top-full right-0 mt-2 w-32 bg-white border border-border shadow-md rounded-[6px] overflow-hidden z-50">
+                    {(Object.entries(CURRENCIES) as [keyof typeof CURRENCIES, string][]).map(([code, label]) => (
+                      <button
+                        key={code}
+                        onClick={() => { setCurrency(code); setCurrencyDropdown(false); }}
+                        className="w-full text-left px-4 py-2 text-[14px] hover:bg-surface-DEFAULT text-text-body"
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3">
+                <Button variant="outline" size="sm" asChild><Link href="/login">Log In</Link></Button>
+                <Button variant="primary" size="sm" asChild><Link href="/signup">Get Started</Link></Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link href="/search" className="text-[14px] font-medium text-text-sub hover:text-navy-DEFAULT">
+                {role === 'company' ? 'Find Experts' : 'My Dashboard'}
+              </Link>
+              
+              <div className="relative cursor-pointer hover:bg-surface-DEFAULT p-2 rounded-full">
+                <Bell className="w-[20px] h-[20px] text-text-sub" />
+                <span className="absolute top-[4px] right-[6px] w-[8px] h-[8px] bg-red-DEFAULT rounded-full"></span>
+              </div>
+
+              {/* Avatar Dropdown */}
+              <div className="relative">
+                <div 
+                  onClick={() => setAvatarDropdown(!avatarDropdown)}
+                  className="w-[32px] h-[32px] rounded-full bg-teal-bg text-teal-DEFAULT flex items-center justify-center font-bold text-[14px] cursor-pointer hover:bg-teal-light"
+                >
+                  {user?.user_metadata?.full_name?.charAt(0) || user?.email?.charAt(0) || "U"}
+                </div>
+
+                {avatarDropdown && (
+                  <div className="absolute top-full right-0 mt-2 w-56 bg-white border border-border shadow-lg rounded-[8px] overflow-hidden z-50 animate-fade-in">
+                    <div className="p-4 border-b border-border">
+                      <p className="font-semibold text-[14px] text-navy-DEFAULT truncate">{user?.user_metadata?.full_name || "User"}</p>
+                      <p className="text-[12px] text-text-muted truncate">{user?.email}</p>
+                    </div>
+                    <div className="p-2">
+                      {role === 'company' ? (
+                        <>
+                          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><CalendarCheck className="w-4 h-4"/> My Bookings</Link>
+                          <Link href="/workspace" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><Building2 className="w-4 h-4"/> Workspace</Link>
+                          <Link href="/settings" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><Settings className="w-4 h-4"/> Settings</Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><LayoutDashboard className="w-4 h-4"/> Dashboard</Link>
+                          <Link href="/profile" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><UserIcon className="w-4 h-4"/> Profile</Link>
+                          <Link href="/payouts" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><CreditCard className="w-4 h-4"/> Payouts</Link>
+                          <Link href="/settings" className="flex items-center gap-3 px-3 py-2 text-[14px] text-text-body hover:bg-surface-DEFAULT rounded-[6px]"><Settings className="w-4 h-4"/> Settings</Link>
+                        </>
+                      )}
+                    </div>
+                    <div className="p-2 border-t border-border">
+                      <button onClick={handleLogout} className="flex items-center w-full gap-3 px-3 py-2 text-[14px] text-red-DEFAULT hover:bg-red-bg rounded-[6px]">
+                        <LogOut className="w-4 h-4"/> Log Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* MOBILE MENU TOGGLE */}
+        <button 
+          className="md:hidden w-[40px] h-[40px] flex items-center justify-center text-navy-DEFAULT hover:bg-surface-DEFAULT rounded-sm"
+          onClick={() => setMobileOpen(true)}
+        >
+          <Menu size={24} />
+        </button>
+        </div>
+      </header>
+
+      {/* MOBILE FULL SCREEN OVERLAY */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-[60] bg-white flex flex-col">
+          <div className="flex items-center justify-between h-[64px] px-6 border-b border-border">
+            <div className="flex items-center gap-2">
+              <Zap className="w-[20px] h-[20px] text-teal-DEFAULT" />
+              <span className="text-[28px] font-bold text-navy-DEFAULT font-sans">Hourly</span>
+            </div>
+            <button onClick={() => setMobileOpen(false)} className="w-[40px] h-[40px] flex items-center justify-center text-text-muted hover:bg-surface-DEFAULT rounded-sm">
+              <X size={24} />
+            </button>
+          </div>
           
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-            <IconButton onClick={toggleColorMode} color="primary" sx={{ mr: 1, display: { xs: 'none', sm: 'inline-flex' } }}>
-              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
+          <nav className="flex flex-col mt-4">
+            <Link href="/experts" className="flex items-center h-[56px] px-6 border-b border-border text-[16px] font-medium text-navy-DEFAULT" onClick={() => setMobileOpen(false)}>For Experts</Link>
+            <div className="flex items-center h-[56px] px-6 border-b border-border text-[16px] font-medium text-navy-DEFAULT justify-between">
+              Currency
+              <select 
+                value={currency} 
+                onChange={(e) => setCurrency(e.target.value as any)}
+                className="bg-transparent border-none text-text-body focus:outline-none"
+              >
+                {(Object.entries(CURRENCIES) as [keyof typeof CURRENCIES, string][]).map(([code, label]) => (
+                  <option key={code} value={code}>{label}</option>
+                ))}
+              </select>
+            </div>
+          </nav>
 
-            {isAuthenticated && (
+          <div className="mt-auto p-6 flex flex-col gap-4">
+            {!isAuthenticated && (
               <>
-                <IconButton onClick={handleNotificationClick} color="primary" sx={{ mr: 2 }}>
-                  <Badge badgeContent={unreadCount} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-                
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleNotificationClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  slotProps={{ paper: { sx: { width: 340, maxHeight: 400, borderRadius: 3, mt: 1.5, boxShadow: '0 10px 40px -10px rgba(0,0,0,0.2)' } } }}
-                >
-                  <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid', borderColor: 'divider' }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>Notifications</Typography>
-                    {unreadCount > 0 && (
-                      <Button size="small" onClick={() => markAllAsRead()} sx={{ fontSize: '0.75rem', textTransform: 'none', fontWeight: 'bold' }}>Mark all read</Button>
-                    )}
-                  </Box>
-                  <List sx={{ p: 0 }}>
-                    {notifications.length === 0 ? (
-                      <ListItem sx={{ py: 4, justifyContent: 'center' }}>
-                        <Typography variant="body2" color="text.secondary">No new notifications.</Typography>
-                      </ListItem>
-                    ) : (
-                      notifications.map((notif) => (
-                        <Box key={notif.id}>
-                          <ListItemButton 
-                            alignItems="flex-start" 
-                            onClick={() => { 
-                              if(!notif.is_read) markAsRead(notif.id); 
-                              handleNotificationClose();
-                            }}
-                            sx={{ 
-                              bgcolor: notif.is_read ? 'transparent' : 'rgba(13, 148, 136, 0.05)',
-                              '&:hover': { bgcolor: notif.is_read ? 'rgba(0,0,0,0.02)' : 'rgba(13, 148, 136, 0.1)' },
-                              borderRadius: 1,
-                              mx: 0.5,
-                              my: 0.25
-                            }}
-                          >
-                            <ListItemText
-                              primary={
-                                <Typography variant="subtitle2" sx={{ fontWeight: notif.is_read ? 'normal' : 'bold', color: notif.is_read ? 'text.primary' : 'primary.main' }}>
-                                  {notif.title}
-                                </Typography>
-                              }
-                              secondary={
-                                <React.Fragment>
-                                  <Typography component="span" variant="body2" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
-                                    {notif.message}
-                                  </Typography>
-                                  <Typography component="span" variant="caption" color="text.disabled">
-                                    {new Date(notif.created_at).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                                  </Typography>
-                                </React.Fragment>
-                              }
-                            />
-                            {!notif.is_read && (
-                              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: 'primary.main', mt: 1, flexShrink: 0, ml: 2 }} />
-                            )}
-                          </ListItemButton>
-                          <Divider component="li" sx={{ mx: 2 }} />
-                        </Box>
-                      ))
-                    )}
-                  </List>
-                </Popover>
+                <Button variant="outline" fullWidth asChild><Link href="/login" onClick={() => setMobileOpen(false)}>Log In</Link></Button>
+                <Button variant="primary" fullWidth asChild><Link href="/signup" onClick={() => setMobileOpen(false)}>Get Started Free</Link></Button>
               </>
             )}
-
-            {isAuthenticated ? (
-              <>
-                <Button 
-                  component={Link} 
-                  href="/expert/dashboard" 
-                  variant="text" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: 'text.secondary',
-                    transition: 'color 0.2s ease',
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    '&:hover': { color: 'primary.main', bgcolor: 'transparent' }
-                  }}
-                >
-                  Expert Dashboard
-                </Button>
-                <Button 
-                  component={Link} 
-                  href="/mentee/dashboard" 
-                  variant="text" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: 'text.secondary',
-                    transition: 'color 0.2s ease',
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    '&:hover': { color: 'primary.main', bgcolor: 'transparent' }
-                  }}
-                >
-                  My Bookings
-                </Button>
-                <Button 
-                  onClick={handleLogout}
-                  variant="contained" 
-                  color="secondary" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 50,
-                    boxShadow: '0 4px 14px 0 rgba(13, 148, 136, 0.39)',
-                    transition: 'all 0.2s ease-in-out',
-                    display: { xs: 'none', md: 'inline-flex' },
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(13, 148, 136, 0.23)',
-                      bgcolor: 'secondary.dark'
-                    }
-                  }}
-                >
-                  Log out
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button 
-                  component={Link} 
-                  href="/login" 
-                  variant="text" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    color: 'text.secondary',
-                    transition: 'color 0.2s ease',
-                    display: { xs: 'none', sm: 'inline-flex' },
-                    '&:hover': { color: 'primary.main', bgcolor: 'transparent' }
-                  }}
-                >
-                  Log in
-                </Button>
-                <Button 
-                  component={Link} 
-                  href="/signup" 
-                  variant="contained" 
-                  color="secondary" 
-                  sx={{ 
-                    fontWeight: 700, 
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 50,
-                    boxShadow: '0 4px 14px 0 rgba(13, 148, 136, 0.39)',
-                    transition: 'all 0.2s ease-in-out',
-                    display: { xs: 'none', md: 'inline-flex' },
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(13, 148, 136, 0.23)',
-                      bgcolor: 'secondary.dark'
-                    }
-                  }}
-                >
-                  Join as Expert
-                </Button>
-              </>
-            )}
-
-            {/* Mobile Hamburger Icon */}
-            <IconButton 
-              color="inherit" 
-              onClick={() => setMobileOpen(true)}
-              sx={{ display: { md: 'none' }, ml: 1, color: 'text.primary' }}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Stack>
-        </Toolbar>
-      </Container>
-
-      {/* Mobile Drawer Navigation */}
-      <Drawer
-        anchor="right"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-        sx={{ '& .MuiDrawer-paper': { width: 280, bgcolor: 'background.paper' } }}
-      >
-        <Box sx={{ p: 2, height: '100%', display: 'flex', flexDirection: 'column' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <IconButton onClick={() => setMobileOpen(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <List>
-            {navItems.map((item) => (
-              <ListItem key={item.label} disablePadding>
-                <ListItemButton component={Link} href={item.href} onClick={() => setMobileOpen(false)} sx={{ borderRadius: 2, mb: 1 }}>
-                  <ListItemText primary={<Typography sx={{ fontWeight: 'bold' }}>{item.label}</Typography>} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider sx={{ my: 2 }} />
-          <Stack spacing={2}>
-            {isAuthenticated ? (
-              <>
-                <Button component={Link} href="/expert/dashboard" variant="outlined" fullWidth onClick={() => setMobileOpen(false)}>
-                  Expert Dashboard
-                </Button>
-                <Button component={Link} href="/mentee/dashboard" variant="outlined" fullWidth onClick={() => setMobileOpen(false)}>
-                  My Bookings
-                </Button>
-                <Button variant="contained" color="secondary" fullWidth onClick={handleLogout}>
-                  Log out
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button component={Link} href="/login" variant="outlined" fullWidth onClick={() => setMobileOpen(false)}>
-                  Log in
-                </Button>
-                <Button component={Link} href="/signup" variant="contained" color="secondary" fullWidth onClick={() => setMobileOpen(false)}>
-                  Join as Expert
-                </Button>
-              </>
-            )}
-          </Stack>
-        </Box>
-      </Drawer>
-    </AppBar>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

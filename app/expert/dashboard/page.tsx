@@ -1,36 +1,44 @@
 "use client";
 
-import React, { useState } from "react";
-import { Container, Grid, Paper, Typography, Box, Button, Avatar, Divider, IconButton, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField } from "@mui/material";
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import PeopleIcon from '@mui/icons-material/People';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import StarIcon from '@mui/icons-material/Star';
-import VideocamIcon from '@mui/icons-material/Videocam';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useAuth } from "../../../contexts/AuthContext";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store/store";
+import { createClient } from "../../../utils/supabase/client";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { Button } from "../../../components/ui/Button";
+import { 
+  Home, Calendar, Wallet, FileText, Settings, ShieldCheck, 
+  CheckCircle2, Circle, MoreVertical, MessageSquare, Video,
+  TrendingUp, Users, Eye, ArrowRight, Share2, Copy
+} from "lucide-react";
+import { ExpertSidebar } from "../../../components/layout/ExpertSidebar";
 import toast from "react-hot-toast";
-import { createClient } from '../../../utils/supabase/client';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
 export default function ExpertDashboardPage() {
-  const { user } = useAuth();
-
+  const user = useSelector((state: RootState) => state.auth.user);
   const [upcomingSessions, setUpcomingSessions] = useState<any[]>([]);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
-  
-  const [rescheduleOpen, setRescheduleOpen] = useState(false);
-  const [cancelOpen, setCancelOpen] = useState(false);
-  const [newDate, setNewDate] = useState('');
-  const [newTime, setNewTime] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [expandedChecklist, setExpandedChecklist] = useState<string | null>('customize');
 
-  React.useEffect(() => {
+  useEffect(() => {
     async function checkOnboarding() {
       if (!user) return;
-      
       const supabase = createClient();
-      
       const { data, error } = await supabase
         .from('expert_profiles')
         .select('is_onboarded')
@@ -41,289 +49,256 @@ export default function ExpertDashboardPage() {
         window.location.href = '/expert/onboarding';
       }
     }
-    
     checkOnboarding();
   }, [user]);
 
-  const fetchBookings = async () => {
-    if (!user) return;
-    
-    const supabase = createClient();
-    
-    const { data, error } = await supabase
-      .from('bookings')
-      .select('*')
-      .eq('expert_id', user.id)
-      .neq('status', 'canceled')
-      .order('booking_date', { ascending: true })
-      .order('start_time', { ascending: true });
-      
-    if (!error && data) {
-      const formattedBookings = data.map((b: any) => {
-        let formattedDate = b.booking_date;
-        try {
-          const [y, m, d] = b.booking_date.split('-');
-          const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
-          formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        } catch (e) {}
+  useEffect(() => {
+    async function fetchBookings() {
+      if (!user) return;
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('*')
+        .eq('expert_id', user.id)
+        .neq('status', 'canceled')
+        .order('booking_date', { ascending: true })
+        .order('start_time', { ascending: true });
+        
+      if (!error && data) {
+        const formattedBookings = data.map((b: any) => {
+          let formattedDate = b.booking_date;
+          try {
+            const [y, m, d] = b.booking_date.split('-');
+            const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+            formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          } catch (e) {}
 
-        return {
-          id: b.id,
-          name: `Mentee (${b.mentee_id.substring(0, 6)})`,
-          type: '1-on-1 Consultation',
-          duration: '30 min',
-          time: `${formattedDate} at ${b.start_time}`,
-          roomLink: b.meeting_link ? `/room/${b.id}` : null
-        };
-      });
-      setUpcomingSessions(formattedBookings);
+          return {
+            id: b.id,
+            name: `Mentee (${b.mentee_id.substring(0, 6)})`,
+            type: '1-on-1 Consultation',
+            duration: '30 min',
+            time: `${formattedDate} at ${b.start_time}`,
+            roomLink: b.meeting_link ? `/room/${b.id}` : null
+          };
+        });
+        setUpcomingSessions(formattedBookings);
+      }
     }
-  };
-
-  React.useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchBookings();
   }, [user]);
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, id: string) => {
-    setAnchorEl(event.currentTarget);
-    setSelectedSessionId(id);
+  const copyProfileLink = () => {
+    const profileLink = `hourly.com/${user?.user_metadata?.username || user?.id}`;
+    navigator.clipboard.writeText(profileLink);
+    toast.success('Link copied!');
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleReschedule = async () => {
-    if (!newDate || !newTime || !selectedSessionId) return;
-    setIsProcessing(true);
-    try {
-      const res = await fetch('/api/expert/sessions/reschedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          booking_id: selectedSessionId,
-          new_date: newDate,
-          new_start_time: newTime
-        })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      
-      toast.success('Session rescheduled successfully!');
-      setRescheduleOpen(false);
-      fetchBookings();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to reschedule');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleCancel = async () => {
-    if (!selectedSessionId) return;
-    setIsProcessing(true);
-    try {
-      const res = await fetch('/api/expert/sessions/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ booking_id: selectedSessionId })
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      
-      toast.success('Session canceled and refund initiated.');
-      setCancelOpen(false);
-      fetchBookings();
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to cancel session');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const metrics = [
-    { label: "This Month", value: "₹0", icon: <AttachMoneyIcon sx={{ color: '#10B981' }} /> },
-    { label: "Total Sessions", value: "0", icon: <PeopleIcon sx={{ color: '#3B82F6' }} /> },
-    { label: "Profile Views", value: "0", icon: <VisibilityIcon sx={{ color: '#8B5CF6' }} /> },
-    { label: "Avg Rating", value: "0.0", icon: <StarIcon sx={{ color: '#F59E0B' }} /> },
-  ];
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || "Expert";
+  const profileUrl = `hourly.com/${user?.user_metadata?.username || user?.id}`;
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>Welcome back, {user?.user_metadata?.first_name || user?.email || "Expert"}</Typography>
-        <Typography variant="body1" color="text.secondary">Here's a summary of your micro-consulting business.</Typography>
-      </Box>
+    <div className="flex min-h-[calc(100vh-64px)] bg-[#FCFCFD] overflow-hidden">
+      
+      {/* SIDEBAR */}
+      <ExpertSidebar />
 
-      <Grid container spacing={3} sx={{ mb: 6 }}>
-        {metrics.map((metric, i) => (
-          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
-            <Paper elevation={1} sx={{ p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: 'action.hover' }}>
-                {metric.icon}
-              </Box>
-              <Box>
-                <Typography variant="h5" sx={{ fontWeight: 'bold' }}>{metric.value}</Typography>
-                <Typography variant="body2" color="text.secondary">{metric.label}</Typography>
-              </Box>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-
-      <Grid container spacing={4}>
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Paper elevation={1} sx={{ p: 4, borderRadius: 3, minHeight: '100%' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Upcoming Sessions</Typography>
-            </Box>
+      {/* MAIN CONTENT */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-[1100px] mx-auto p-6 md:p-10 lg:p-12">
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={staggerContainer}
+          >
             
-            {upcomingSessions.length === 0 ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 6, textAlign: 'center' }}>
-                <Box sx={{ p: 2, borderRadius: '50%', bgcolor: 'action.hover', mb: 2 }}>
-                  <VideocamIcon sx={{ fontSize: 40, color: 'text.secondary' }} />
-                </Box>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1 }}>No upcoming sessions</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300, mb: 3 }}>
-                  You don't have any sessions scheduled right now. Share your profile link to get booked!
-                </Typography>
-                <Button variant="outlined" color="primary" sx={{ borderRadius: 2, fontWeight: 'bold' }}>
-                  Share Profile
-                </Button>
-              </Box>
-            ) : (
-              upcomingSessions.map((session, i) => (
-                <Box key={session.id}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', py: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <Avatar sx={{ bgcolor: 'secondary.main' }}>{session.name[0]}</Avatar>
-                      <Box>
-                        <Typography sx={{ fontWeight: 'bold' }}>{session.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {session.type} • {session.duration}
-                        </Typography>
-                      </Box>
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                      <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{session.time}</Typography>
-                      </Box>
-                      {session.roomLink ? (
-                        <Button 
-                          variant="contained" 
-                          color="primary" 
-                          startIcon={<VideocamIcon />} 
-                          sx={{ borderRadius: 2 }}
-                          component="a"
-                          href={session.roomLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Join
-                        </Button>
-                      ) : (
-                        <Button 
-                          variant="contained" 
-                          color="inherit" 
-                          startIcon={<VideocamIcon />} 
-                          sx={{ borderRadius: 2 }}
-                          disabled
-                        >
-                          No Link
-                        </Button>
+            {/* Header Area */}
+            <motion.div variants={fadeUp} className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+              <h1 className="text-[32px] md:text-[40px] font-bold text-navy-DEFAULT tracking-tight leading-tight">
+                Hi, {firstName}
+              </h1>
+              
+              <div className="flex items-center bg-white border border-border rounded-full p-1 pl-4 shadow-sm max-w-sm">
+                <span className="text-[14px] font-semibold text-navy-DEFAULT truncate mr-3">
+                  {profileUrl}
+                </span>
+                <button 
+                  onClick={copyProfileLink}
+                  className="w-8 h-8 flex items-center justify-center bg-surface-2 hover:bg-border rounded-full transition-colors text-navy-DEFAULT shrink-0"
+                >
+                  <Copy size={14} />
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Verify Banner */}
+            <motion.div variants={fadeUp} className="mb-10 bg-blue-50/50 border border-blue-200 rounded-[16px] p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0">
+                  <ShieldCheck size={24} />
+                </div>
+                <div>
+                  <h3 className="text-[16px] font-bold text-blue-900 mb-1">Verify your identity to enable payouts</h3>
+                  <p className="text-[14px] text-blue-700/80">Complete identity verification to start receiving payouts directly to your bank account for your paid bookings.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 shrink-0">
+                <button className="text-[14px] font-semibold text-blue-600 hover:text-blue-800 transition-colors">Contact Support</button>
+                <Button className="bg-navy-DEFAULT hover:bg-navy-DEFAULT/90 text-white border-none shadow-md">Verify Identity</Button>
+              </div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              {/* Left Column - 2/3 width */}
+              <div className="lg:col-span-2 flex flex-col gap-8">
+                
+                {/* Onboarding Checklist */}
+                <motion.div variants={fadeUp} className="bg-white border border-border rounded-[16px] p-6 md:p-8 shadow-sm">
+                  <h2 className="text-[20px] font-bold text-navy-DEFAULT mb-2">Make the page yours!</h2>
+                  <p className="text-[15px] text-text-sub mb-8">Unlock the potential of your Hourly page</p>
+                  
+                  {/* Progress Bar */}
+                  <div className="flex gap-2 mb-8">
+                    <div className="h-2 flex-1 bg-teal-DEFAULT rounded-full"></div>
+                    <div className="h-2 flex-1 bg-teal-DEFAULT rounded-full"></div>
+                    <div className="h-2 flex-1 bg-surface-2 rounded-full"></div>
+                    <div className="h-2 flex-1 bg-surface-2 rounded-full"></div>
+                    <div className="h-2 flex-1 bg-surface-2 rounded-full"></div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    {/* Item 1 */}
+                    <div className="border-b border-border py-4">
+                      <button 
+                        onClick={() => setExpandedChecklist(expandedChecklist === 'availability' ? null : 'availability')}
+                        className="w-full flex items-center justify-between group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <CheckCircle2 className="text-teal-DEFAULT" size={24} />
+                          <span className="text-[16px] font-bold text-navy-DEFAULT">Set availability</span>
+                        </div>
+                      </button>
+                      {expandedChecklist === 'availability' && (
+                        <div className="pl-10 mt-3 text-[14px] text-text-sub">
+                          You have already set up your availability schedule.
+                        </div>
                       )}
-                      
-                      <IconButton onClick={(e) => handleMenuClick(e, session.id)}>
-                        <MoreVertIcon />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                  {i < upcomingSessions.length - 1 && <Divider />}
-                </Box>
-              ))
-            )}
-          </Paper>
-        </Grid>
-        
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Paper elevation={1} sx={{ p: 4, borderRadius: 3, bgcolor: 'primary.main', color: 'white' }}>
-            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>Expert Tip</Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9, mb: 3, lineHeight: 1.6 }}>
-              Need to shift a meeting? Click the 3 dots next to a session to reschedule it without recharging your mentee, or refund them instantly.
-            </Typography>
-            <Button variant="contained" color="secondary" fullWidth sx={{ fontWeight: 'bold', color: 'white' }} href="/expert/settings">
-              Update Availability
-            </Button>
-          </Paper>
-        </Grid>
-      </Grid>
+                    </div>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <MenuItem onClick={() => { handleMenuClose(); setRescheduleOpen(true); }}>
-          Reschedule Session
-        </MenuItem>
-        <MenuItem onClick={() => { handleMenuClose(); setCancelOpen(true); }} sx={{ color: 'error.main' }}>
-          Cancel & Refund
-        </MenuItem>
-      </Menu>
+                    {/* Item 2 */}
+                    <div className="border-b border-border py-4">
+                      <button 
+                        onClick={() => setExpandedChecklist(expandedChecklist === 'customize' ? null : 'customize')}
+                        className="w-full flex items-center justify-between group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <Circle className="text-text-muted" size={24} />
+                          <span className="text-[16px] font-bold text-navy-DEFAULT">Customize your creator page</span>
+                        </div>
+                      </button>
+                      {expandedChecklist === 'customize' && (
+                        <div className="pl-10 mt-4">
+                          <p className="text-[14px] text-text-sub mb-4">Add your photo, bio, theme, and showcase testimonials & ratings to stand out.</p>
+                          <Button>Customize page</Button>
+                        </div>
+                      )}
+                    </div>
 
-      {/* Reschedule Dialog */}
-      <Dialog open={rescheduleOpen} onClose={() => !isProcessing && setRescheduleOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Reschedule Session</DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={{ mb: 3 }}>
-            Shift this session to a new date and time. The mentee will retain their booking and will not be charged again.
-          </DialogContentText>
-          <TextField
-            fullWidth
-            label="New Date"
-            type="date"
-            slotProps={{ inputLabel: { shrink: true } }}
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="New Time"
-            placeholder="e.g. 02:00 PM"
-            value={newTime}
-            onChange={(e) => setNewTime(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 0 }}>
-          <Button onClick={() => setRescheduleOpen(false)} disabled={isProcessing}>Cancel</Button>
-          <Button onClick={handleReschedule} variant="contained" disabled={isProcessing || !newDate || !newTime}>
-            {isProcessing ? 'Processing...' : 'Reschedule'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+                    {/* Item 3 */}
+                    <div className="py-4">
+                      <button 
+                        onClick={() => setExpandedChecklist(expandedChecklist === 'services' ? null : 'services')}
+                        className="w-full flex items-center justify-between group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <CheckCircle2 className="text-teal-DEFAULT" size={24} />
+                          <span className="text-[16px] font-bold text-navy-DEFAULT">Create your services</span>
+                        </div>
+                      </button>
+                      {expandedChecklist === 'services' && (
+                        <div className="pl-10 mt-3 text-[14px] text-text-sub">
+                          Your services are active and ready to be booked by clients.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
 
-      {/* Cancel Dialog */}
-      <Dialog open={cancelOpen} onClose={() => !isProcessing && setCancelOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Cancel & Refund</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Are you sure you want to cancel this session? This action cannot be undone.
-            The mentee will receive an automated full refund to their original payment method via Razorpay.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions sx={{ p: 3, pt: 0 }}>
-          <Button onClick={() => setCancelOpen(false)} disabled={isProcessing}>Keep Session</Button>
-          <Button onClick={handleCancel} color="error" variant="contained" disabled={isProcessing}>
-            {isProcessing ? 'Processing...' : 'Confirm Refund'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+                {/* Upcoming Sessions */}
+                <motion.div variants={fadeUp} className="bg-white border border-border rounded-[16px] p-6 md:p-8 shadow-sm">
+                  <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-[20px] font-bold text-navy-DEFAULT">Upcoming Bookings</h2>
+                    <div className="bg-surface-2 text-navy-DEFAULT font-bold px-3 py-1 rounded-full text-[13px]">
+                      {upcomingSessions.length}
+                    </div>
+                  </div>
 
-    </Container>
+                  {upcomingSessions.length === 0 ? (
+                    <div className="text-center py-12 px-4">
+                      <div className="w-16 h-16 bg-surface-2 rounded-full flex items-center justify-center mx-auto mb-4 text-text-muted">
+                        <Calendar size={24} />
+                      </div>
+                      <h3 className="text-[16px] font-bold text-navy-DEFAULT mb-2">No upcoming sessions</h3>
+                      <p className="text-[14px] text-text-sub max-w-sm mx-auto">Share your profile link on LinkedIn or Twitter to get your first booking!</p>
+                      <Button className="mt-6" variant="outline">Share Profile</Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-6">
+                      {upcomingSessions.map((session, i) => (
+                        <div key={session.id} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${i !== upcomingSessions.length - 1 ? 'pb-6 border-b border-border' : ''}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="w-12 h-12 rounded-full bg-teal-DEFAULT/10 text-teal-DEFAULT flex items-center justify-center font-bold text-[18px] shrink-0">
+                              {session.name.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="text-[16px] font-bold text-navy-DEFAULT mb-1">{session.name}</div>
+                              <div className="text-[14px] text-text-sub mb-2">{session.type} • {session.duration}</div>
+                              <div className="inline-block bg-surface-2 text-navy-DEFAULT text-[12px] font-bold px-2 py-1 rounded">
+                                {session.time}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 sm:ml-auto">
+                            <button className="w-10 h-10 flex items-center justify-center bg-white border border-border rounded-[8px] text-text-sub hover:text-navy-DEFAULT hover:border-navy-DEFAULT transition-colors">
+                              <MessageSquare size={18} />
+                            </button>
+                            {session.roomLink && (
+                              <Button className="h-10 bg-teal-DEFAULT hover:bg-teal-dark border-none shadow-sm gap-2">
+                                <Video size={16} /> Join
+                              </Button>
+                            )}
+                            <button className="w-10 h-10 flex items-center justify-center bg-white border border-border rounded-[8px] text-text-sub hover:text-navy-DEFAULT hover:border-navy-DEFAULT transition-colors">
+                              <MoreVertical size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              </div>
+
+              {/* Right Column - 1/3 width */}
+              <div className="flex flex-col gap-8">
+                
+                {/* Quick Stats Placeholder */}
+                <motion.div variants={fadeUp} className="bg-white border border-border rounded-[16px] p-6 shadow-sm">
+                  <h3 className="text-[12px] font-bold text-text-muted uppercase tracking-widest mb-6">Quick Stats</h3>
+                  <div className="flex flex-col items-center justify-center min-h-[150px] text-center">
+                    <TrendingUp size={24} className="text-text-muted mb-3" />
+                    <h4 className="text-[14px] font-bold text-navy-DEFAULT mb-1">No data yet</h4>
+                    <p className="text-[13px] text-text-sub">Your analytics will appear here once you start getting bookings.</p>
+                  </div>
+                </motion.div>
+
+              </div>
+            </div>
+
+          </motion.div>
+        </div>
+      </main>
+    </div>
   );
 }

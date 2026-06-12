@@ -8,6 +8,7 @@ import EventIcon from '@mui/icons-material/Event';
 import Link from "next/link";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import SearchIcon from '@mui/icons-material/Search';
+import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import { createClient } from '../../../utils/supabase/client';
 import { motion } from "framer-motion";
 
@@ -187,6 +188,18 @@ export default function MenteeDashboardPage() {
                         <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1.5 }}>
                           {session.time}
                         </Typography>
+                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                          <Button
+                            variant="outlined"
+                            size="small"
+                            color="secondary"
+                            startIcon={<ChatBubbleOutlinedIcon />}
+                            sx={{ borderRadius: 2 }}
+                            component={Link}
+                            href={`/messages?bookingId=${session.id}`}
+                          >
+                            Message
+                          </Button>
                         {session.roomLink ? (
                           <Button 
                             variant="contained" 
@@ -209,6 +222,7 @@ export default function MenteeDashboardPage() {
                             No Link
                           </Button>
                         )}
+                        </Box>
                       </Box>
                     </Box>
                     {i < upcomingSessions.length - 1 && <Divider />}
@@ -238,6 +252,16 @@ export default function MenteeDashboardPage() {
                           <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>{session.expertName}</Typography>
                           <Typography variant="body2" color="text.secondary">{session.time}</Typography>
                         </Box>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          color="secondary"
+                          sx={{ borderRadius: 2, mr: 1 }}
+                          component={Link}
+                          href={`/messages?bookingId=${session.id}`}
+                        >
+                          Chat
+                        </Button>
                         <Chip label="Completed" size="small" sx={{ fontWeight: 'bold' }} />
                       </Box>
                       {i < pastSessions.length - 1 && <Divider />}

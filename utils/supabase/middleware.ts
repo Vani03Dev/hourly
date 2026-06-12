@@ -41,7 +41,7 @@ export async function updateSession(request: NextRequest) {
 
   // If the user is logged in and trying to access auth pages (login/signup), redirect them to dashboard
   if (user && isAuthRoute) {
-    url.pathname = '/expert/dashboard'
+    url.pathname = '/dashboard'
     return NextResponse.redirect(url)
   }
 

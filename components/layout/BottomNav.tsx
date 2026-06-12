@@ -1,49 +1,50 @@
 "use client";
 
-import React, { } from "react";
-import { BottomNavigation, BottomNavigationAction, Paper } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
-import HomeIcon from '@mui/icons-material/Home';
-import PersonIcon from '@mui/icons-material/Person';
-import { useRouter, usePathname } from "next/navigation";
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Home, Search, User } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function BottomNav() {
-  const router = useRouter();
   const pathname = usePathname();
 
-  const getValue = () => {
-    if (pathname === '/') return 0;
-    if (pathname.includes('/search')) return 1;
-    if (pathname.includes('/profile') || pathname.includes('/dashboard')) return 2;
-    return 0;
+  const getActive = (path: string) => {
+    if (path === '/' && pathname === '/') return true;
+    if (path !== '/' && pathname.includes(path)) return true;
+    return false;
   };
 
+  const navItems = [
+    { label: "Home", icon: Home, path: "/" },
+    { label: "Explore", icon: Search, path: "/search" },
+    { label: "Account", icon: User, path: "/dashboard" },
+  ];
+
   return (
-    <Paper 
-      sx={{ 
-        position: 'fixed', 
-        bottom: 0, 
-        left: 0, 
-        right: 0, 
-        display: { xs: 'block', sm: 'none' }, // Only show on mobile
-        zIndex: 1100,
-        pb: 'env(safe-area-inset-bottom)' // iOS safe area
-      }} 
-      elevation={8}
-    >
-      <BottomNavigation
-        showLabels
-        value={getValue()}
-        onChange={(event, newValue) => {
-          if (newValue === 0) router.push('/');
-          if (newValue === 1) router.push('/search');
-          if (newValue === 2) router.push('/dashboard');
-        }}
-      >
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Explore" icon={<SearchIcon />} />
-        <BottomNavigationAction label="Account" icon={<PersonIcon />} />
-      </BottomNavigation>
-    </Paper>
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1100] md:hidden w-[90%] max-w-[340px]">
+      <div className="bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-[24px] px-6 py-3 flex justify-between items-center relative overflow-hidden">
+        {navItems.map((item, i) => {
+          const isActive = getActive(item.path);
+          return (
+            <Link 
+              key={i} 
+              href={item.path}
+              className="flex flex-col items-center gap-1 relative z-10 w-[60px]"
+            >
+              <div className={`p-2 rounded-full transition-all duration-300 ${isActive ? 'bg-teal-DEFAULT/10' : ''}`}>
+                <item.icon className={`w-[22px] h-[22px] transition-all duration-300 ${isActive ? 'text-teal-DEFAULT scale-110' : 'text-text-muted scale-100'}`} />
+              </div>
+              <span className={`text-[10px] font-medium transition-colors ${isActive ? 'text-teal-DEFAULT' : 'text-text-muted'}`}>
+                {item.label}
+              </span>
+              {isActive && (
+                <motion.div layoutId="bottomNavIndicator" className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1 h-1 bg-teal-DEFAULT rounded-full" />
+              )}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
   );
 }

@@ -1,325 +1,144 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { notFound } from "next/navigation";
-import { mockReviews } from "@/lib/mock-data";
-import { Box, Container, Typography, Card, Button, Stack, Avatar, Rating, Chip, IconButton, Skeleton } from "@mui/material";
-import VideocamIcon from '@mui/icons-material/Videocam';
-import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
-import BoltIcon from '@mui/icons-material/Bolt';
-import StarIcon from '@mui/icons-material/Star';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import IosShareIcon from '@mui/icons-material/IosShare';
-import Link from "next/link";
-import { SlideUp } from "@/components/shared/MotionWrapper";
-import { motion } from "framer-motion";
-import { createClient } from "@/utils/supabase/client";
-import { use } from "react";
-import { ShareProfileModal } from "@/components/profile/ShareProfileModal";
+import React, { useEffect, useState } from 'react';
+import { createClient } from '../../utils/supabase/client';
+import { motion } from 'framer-motion';
+import { Button } from '../../components/ui/Button';
+import { MapPin, ShieldCheck, Clock, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound, useRouter } from 'next/navigation';
 
-export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
-  const unwrappedParams = use(params);
-  const usernameParam = unwrappedParams.username;
-  
+export default function ExpertPublicProfile({ params }: { params: { username: string } }) {
   const [expert, setExpert] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchExpert() {
-      try {
-        const supabase = createClient();
-        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameParam);
+    async function fetchData() {
+      const supabase = createClient();
+      
+      // Fetch expert profile by username
+      const { data: profile, error } = await supabase
+        .from('expert_profiles')
+        .select('*')
+        .eq('username', params.username)
+        .single();
         
-        const { data, error } = await supabase
-          .from('expert_profiles')
-          .select('*')
-          .eq(isUUID ? 'id' : 'username', usernameParam)
-          .single();
-          
-        if (error) throw error;
-        setExpert(data);
-      } catch (err) {
-        console.error("Failed to load expert:", err);
-      } finally {
-        setIsLoading(false);
+      if (error || !profile) {
+        setLoading(false);
+        return; // Will show not found
       }
-    }
-    fetchExpert();
-  }, [usernameParam]);
 
-  if (isLoading) {
-    return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Skeleton variant="circular" width={100} height={100} />
-      </Box>
-    );
+      setExpert(profile);
+
+      // Fetch expert services
+      const { data: svcs } = await supabase
+        .from('services')
+        .select('*')
+        .eq('expert_id', profile.id)
+        .order('price', { ascending: true });
+
+      if (svcs) setServices(svcs);
+      setLoading(false);
+    }
+    fetchData();
+  }, [params.username]);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-text-muted">Loading profile...</div>;
   }
 
   if (!expert) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>Profile Not Found</Typography>
-        <Button component={Link} href="/search" sx={{ mt: 2 }}>Find an Expert</Button>
-      </Box>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
+        <h1 className="text-3xl font-bold text-navy-DEFAULT mb-2">Profile Not Found</h1>
+        <p className="text-text-sub mb-6">The expert you are looking for does not exist.</p>
+        <Button asChild><Link href="/search">Find an Expert</Link></Button>
+      </div>
     );
   }
 
-  const fullName = `${expert.first_name || ''} ${expert.last_name || ''}`.trim() || 'Anonymous Expert';
-  // Use mock values for online status, rating, etc. if not present in DB
-  const isOnline = true; // In a real app, calculate this or fetch from presence DB
-  const perMinuteRate = expert.hourly_rate ? Math.round(expert.hourly_rate / 60) : 10;
-
-  const handleShareClick = async () => {
-    try {
-      // Use native share on mobile/supported devices if available
-      if (navigator.share && window.innerWidth <= 768) {
-        await navigator.share({ 
-          title: `Book a session with ${fullName} on Hourly`, 
-          url: window.location.href 
-        });
-      } else {
-        setIsShareModalOpen(true);
-      }
-    } catch (err: any) {
-      // Only open modal if it wasn't a deliberate user cancellation of the share sheet
-      if (err.name !== 'AbortError') {
-        setIsShareModalOpen(true);
-      }
-    }
-  };
-
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 12 }}>
-      {/* Share Modal */}
-      <ShareProfileModal 
-        open={isShareModalOpen} 
-        onClose={() => setIsShareModalOpen(false)} 
-        profileUrl={typeof window !== 'undefined' ? window.location.href : `https://hourly.com/${expert.username || expert.id}`}
-        profileName={fullName}
-      />
-
-      {/* Cover Photo Area */}
-      <Box 
-        sx={{ 
-          height: { xs: 160, sm: 220 }, 
-          bgcolor: 'primary.main',
-          backgroundImage: 'linear-gradient(120deg, #1E3A5F 0%, #0D9488 100%)',
-          position: 'relative',
-        }}
-      >
-        <Container maxWidth="sm" sx={{ height: '100%', position: 'relative' }}>
-          <IconButton 
-            sx={{ position: 'absolute', top: 16, right: 16, bgcolor: 'rgba(255,255,255,0.2)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }}
-            onClick={handleShareClick}
-          >
-            <IosShareIcon />
-          </IconButton>
-        </Container>
-      </Box>
-
-      <Container maxWidth="sm" sx={{ px: { xs: 2, sm: 3 } }}>
-        <SlideUp>
-          {/* Profile Header (Overlapping Avatar) */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: -8, mb: 4, textAlign: 'center' }}>
-            <Box sx={{ position: 'relative', mb: 2 }}>
-              <Avatar 
-                src={expert.avatar_url} 
-                sx={{ 
-                  width: 140, 
-                  height: 140, 
-                  border: '6px solid', 
-                  borderColor: 'background.default', 
-                  boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
-                  fontSize: '3rem',
-                  bgcolor: 'secondary.main'
-                }} 
-              >
-                {!expert.avatar_url && fullName.charAt(0)}
-              </Avatar>
-              {isOnline && (
-                <Box sx={{ 
-                  position: 'absolute', bottom: 8, right: 8, width: 24, height: 24, 
-                  bgcolor: '#10B981', borderRadius: '50%', border: '4px solid', borderColor: 'background.default',
-                  animation: 'pulse 2s infinite',
-                  '@keyframes pulse': {
-                    '0%': { boxShadow: '0 0 0 0 rgba(16, 185, 129, 0.7)' },
-                    '70%': { boxShadow: '0 0 0 10px rgba(16, 185, 129, 0)' },
-                    '100%': { boxShadow: '0 0 0 0 rgba(16, 185, 129, 0)' }
-                  }
-                }} />
-              )}
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-              <Typography variant="h4" sx={{ fontWeight: 900, color: 'text.primary', letterSpacing: '-0.02em' }}>
-                {fullName}
-              </Typography>
-              <VerifiedIcon color="secondary" fontSize="small" />
-            </Box>
-            
-            <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 600, mb: 2, fontSize: '1.1rem' }}>
-              {expert.title || "Professional Expert"}
-            </Typography>
-
-            <Typography variant="body1" sx={{ color: 'text.primary', mb: 3, lineHeight: 1.6, px: { xs: 1, sm: 4 }, whiteSpace: 'pre-line' }}>
-              {expert.bio || "No bio provided."}
-            </Typography>
-
-            {/* Social Proof Pills */}
-            <Stack direction="row" spacing={2} sx={{ flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'background.paper', px: 2, py: 1, borderRadius: 50, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                <StarIcon sx={{ color: '#F59E0B', fontSize: 18 }} />
-                <Typography variant="body2" sx={{ fontWeight: 800 }}>5.0</Typography>
-                <Typography variant="body2" color="text.secondary">(12)</Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: 'background.paper', px: 2, py: 1, borderRadius: 50, border: '1px solid', borderColor: 'divider', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
-                <AccessTimeIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
-                <Typography variant="body2" sx={{ fontWeight: 700, color: 'text.secondary' }}>12h</Typography>
-              </Box>
-            </Stack>
-          </Box>
-
-          {/* Services List */}
-          <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, mt: 5, px: 1 }}>Services</Typography>
-          <Stack spacing={2}>
-            
-            {/* Live Now Card */}
-            {isOnline && (
-              <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-                <Card 
-                  elevation={0}
-                  component={Link} 
-                  href={`/room/${expert.id}`}
-                  sx={{ 
-                    textDecoration: 'none',
-                    display: 'block',
-                    p: 3, 
-                    border: '2px solid', 
-                    borderColor: '#10B981', 
-                    bgcolor: 'rgba(16, 185, 129, 0.03)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                    <Box sx={{ p: 1.5, bgcolor: '#10B981', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                      <VideocamIcon fontSize="medium" />
-                    </Box>
-                    <Box sx={{ flexGrow: 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                        <Typography sx={{ fontWeight: 800, fontSize: '1.1rem', color: 'text.primary' }}>Instant Drop-In</Typography>
-                        <Box sx={{ width: 8, height: 8, bgcolor: '#10B981', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography component="span" sx={{ fontWeight: 800, color: 'text.primary' }}>₹{perMinuteRate}/min</Typography>
-                        • Connect right now
-                      </Typography>
-                    </Box>
-                    <Button variant="contained" sx={{ bgcolor: '#10B981', '&:hover': { bgcolor: '#059669' }, color: 'white', borderRadius: 50, px: 3, py: 1, fontWeight: 'bold' }}>
-                      Join
-                    </Button>
-                  </Box>
-                </Card>
-              </motion.div>
+    <div className="min-h-screen bg-[#FCFCFD]">
+      {/* Header section */}
+      <div className="bg-navy-DEFAULT pt-20 pb-32 px-6">
+        <div className="max-w-[800px] mx-auto text-center relative z-10">
+          <div className="w-32 h-32 mx-auto rounded-full bg-white border-4 border-white overflow-hidden shadow-lg mb-6">
+            {expert.avatar_url ? (
+              <Image src={expert.avatar_url} alt={expert.username} width={128} height={128} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-surface-2 flex items-center justify-center text-4xl font-bold text-navy-DEFAULT">
+                {(expert.first_name?.[0] || expert.username?.[0] || 'E').toUpperCase()}
+              </div>
             )}
+          </div>
+          <h1 className="text-[36px] md:text-[48px] font-bold text-white tracking-tight flex items-center justify-center gap-3">
+            {expert.first_name ? `${expert.first_name} ${expert.last_name || ''}` : expert.username}
+            <ShieldCheck className="text-teal-DEFAULT w-8 h-8" />
+          </h1>
+          <p className="text-[18px] text-white/80 mt-2 font-medium">{expert.title}</p>
+          
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-[14px] text-white/60">
+            <div className="flex items-center gap-1.5"><MapPin size={16} /> Global (Remote)</div>
+            <div className="flex items-center gap-1.5"><Clock size={16} /> Usually responds in 2 hours</div>
+          </div>
+        </div>
+      </div>
 
-            {/* Video Consultation */}
-            <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-              <Card 
-                elevation={0}
-                component={Link} 
-                href={`/${expert.username || expert.id}/book`}
-                sx={{ 
-                  textDecoration: 'none',
-                  display: 'block',
-                  p: 3, 
-                  bgcolor: 'background.paper',
-                  cursor: 'pointer',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  '&:hover': { borderColor: 'secondary.main', boxShadow: '0 12px 40px -12px rgba(13, 148, 136, 0.15)' }
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                  <Box sx={{ p: 1.5, bgcolor: 'rgba(13,148,136,0.1)', color: 'secondary.main', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <VideocamIcon fontSize="medium" />
-                  </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography sx={{ fontWeight: 800, fontSize: '1.1rem', color: 'text.primary', mb: 0.5 }}>1:1 Video Consultation</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography component="span" sx={{ fontWeight: 800, color: 'text.primary' }}>₹{expert.hourly_rate || 500}</Typography>
-                      • 30 mins
-                    </Typography>
-                  </Box>
-                  <Button variant="outlined" color="secondary" sx={{ borderRadius: 50, px: 3, py: 1, fontWeight: 'bold' }}>
-                    Book
-                  </Button>
-                </Box>
-              </Card>
-            </motion.div>
-
-            {/* Priority DM */}
-            <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-              <Card 
-                elevation={0}
-                component={Link} 
-                href={`#`}
-                sx={{ 
-                  textDecoration: 'none',
-                  display: 'block',
-                  p: 3, 
-                  bgcolor: 'background.paper',
-                  cursor: 'pointer',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  '&:hover': { borderColor: 'primary.main', boxShadow: '0 12px 40px -12px rgba(30, 58, 95, 0.1)' }
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-                  <Box sx={{ p: 1.5, bgcolor: 'rgba(30, 58, 95, 0.05)', color: 'primary.main', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ChatBubbleIcon fontSize="medium" />
-                  </Box>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography sx={{ fontWeight: 800, fontSize: '1.1rem', color: 'text.primary', mb: 0.5 }}>Priority DM</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography component="span" sx={{ fontWeight: 800, color: 'text.primary' }}>₹{Math.round((expert.hourly_rate || 500) * 0.4)}</Typography>
-                      • 24h response
-                    </Typography>
-                  </Box>
-                  <Button variant="outlined" color="primary" sx={{ borderRadius: 50, px: 3, py: 1, fontWeight: 'bold', borderWidth: 1 }}>
-                    Ask
-                  </Button>
-                </Box>
-              </Card>
-            </motion.div>
-
-          </Stack>
-
-          {/* Reviews Section */}
-          <Typography variant="h6" sx={{ fontWeight: 800, mb: 2, mt: 6, px: 1 }}>Recent Reviews</Typography>
-          <Stack spacing={2}>
-            {mockReviews.slice(0, 3).map((review) => (
-              <Card key={review.id} elevation={0} sx={{ p: 3, bgcolor: 'background.paper', border: '1px solid', borderColor: 'divider' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Avatar sx={{ width: 32, height: 32, fontSize: '0.9rem', bgcolor: 'primary.main' }}>{review.userName[0]}</Avatar>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{review.userName}</Typography>
-                  </Box>
-                  <Rating value={review.rating} readOnly size="small" sx={{ color: '#F59E0B' }} />
-                </Box>
-                <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                  "{review.text}"
-                </Typography>
-              </Card>
+      {/* Content section */}
+      <div className="max-w-[800px] mx-auto px-6 -mt-20 relative z-20 pb-20">
+        <div className="bg-white rounded-3xl shadow-xl border border-border p-8 md:p-12 mb-8">
+          <h2 className="text-[20px] font-bold text-navy-DEFAULT mb-4">About</h2>
+          <div className="prose prose-sm max-w-none text-text-body text-[16px] leading-relaxed">
+            {expert.bio?.split('\n').map((para: string, i: number) => (
+              <p key={i} className="mb-4">{para}</p>
             ))}
-          </Stack>
-        </SlideUp>
-      </Container>
-    </Box>
+          </div>
+
+          {expert.tags && expert.tags.length > 0 && (
+            <div className="mt-8 pt-8 border-t border-border">
+              <h3 className="text-[14px] font-bold text-navy-DEFAULT mb-4 uppercase tracking-wider">Expertise</h3>
+              <div className="flex flex-wrap gap-2">
+                {expert.tags.map((tag: string) => (
+                  <span key={tag} className="px-3 py-1.5 bg-surface-2 text-navy-DEFAULT rounded-full text-[13px] font-medium border border-border">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <h2 className="text-[24px] font-bold text-navy-DEFAULT mb-6">Available Services</h2>
+        <div className="flex flex-col gap-4">
+          {services.length > 0 ? (
+            services.map(service => (
+              <div key={service.id} className="bg-white rounded-[20px] border border-border p-6 md:p-8 flex flex-col md:flex-row gap-6 md:items-center justify-between hover:shadow-md transition-shadow group">
+                <div className="flex-1">
+                  <h3 className="text-[18px] font-bold text-navy-DEFAULT mb-2 group-hover:text-teal-DEFAULT transition-colors">{service.title}</h3>
+                  <p className="text-[15px] text-text-sub line-clamp-2">{service.description}</p>
+                </div>
+                <div className="flex flex-row md:flex-col items-center md:items-end justify-between shrink-0 gap-4">
+                  <div className="text-right">
+                    <div className="text-[24px] font-bold text-navy-DEFAULT">₹{service.price}</div>
+                    <div className="text-[13px] font-medium text-text-muted">{service.duration_minutes} mins</div>
+                  </div>
+                  <Button asChild size="md">
+                    <Link href={`/${expert.username}/book/${service.id}`}>
+                      Book Session <ArrowRight size={16} className="ml-2" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="bg-surface-1 rounded-[20px] border border-border border-dashed p-10 text-center">
+              <p className="text-text-muted">This expert hasn't set up any services yet.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

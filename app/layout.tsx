@@ -7,43 +7,56 @@ import { BottomNav } from "../components/layout/BottomNav";
 import { ThemeRegistry } from "../components/ThemeRegistry";
 import { Toaster } from "react-hot-toast";
 
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 
-const plusJakartaSans = Plus_Jakarta_Sans({ 
+const inter = Inter({ 
   subsets: ["latin"],
   weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-plus-jakarta',
+  variable: '--font-inter',
+});
+
+const instrument = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ['400'],
+  style: ['italic', 'normal'],
+  variable: '--font-instrument',
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-jetbrains',
 });
 
 export const metadata: Metadata = {
   title: {
     template: '%s | Hourly',
-    default: 'Hourly | Rent Expertise by the Hour',
+    default: 'Hourly | B2B Expertise-as-a-Service',
   },
-  description: "Peer-to-peer micro-consulting from credentialed professionals. Book 1-on-1 sessions in seconds.",
-  keywords: ["micro-consulting", "expert advice", "mentorship", "freelance consultants", "Hourly", "peer-to-peer consulting"],
+  description: "The premium B2B marketplace to hire the top 1% of vetted Indian professionals (Staff Engineers, Fractional CFOs, Legal Experts) for 60-minute unblocking sessions.",
+  keywords: ["B2B expertise", "fractional CFO", "staff engineer consulting", "legal experts india", "Hourly", "corporate micro-consulting"],
   authors: [{ name: "Hourly Inc" }],
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "en_IN",
     url: "https://hourly.app",
-    title: "Hourly | Rent Expertise by the Hour",
-    description: "Connect with credentialed professionals for 1-on-1 micro-consulting sessions. Gain insights and accelerate your career.",
+    title: "Hourly | B2B Expertise-as-a-Service",
+    description: "Unblock your engineering, finance, and legal teams with vetted top 1% Indian professionals in under 60 minutes.",
     siteName: "Hourly",
     images: [
       {
         url: "https://hourly.app/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Hourly - Rent Expertise by the Hour",
+        alt: "Hourly - B2B Expertise Procurement",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hourly | Rent Expertise by the Hour",
-    description: "Peer-to-peer micro-consulting from credentialed professionals.",
-    creator: "@hourlyapp",
+    title: "Hourly | B2B Expertise-as-a-Service",
+    description: "Unblock your teams with vetted top 1% Indian professionals in under 60 minutes.",
+    creator: "@hourlyhq",
     images: ["https://hourly.app/og-image.jpg"],
   },
   robots: {
@@ -61,6 +74,8 @@ export const metadata: Metadata = {
 
 import { NotificationsProvider } from "../contexts/NotificationsContext";
 import { ReduxProvider } from "@/store/ReduxProvider";
+import SupabaseProvider from "@/components/providers/SupabaseProvider";
+import { CurrencyProvider } from "../contexts/CurrencyContext";
 
 export default function RootLayout({
   children,
@@ -69,30 +84,34 @@ export default function RootLayout({
 }>) {
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'WebSite',
+    '@type': 'B2BBusiness',
     name: 'Hourly',
     url: 'https://hourly.app',
-    description: 'Peer-to-peer micro-consulting from credentialed professionals.',
+    description: 'The B2B Expertise Procurement Platform. Unblock your engineering, finance, and legal teams with vetted top 1% Indian professionals.',
   };
 
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
-      <body className={`flex flex-col min-h-screen ${plusJakartaSans.className}`} style={{ fontFamily: 'var(--font-plus-jakarta), sans-serif' }}>
+    <html lang="en" className={`${inter.variable} ${instrument.variable} ${jetbrains.variable}`}>
+      <body className={`flex flex-col min-h-screen ${inter.className} bg-white text-text-primary`} style={{ fontFamily: 'var(--font-inter), sans-serif' }}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeRegistry>
           <ReduxProvider>
-            <AuthProvider>
-              <NotificationsProvider>
-                <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '8px' } }} />
-                <Header />
-                <main className="flex-grow">{children}</main>
-                <Footer />
-                <BottomNav />
-              </NotificationsProvider>
-            </AuthProvider>
+            <SupabaseProvider>
+              <AuthProvider>
+                <CurrencyProvider>
+                  <NotificationsProvider>
+                    <Toaster position="bottom-center" toastOptions={{ style: { background: '#333', color: '#fff', borderRadius: '8px' } }} />
+                    <Header />
+                    <main className="flex-grow">{children}</main>
+                    <Footer />
+                    <BottomNav />
+                  </NotificationsProvider>
+                </CurrencyProvider>
+              </AuthProvider>
+            </SupabaseProvider>
           </ReduxProvider>
         </ThemeRegistry>
       </body>
