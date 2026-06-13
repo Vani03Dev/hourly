@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 
 const STATS = [
-  { value: 2400, suffix: "+", label: "Experts" },
-  { value: 18, suffix: "K+", label: "Sessions completed" },
-  { value: 500, suffix: "+", label: "Startups trust us" },
+  { value: 2400, suffix: "+", label: "Experts", decimals: 0 },
+  { value: 18, suffix: "K+", label: "Sessions completed", decimals: 0 },
+  { value: 500, suffix: "+", label: "Startups trust us", decimals: 0 },
 ];
 
 function AnimatedNumber({

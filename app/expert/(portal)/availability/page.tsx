@@ -10,9 +10,11 @@ import { createClient } from '@/utils/supabase/client';
 import { updateExpertAvailability } from '@/app/actions/expert';
 import toast from 'react-hot-toast';
 
+
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 
 type TimeSlot = { start: string; end: string };
 type DaySchedule = { enabled: boolean; slots: TimeSlot[] };
@@ -25,8 +27,9 @@ type Booking = {
   end_time: string;
   status: string;
   payment_status: string;
-  client_profiles?: { first_name?: string; last_name?: string } | null;
+  client_profiles?: { first_name?: string; last_name?: string }[] | null;
 };
+
 
 const defaultWeeklySchedule = (): WeeklySchedule =>
   DAYS.reduce((acc, day) => {
@@ -37,9 +40,11 @@ const defaultWeeklySchedule = (): WeeklySchedule =>
     return acc;
   }, {} as WeeklySchedule);
 
+
 function formatDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
+
 
 function generateTimeOptions() {
   const options: string[] = [];
@@ -51,7 +56,9 @@ function generateTimeOptions() {
   return options;
 }
 
+
 const timeOptions = generateTimeOptions();
+
 
 function normalizeTime(value: string): string {
   if (!value) return '09:00';
@@ -68,12 +75,14 @@ function normalizeTime(value: string): string {
   return `${hours.toString().padStart(2, '0')}:${minutes}`;
 }
 
+
 function normalizeSlot(slot: Partial<TimeSlot>): TimeSlot {
   return {
     start: normalizeTime(slot.start || '09:00'),
     end: normalizeTime(slot.end || '17:00'),
   };
 }
+
 
 function normalizeWeeklySchedule(raw: unknown): WeeklySchedule {
   const result = defaultWeeklySchedule();
@@ -108,10 +117,12 @@ function normalizeWeeklySchedule(raw: unknown): WeeklySchedule {
   return result;
 }
 
+
 function timeToMinutes(time: string) {
   const [h, m] = normalizeTime(time).split(':').map(Number);
   return h * 60 + m;
 }
+
 
 function formatDuration(start: string, end: string) {
   const diff = timeToMinutes(end) - timeToMinutes(start);
@@ -123,10 +134,11 @@ function formatDuration(start: string, end: string) {
   return `${mins}m`;
 }
 
+
 export default function AvailabilityPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [availability, setAvailability] = useState<WeeklySchedule>(defaultWeeklySchedule);
+  const [availability, setAvailability] = useState<WeeklySchedule>(defaultWeeklySchedule());
   const [dateOverrides, setDateOverrides] = useState<DateOverrides>({});
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [calendarMonth, setCalendarMonth] = useState(() => new Date().getMonth());
@@ -138,7 +150,9 @@ export default function AvailabilityPage() {
   const [selectedWeekday, setSelectedWeekday] = useState<string>('Monday');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+
   const markDirty = () => setHasUnsavedChanges(true);
+
 
   const fetchMonthBookings = useCallback(async (year: number, month: number, expertId: string) => {
     const supabase = createClient();
@@ -160,6 +174,7 @@ export default function AvailabilityPage() {
 
     setBookings(data || []);
   }, []);
+
 
   useEffect(() => {
     async function fetchProfile() {
@@ -190,6 +205,7 @@ export default function AvailabilityPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+
   useEffect(() => {
     async function loadBookings() {
       const supabase = createClient();
@@ -200,6 +216,7 @@ export default function AvailabilityPage() {
     if (!loading) loadBookings();
   }, [calendarYear, calendarMonth, fetchMonthBookings, loading]);
 
+
   const { daysInMonth, firstDayIndex } = useMemo(() => {
     const total = new Date(calendarYear, calendarMonth + 1, 0).getDate();
     let first = new Date(calendarYear, calendarMonth, 1).getDay() - 1;
@@ -207,10 +224,12 @@ export default function AvailabilityPage() {
     return { daysInMonth: total, firstDayIndex: first };
   }, [calendarYear, calendarMonth]);
 
+
   const monthLabel = new Date(calendarYear, calendarMonth).toLocaleString('default', {
     month: 'long',
     year: 'numeric',
   });
+
 
   const bookingsByDate = useMemo(() => {
     const map: Record<string, Booking[]> = {};
@@ -220,6 +239,7 @@ export default function AvailabilityPage() {
     });
     return map;
   }, [bookings]);
+
 
   const getDayStatus = (day: number) => {
     const dateStr = formatDateStr(calendarYear, calendarMonth, day);
@@ -245,9 +265,11 @@ export default function AvailabilityPage() {
     return { dateStr, status: 'unavailable' as const, dayBookings, isBlocked, isAvailable };
   };
 
+
   const selectedDayBookings = selectedDate ? bookingsByDate[selectedDate] || [] : [];
   const selectedOverride = selectedDate ? dateOverrides[selectedDate] : undefined;
   const selectedIsBlocked = selectedOverride !== undefined && Array.isArray(selectedOverride) && selectedOverride.length === 0;
+
 
   const changeMonth = (delta: number) => {
     let newMonth = calendarMonth + delta;
@@ -257,6 +279,7 @@ export default function AvailabilityPage() {
     setCalendarMonth(newMonth);
     setCalendarYear(newYear);
   };
+
 
   const toggleDay = (day: string) => {
     setAvailability((prev) => {
@@ -275,6 +298,7 @@ export default function AvailabilityPage() {
     markDirty();
   };
 
+
   const addSlot = (day: string) => {
     setAvailability((prev) => ({
       ...prev,
@@ -282,6 +306,7 @@ export default function AvailabilityPage() {
     }));
     markDirty();
   };
+
 
   const removeSlot = (day: string, index: number) => {
     setAvailability((prev) => {
@@ -299,6 +324,7 @@ export default function AvailabilityPage() {
     markDirty();
   };
 
+
   const updateSlot = (day: string, index: number, field: 'start' | 'end', value: string) => {
     setAvailability((prev) => {
       const newSlots = [...prev[day].slots];
@@ -307,6 +333,7 @@ export default function AvailabilityPage() {
     });
     markDirty();
   };
+
 
   const applyWeekdayPreset = () => {
     const preset: DaySchedule = {
@@ -326,6 +353,7 @@ export default function AvailabilityPage() {
     toast.success('Weekdays set to 9 AM – 5 PM');
     markDirty();
   };
+
 
   const copyDayToWeekdays = (sourceDay: string) => {
     const source = availability[sourceDay];
@@ -347,6 +375,7 @@ export default function AvailabilityPage() {
     markDirty();
   };
 
+
   const activeDaySchedule = availability[selectedWeekday] || { enabled: false, slots: [{ start: '09:00', end: '17:00' }] };
   const activeDayTotal = activeDaySchedule.enabled
     ? activeDaySchedule.slots.reduce((sum, slot) => {
@@ -354,6 +383,7 @@ export default function AvailabilityPage() {
         return sum + (diff > 0 ? diff : 0);
       }, 0)
     : 0;
+
 
   const toggleBlockSelectedDate = () => {
     if (!selectedDate) return;
@@ -370,6 +400,7 @@ export default function AvailabilityPage() {
     });
     markDirty();
   };
+
 
   const handleSave = async () => {
     for (const day of DAYS) {
@@ -394,6 +425,7 @@ export default function AvailabilityPage() {
     setSaving(false);
   };
 
+
   const dayCellClass = (status: string, isSelected: boolean) => {
     const base = 'aspect-square flex flex-col items-center justify-center rounded-[10px] text-[14px] font-semibold transition-all border-2 relative';
     if (isSelected) return `${base} border-teal bg-teal text-white shadow-sm`;
@@ -411,6 +443,20 @@ export default function AvailabilityPage() {
     }
   };
 
+
+  // Fix: Safely get client name from array or object
+  const getClientName = (booking: Booking) => {
+    const client = booking.client_profiles;
+    if (!client || client.length === 0) return 'Client';
+    
+    // Supabase returns array, get first element
+    const clientObj = client[0];
+    const firstName = clientObj?.first_name || '';
+    const lastName = clientObj?.last_name || '';
+    return `${firstName} ${lastName}`.trim() || 'Client';
+  };
+
+
   if (loading) {
     return (
       <div className="max-w-[1100px] mx-auto p-6 md:p-10 lg:p-12">
@@ -422,6 +468,7 @@ export default function AvailabilityPage() {
       </div>
     );
   }
+
 
   return (
     <div className="max-w-[1100px] mx-auto p-6 md:p-10 lg:p-12">
@@ -552,8 +599,7 @@ export default function AvailabilityPage() {
             {selectedDayBookings.length > 0 ? (
               <div className="space-y-3">
                 {selectedDayBookings.map((booking) => {
-                  const client = booking.client_profiles;
-                  const clientName = `${client?.first_name || ''} ${client?.last_name || ''}`.trim() || 'Client';
+                  const clientName = getClientName(booking);
                   return (
                     <div key={booking.id} className="p-4 rounded-[10px] border border-border bg-gray-50/50">
                       <div className="flex items-center gap-3 mb-2">
