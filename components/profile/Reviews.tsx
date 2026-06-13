@@ -4,8 +4,11 @@ import { Card } from "../shared/Card";
 import { Badge } from "../shared/Badge";
 import { mockReviews } from "@/lib/mock-data";
 import { Button } from "../shared/Button";
+import { SHOW_RATINGS_AND_REVIEWS } from "@/lib/feature-flags";
 
 export function Reviews() {
+  if (!SHOW_RATINGS_AND_REVIEWS) return null;
+
   return (
     <div className="py-10 bg-gray-50 border-b border-gray-100">
       <div className="container mx-auto px-4 md:px-6">

@@ -2,74 +2,71 @@
 
 import React from "react";
 import Link from "next/link";
-import { Box, Container, Typography, Grid, Stack, IconButton } from "@mui/material";
-import LinkIcon from '@mui/icons-material/Link';
-import PersonIcon from '@mui/icons-material/Person';
-import StarIcon from '@mui/icons-material/Star';
-import TagIcon from '@mui/icons-material/Tag';
+import { usePathname } from "next/navigation";
 
 export function Footer() {
-  return (
-    <Box sx={(theme) => ({ bgcolor: theme.palette.mode === 'light' ? 'primary.main' : 'background.paper', color: 'common.white', pt: 8, pb: { xs: 14, sm: 8 }, borderTop: theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : 'none' })}>
-      <Container maxWidth="xl">
-        <Grid container spacing={6}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Box sx={{ mb: 2 }}>
-              <Typography sx={{ fontWeight: 900, fontSize: '2rem', lineHeight: 1, letterSpacing: '-0.02em', color: 'common.white' }}>
-                Hourly<Box component="span" sx={{ color: 'secondary.main' }}>.</Box>
-              </Typography>
-            </Box>
-            <Typography variant="body2" sx={{ color: 'grey.400', mb: 3, maxWidth: 300, lineHeight: 1.6 }}>
-              The platform connecting professionals for immediate, focused micro-consulting sessions.
-            </Typography>
-            <Stack direction="row" spacing={1}>
-              <IconButton size="small" sx={{ color: 'grey.400' }}><LinkIcon fontSize="small" /></IconButton>
-              <IconButton size="small" sx={{ color: 'grey.400' }}><PersonIcon fontSize="small" /></IconButton>
-              <IconButton size="small" sx={{ color: 'grey.400' }}><StarIcon fontSize="small" /></IconButton>
-              <IconButton size="small" sx={{ color: 'grey.400' }}><TagIcon fontSize="small" /></IconButton>
-            </Stack>
-          </Grid>
-          
-          <Grid size={{ xs: 6, md: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>Platform</Typography>
-            <Stack spacing={1.5}>
-              <Link href="/search" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Browse Experts</Link>
-              <Link href="/how-it-works" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>How it Works</Link>
-              <Link href="/pricing" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Pricing</Link>
-            </Stack>
-          </Grid>
-          
-          <Grid size={{ xs: 6, md: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>For Experts</Typography>
-            <Stack spacing={1.5}>
-              <Link href="/signup" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Join the Network</Link>
-              <Link href="/guidelines" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Expert Guidelines</Link>
-            </Stack>
-          </Grid>
-          
-          <Grid size={{ xs: 6, md: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>Support</Typography>
-            <Stack spacing={1.5}>
-              <Link href="/faq" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>FAQ</Link>
-              <Link href="/contact" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Contact Us</Link>
-            </Stack>
-          </Grid>
+  const pathname = usePathname();
 
-          <Grid size={{ xs: 6, md: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 2 }}>Legal</Typography>
-            <Stack spacing={1.5}>
-              <Link href="/terms" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Terms of Service</Link>
-              <Link href="/privacy" style={{ color: '#9CA3AF', textDecoration: 'none', fontSize: '0.875rem' }}>Privacy Policy</Link>
-            </Stack>
-          </Grid>
-        </Grid>
-        
-        <Box sx={{ borderTop: '1px solid', borderColor: 'grey.800', mt: 8, pt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="caption" sx={{ color: 'grey.500' }}>
-            © {new Date().getFullYear()} Hourly Inc. All rights reserved.
-          </Typography>
-        </Box>
-      </Container>
-    </Box>
+  // Hide footer on dashboard and expert portal pages
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/expert')) {
+    return null;
+  }
+
+  return (
+    <footer className="bg-bg text-muted py-[64px] px-[20px] md:px-[48px] lg:px-[96px] border-t border-border w-full font-sans">
+      <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[48px]">
+        {/* Column 1: Product */}
+        <div className="flex flex-col gap-[16px]">
+          <h4 className="text-[12px] font-bold text-text uppercase tracking-widest">Product</h4>
+          <div className="flex flex-col gap-[12px]">
+            <Link href="/experts" className="text-[14px] text-muted hover:text-text transition-colors">Browse Experts</Link>
+            <Link href="/how-it-works" className="text-[14px] text-muted hover:text-text transition-colors">How It Works</Link>
+            <Link href="/pricing" className="text-[14px] text-muted hover:text-text transition-colors">Pricing</Link>
+          </div>
+        </div>
+
+        {/* Column 2: For Experts */}
+        <div className="flex flex-col gap-[16px]">
+          <h4 className="text-[12px] font-bold text-text uppercase tracking-widest">For Experts</h4>
+          <div className="flex flex-col gap-[12px]">
+            <Link href="/auth/signup" className="text-[14px] text-muted hover:text-text transition-colors">Become an Expert</Link>
+            <Link href="/how-it-works" className="text-[14px] text-muted hover:text-text transition-colors">Guidelines</Link>
+            <Link href="/faq" className="text-[14px] text-muted hover:text-text transition-colors">Payouts</Link>
+          </div>
+        </div>
+
+        {/* Column 3: Company */}
+        <div className="flex flex-col gap-[16px]">
+          <h4 className="text-[12px] font-bold text-text uppercase tracking-widest">Company</h4>
+          <div className="flex flex-col gap-[12px]">
+            <Link href="/about" className="text-[14px] text-muted hover:text-text transition-colors">About Us</Link>
+            <Link href="/careers" className="text-[14px] text-muted hover:text-text transition-colors">Careers</Link>
+            <Link href="/contact" className="text-[14px] text-muted hover:text-text transition-colors">Contact</Link>
+          </div>
+        </div>
+
+        {/* Column 4: Legal */}
+        <div className="flex flex-col gap-[16px]">
+          <h4 className="text-[12px] font-bold text-text uppercase tracking-widest">Legal</h4>
+          <div className="flex flex-col gap-[12px]">
+            <Link href="/privacy" className="text-[14px] text-muted hover:text-text transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-[14px] text-muted hover:text-text transition-colors">Terms of Service</Link>
+            <Link href="/refunds" className="text-[14px] text-muted hover:text-text transition-colors">Refund Policy</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="max-w-[1440px] mx-auto mt-[48px] pt-[24px] border-t border-border flex flex-col sm:flex-row justify-between items-center gap-[16px]">
+        <span className="text-[12px] text-muted">
+          © 2026 Sessionly. All rights reserved.
+        </span>
+        <div className="flex gap-4 text-[12px]">
+          <Link href="/privacy" className="text-muted hover:text-text transition-colors">Privacy</Link>
+          <span className="text-border">·</span>
+          <Link href="/terms" className="text-muted hover:text-text transition-colors">Terms</Link>
+        </div>
+      </div>
+    </footer>
   );
 }

@@ -26,7 +26,7 @@ export function WhyHourly() {
   ];
 
   return (
-    <Box component="section" id="why-hourly" sx={(theme) => ({ py: 12, bgcolor: theme.palette.mode === 'light' ? 'primary.main' : 'background.paper', color: 'common.white', overflow: 'hidden' })}>
+    <Box component="section" id="why-sessionly" sx={(theme) => ({ py: 12, bgcolor: theme.palette.mode === 'light' ? 'primary.main' : 'background.paper', color: 'common.white', overflow: 'hidden' })}>
       <Container maxWidth="lg">
         <Grid container spacing={8} sx={{ alignItems: 'center' }}>
           
@@ -48,7 +48,7 @@ export function WhyHourly() {
                     <Box sx={{ width: '100%', height: '100%', bgcolor: '#1e293b', borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
                       <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                           <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#0D9488', opacity: 0.8 }} />
+                           <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: '#2563EB', opacity: 0.8 }} />
                         </Box>
                       </Box>
                       <Box sx={{ position: 'absolute', bottom: 16, left: 16, px: 2, py: 1, bgcolor: 'rgba(0,0,0,0.5)', borderRadius: 1 }}>
@@ -70,7 +70,7 @@ export function WhyHourly() {
           <Grid size={{ xs: 12, lg: 6 }} sx={{ order: { xs: 1, lg: 2 } }}>
             <SlideUp delay={0.1}>
               <Typography variant="h2" sx={{ color: 'common.white', mb: 3, lineHeight: 1.2 }}>
-                Why Choose Hourly?
+                Why Choose Sessionly?
               </Typography>
             </SlideUp>
             <SlideUp delay={0.2}>
@@ -83,8 +83,8 @@ export function WhyHourly() {
               {points.map((point, index) => (
                 <FadeIn delay={0.3 + index * 0.1} key={index}>
                   <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start', bgcolor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2, p: 3 }}>
-                    <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'rgba(13,148,136,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <point.icon style={{ color: '#0D9488' }} size={20} />
+                    <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'rgba(37,99,235,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <point.icon style={{ color: '#2563EB' }} size={20} />
                     </Box>
                     <Box>
                       <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'common.white', mb: 0.5 }}>{point.title}</Typography>

@@ -8,8 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'icon-only';
-  size?: 'sm' | 'md' | 'lg' | 'icon';
+  variant?: 'primary' | 'secondary' | 'outline' | 'teal-outline' | 'ghost' | 'danger';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   fullWidth?: boolean;
   asChild?: boolean;
 }
@@ -18,19 +18,20 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', fullWidth = false, asChild = false, ...props }, ref) => {
     
     const variants = {
-      primary: 'bg-teal-DEFAULT text-white hover:bg-teal-dark hover:shadow-teal',
-      secondary: 'bg-navy-DEFAULT text-white hover:bg-navy-dark',
-      outline: 'bg-transparent border border-navy-DEFAULT text-navy-DEFAULT hover:bg-navy-DEFAULT hover:text-white',
-      danger: 'bg-red-DEFAULT text-white',
-      ghost: 'bg-transparent text-text-body hover:bg-surface-DEFAULT',
-      'icon-only': 'bg-transparent text-text-body hover:bg-surface-2',
+      primary: 'bg-teal text-white hover:bg-teal-600 active:scale-[0.98]',
+      secondary: 'bg-[#0F2137] text-white hover:bg-[#1E3A5F] active:scale-[0.98]',
+      outline: 'bg-transparent border-[1.5px] border-gray-200 text-gray-700 hover:border-gray-700 hover:text-gray-900 active:scale-[0.98]',
+      'teal-outline': 'bg-transparent border-[1.5px] border-teal text-teal hover:bg-teal hover:text-white active:scale-[0.98]',
+      ghost: 'bg-transparent text-gray-600 hover:bg-gray-100 active:scale-[0.98]',
+      danger: 'bg-red text-white hover:bg-red-900 active:scale-[0.98]',
     };
 
     const sizes = {
-      sm: 'h-[36px] px-4 text-[14px] font-medium rounded-[6px]',
-      md: 'h-[48px] px-6 text-[16px] font-semibold rounded-[6px]',
-      lg: 'h-[56px] px-8 text-[18px] font-semibold rounded-[6px]',
-      icon: 'w-[40px] h-[40px] p-0 rounded-[4px]',
+      xs: 'h-[28px] px-[10px] text-[12px] font-semibold rounded-[6px]',
+      sm: 'h-[36px] px-[14px] text-[13px] font-semibold rounded-[6px]',
+      md: 'h-[44px] px-[20px] text-[15px] font-semibold rounded-[8px]',
+      lg: 'h-[52px] px-[24px] text-[16px] font-bold rounded-[8px]',
+      xl: 'h-[60px] px-[28px] text-[18px] font-bold rounded-[10px]',
     };
 
     const Comp = asChild ? Slot : "button";
@@ -39,10 +40,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         ref={ref}
         className={cn(
-          'inline-flex items-center justify-center transition-all duration-200 ease-in-out font-sans',
-          'active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none disabled:bg-surface-2 disabled:text-text-disabled',
+          'inline-flex items-center justify-center transition-all duration-[150ms] ease-in-out font-sans select-none',
+          'focus:outline-none focus:ring-2 focus:ring-teal focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-400',
           variants[variant],
-          sizes[variant === 'icon-only' ? 'icon' : size],
+          sizes[size],
           fullWidth && 'w-full',
           className
         )}

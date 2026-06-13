@@ -8,6 +8,7 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import ShieldIcon from '@mui/icons-material/Shield';
 import { SlideUp, FadeIn } from "../shared/MotionWrapper";
+import { SHOW_RATINGS_AND_REVIEWS } from "@/lib/feature-flags";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -164,10 +165,12 @@ export function BookingConfirmation({ expert }: { expert: Expert }) {
                     <Avatar src={expert.photo} sx={{ width: 56, height: 56 }} />
                     <Box>
                       <Typography sx={{ fontWeight: 'bold' }} variant="subtitle1" color="text.primary">{expert.name}</Typography>
+                      {SHOW_RATINGS_AND_REVIEWS && (
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         <StarIcon sx={{ color: '#F59E0B', fontSize: 16 }} />
                         <Typography sx={{ fontWeight: 'bold' }} variant="caption">{expert.rating}</Typography>
                       </Box>
+                      )}
                     </Box>
                   </Box>
                 </Box>

@@ -4,13 +4,13 @@ export const Toast = {
   success: (message: string) => {
     toast.success(message, {
       style: {
-        background: '#0D9488', // Teal primary color
+        background: '#2563EB', // Blue primary color
         color: '#fff',
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       iconTheme: {
         primary: '#fff',
-        secondary: '#0D9488',
+        secondary: '#2563EB',
       },
     });
   },
@@ -19,7 +19,7 @@ export const Toast = {
       style: {
         background: '#EF4444', // Red for errors
         color: '#fff',
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
       iconTheme: {
         primary: '#fff',
@@ -30,9 +30,9 @@ export const Toast = {
   loading: (message: string) => {
     return toast.loading(message, {
       style: {
-        background: '#1E3A5F',
+        background: '#111827', // Charcoal loading color
         color: '#fff',
-        fontWeight: 'bold',
+        fontWeight: 'semibold',
       },
     });
   },

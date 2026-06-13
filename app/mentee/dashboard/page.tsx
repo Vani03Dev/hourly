@@ -72,7 +72,7 @@ export default function MenteeDashboardPage() {
 
             return {
               id: b.id,
-              expertName: expert ? `${expert.first_name} ${expert.last_name || ''}` : 'Hourly Expert',
+              expertName: expert ? `${expert.first_name} ${expert.last_name || ''}` : 'Sessionly Expert',
               expertTitle: expert?.title || 'Micro-Consultant',
               expertAvatar: expert?.avatar_url || '',
               type: '1-on-1 Consultation',
@@ -131,7 +131,7 @@ export default function MenteeDashboardPage() {
                       component={motion.div}
                       animate={{ y: [0, -10, 0] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                      sx={{ width: 80, height: 80, mx: 'auto', mb: 3, bgcolor: 'rgba(13,148,136,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      sx={{ width: 80, height: 80, mx: 'auto', mb: 3, bgcolor: 'rgba(37,99,235,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <SearchIcon sx={{ fontSize: 40, color: 'primary.main' }} />
                     </Box>
@@ -143,7 +143,7 @@ export default function MenteeDashboardPage() {
                     </Typography>
                     <Button 
                       component={Link} 
-                      href="/search" 
+                      href="/experts" 
                       variant="contained" 
                       size="large"
                       sx={{ 
@@ -151,11 +151,11 @@ export default function MenteeDashboardPage() {
                         px: 4, 
                         py: 1.5, 
                         fontWeight: 'bold',
-                        boxShadow: '0 8px 24px rgba(13,148,136,0.3)',
+                        boxShadow: '0 8px 24px rgba(37,99,235,0.3)',
                         transition: 'all 0.3s',
                         '&:hover': {
                           transform: 'translateY(-2px)',
-                          boxShadow: '0 12px 28px rgba(13,148,136,0.4)',
+                          boxShadow: '0 12px 28px rgba(37,99,235,0.4)',
                         }
                       }}
                     >

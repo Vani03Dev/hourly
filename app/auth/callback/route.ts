@@ -4,12 +4,24 @@ import { createClient } from '../../../utils/supabase/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const role = searchParams.get('role')
   
   if (code) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}/expert/dashboard`)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const currentRole = user.user_metadata?.role
+        const targetRole = role || currentRole || 'company'
+        
+        if (targetRole && currentRole !== targetRole) {
+          await supabase.auth.updateUser({
+            data: { role: targetRole }
+          })
+        }
+      }
+      return NextResponse.redirect(`${origin}/dashboard`)
     }
   }
 

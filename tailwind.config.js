@@ -8,74 +8,112 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Primary Brand
-        'navy-DEFAULT': '#1E3A5F',
-        navy: {
-          DEFAULT: '#1E3A5F',
-          dark: '#152D4A',
-          light: '#2A4E7F',
+        // Sessionly Design Tokens
+        primary: {
+          DEFAULT: '#111827',
         },
-        'teal-DEFAULT': '#0D9488',
-        teal: {
-          DEFAULT: '#0D9488',
-          dark: '#0A7A70',
-          light: '#14B8A6',
-          bg: '#F0FDFA',
+        accent: {
+          DEFAULT: '#2563EB',
+          hover: '#1D4ED8',
         },
-        // Neutrals
-        'surface-DEFAULT': '#F9FAFB',
-        surface: {
+        success: {
+          DEFAULT: '#16A34A',
+        },
+        warning: {
+          DEFAULT: '#D97706',
+        },
+        danger: {
+          DEFAULT: '#DC2626',
+        },
+        bg: {
           DEFAULT: '#F9FAFB',
-          2: '#F3F4F6',
         },
-        'border-DEFAULT': '#E5E7EB',
+        surface: {
+          DEFAULT: '#FFFFFF',
+        },
         border: {
           DEFAULT: '#E5E7EB',
-          dark: '#D1D5DB',
         },
-        // Text
+        muted: {
+          DEFAULT: '#6B7280',
+        },
         text: {
-          primary: '#111827',
-          body: '#374151',
-          sub: '#4B5563',
-          muted: '#6B7280',
-          disabled: '#9CA3AF',
+          DEFAULT: '#111827',
         },
-        // Semantic
-        'gold-DEFAULT': '#F59E0B',
-        gold: {
-          DEFAULT: '#F59E0B',
-          bg: '#FFFBEB',
+        // Legacy Brand support mapped to Sessionly brand colors
+        navy: {
+          DEFAULT: '#111827', // Charcoal primary
+          700: '#1F2937',
         },
-        'green-DEFAULT': '#10B981',
+        teal: {
+          DEFAULT: '#2563EB', // Blue accent
+          600: '#1D4ED8',     // Accent hover
+          50: '#EFF6FF',      // Accent light bg
+        },
+        white: '#FFFFFF',
+        gray: {
+          50: '#F9FAFB',
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          400: '#9CA3AF',
+          500: '#6B7280',
+          600: '#4B5563',
+          700: '#374151',
+        },
         green: {
           DEFAULT: '#10B981',
-          bg: '#ECFDF5',
+          50: '#ECFDF5',
+          900: '#064E3B',
         },
-        'red-DEFAULT': '#EF4444',
+        amber: {
+          DEFAULT: '#F59E0B',
+          50: '#FFFBEB',
+        },
         red: {
           DEFAULT: '#EF4444',
-          bg: '#FEF2F2',
+          50: '#FEF2F2',
         },
-        'yellow-DEFAULT': '#F59E0B',
-        yellow: {
-          DEFAULT: '#F59E0B',
-          bg: '#FFFBEB',
+        gold: '#F59E0B',
+        itc: {
+          bg: '#ECFDF5',
+          text: '#065F46',
         },
-        overlay: 'rgba(17,24,39,0.6)',
+        verified: {
+          bg: '#EFF6FF',
+          text: '#1D4ED8',
+        },
+        workspace: {
+          bg: '#F5F3FF',
+          text: '#5B21B6',
+        },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'sans-serif'],
-        serif: ['var(--font-instrument)', 'serif'],
-        mono: ['var(--font-jetbrains)', 'monospace'],
+        sans: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-plus-jakarta)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'ui-monospace', 'monospace'],
+      },
+      letterSpacing: {
+        tighter: '-0.03em',
+        tight: '-0.02em',
+        snug: '-0.015em',
+        normal: '0',
+        wide: '0.02em',
+        wider: '0.04em',
+        widest: '0.08em',
+      },
+      lineHeight: {
+        tight: '1.1',
+        snug: '1.25',
+        normal: '1.5',
+        relaxed: '1.625',
+        loose: '1.75',
       },
       boxShadow: {
-        'xs': '0 1px 2px rgba(0,0,0,0.04)',
-        'sm': '0 2px 4px rgba(0,0,0,0.05)',
-        'md': '0 4px 12px rgba(0,0,0,0.08)',
-        'lg': '0 8px 24px rgba(0,0,0,0.10)',
-        'xl': '0 16px 48px rgba(0,0,0,0.12)',
-        'teal': '0 4px 16px rgba(13,148,136,0.25)',
+        'level-0': 'none',
+        'level-1': '0 1px 2px rgba(15,33,55,0.04), 0 1px 4px rgba(15,33,55,0.06)',
+        'level-2': '0 4px 6px rgba(15,33,55,0.05), 0 10px 15px rgba(15,33,55,0.08)',
+        'level-3': '0 10px 24px rgba(15,33,55,0.10), 0 24px 48px rgba(15,33,55,0.12)',
+        'level-4': '0 20px 40px rgba(15,33,55,0.15), 0 40px 80px rgba(15,33,55,0.18)',
       },
       borderRadius: {
         'xs': '4px',
@@ -85,33 +123,27 @@ module.exports = {
         'xl': '16px',
         'full': '9999px',
       },
-      fontSize: {
-        'xs': ['12px', { lineHeight: '1.4' }],
-        'sm': ['14px', { lineHeight: '1.5' }],
-        'base': ['16px', { lineHeight: '1.6' }],
-        'h5': ['18px', { lineHeight: '1.5' }],
-        'h4': ['22px', { lineHeight: '1.4' }],
-        'h3': ['28px', { lineHeight: '1.3' }],
-        'h2': ['40px', { lineHeight: '1.2' }],
-        'h1': ['56px', { lineHeight: '1.1' }],
-      },
       spacing: {
-        '1': '4px',
-        '2': '8px',
-        '3': '12px',
-        '4': '16px',
-        '5': '20px',
-        '6': '24px',
-        '8': '32px',
-        '10': '40px',
-        '12': '48px',
-        '16': '64px',
-        '20': '80px',
-        '24': '96px',
+        '2px': '2px',
+        '4px': '4px',
+        '8px': '8px',
+        '12px': '12px',
+        '16px': '16px',
+        '20px': '20px',
+        '24px': '24px',
+        '32px': '32px',
+        '40px': '40px',
+        '48px': '48px',
+        '64px': '64px',
+        '80px': '80px',
+        '96px': '96px',
+        '128px': '128px',
       }
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
+    require('@tailwindcss/forms')({
+      strategy: 'class',
+    }),
   ],
 }

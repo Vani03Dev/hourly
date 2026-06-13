@@ -3,8 +3,8 @@ import { cn } from './Button';
 import { Receipt, ShieldCheck, Briefcase } from 'lucide-react';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'itc' | 'verified' | 'available' | '1slot' | 'workspace' | 'completed' | 'upcoming' | 'cancelled' | 'admin' | 'member';
-  shape?: 'pill' | 'rect';
+  variant?: 'default' | 'itc' | 'verified' | 'workspace' | 'success' | 'warning' | 'error' | 'admin';
+  shape?: 'pill' | 'tag';
   icon?: boolean;
 }
 
@@ -17,39 +17,36 @@ export const Badge: React.FC<BadgeProps> = ({
   ...props 
 }) => {
   const shapes = {
-    pill: 'rounded-[20px] px-[12px] py-[6px]',
-    rect: 'rounded-[4px] px-[10px] py-[4px]',
+    pill: 'rounded-full text-[12px] font-medium px-[12px] py-[4px]',
+    tag: 'rounded-[6px] text-[11px] font-semibold uppercase tracking-[0.08em] px-[8px] py-[3px]',
   };
 
   const variants = {
-    default: 'bg-gray-100 text-gray-700',
-    itc: 'bg-itc-bg text-itc-text',
-    verified: 'bg-verified-bg text-verified-text',
-    available: 'bg-green-light text-[#065F46]',
-    '1slot': 'bg-amber-light text-[#92400E]',
-    workspace: 'bg-workspace-bg text-workspace-text',
-    completed: 'bg-green-light text-[#065F46]',
-    upcoming: 'bg-amber-light text-[#92400E]',
-    cancelled: 'bg-red-light text-[#991B1B]',
-    admin: 'bg-navy text-white',
-    member: 'bg-gray-100 text-gray-700',
+    default: 'bg-gray-100 text-gray-600',
+    itc: 'bg-[#ECFDF5] text-[#065F46]',
+    verified: 'bg-[#EFF6FF] text-[#1D4ED8]',
+    workspace: 'bg-[#F5F3FF] text-[#5B21B6]',
+    success: 'bg-[#ECFDF5] text-[#064E3B]',
+    warning: 'bg-[#FFFBEB] text-[#F59E0B]',
+    error: 'bg-[#FEF2F2] text-[#EF4444]',
+    admin: 'bg-teal text-white',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center justify-center text-[12px] font-semibold gap-[6px] w-fit whitespace-nowrap',
+        'inline-flex items-center justify-center gap-[6px] w-fit whitespace-nowrap font-sans transition-colors',
         shapes[shape],
         variants[variant],
         className
       )}
       {...props}
     >
-      {icon && variant === 'itc' && <Receipt size={14} />}
-      {icon && variant === 'verified' && <ShieldCheck size={14} />}
-      {icon && variant === 'available' && <div className="w-[6px] h-[6px] rounded-full bg-[#065F46]" />}
-      {icon && variant === '1slot' && <div className="w-[6px] h-[6px] rounded-full bg-[#92400E]" />}
-      {icon && variant === 'workspace' && <Briefcase size={14} />}
+      {icon && variant === 'itc' && <Receipt size={12} />}
+      {icon && variant === 'verified' && <ShieldCheck size={12} />}
+      {icon && variant === 'workspace' && <Briefcase size={12} />}
+      {icon && variant === 'success' && <div className="w-[6px] h-[6px] rounded-full bg-[#10B981]" />}
+      {icon && variant === 'warning' && <div className="w-[6px] h-[6px] rounded-full bg-[#F59E0B]" />}
       {children}
     </span>
   );

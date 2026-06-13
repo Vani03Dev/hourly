@@ -102,7 +102,7 @@ export default function AdminConsolePage() {
                     </div>
                   </td>
                   <td className="p-[16px]">
-                    <Badge variant={row.role === 'Admin' ? 'admin' : 'member'}>{row.role}</Badge>
+                    <Badge variant={row.role === 'Admin' ? 'admin' : 'workspace'}>{row.role}</Badge>
                   </td>
                   <td className="p-[16px] text-[14px] text-gray-600 font-medium group-hover:text-navy transition-colors">{row.limit}</td>
                   <td className="p-[16px]">

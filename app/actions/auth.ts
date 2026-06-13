@@ -66,9 +66,9 @@ export async function signup(formData: FormData) {
       const fromEmail = 'onboarding@resend.dev'; // Default testing email for Resend
       
       await resend.emails.send({
-        from: `Hourly <${fromEmail}>`,
+        from: `Sessionly <${fromEmail}>`,
         to: email,
-        subject: 'Welcome to Hourly!',
+        subject: 'Welcome to Sessionly!',
         html: htmlContent,
       });
     } catch (e) {
@@ -85,7 +85,7 @@ export async function signup(formData: FormData) {
 export async function logout() {
   const supabase = await createClient()
   await supabase.auth.signOut()
-  redirect('/login')
+  redirect('/')
 }
 
 export async function sendPasswordResetEmail(formData: FormData) {

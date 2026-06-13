@@ -34,10 +34,16 @@ export async function updateSession(request: NextRequest) {
 
   // Define route categories
   const authRoutes = ['/login', '/signup', '/expert/login', '/forgot-password', '/update-password'];
-  const protectedRoutePrefixes = ['/expert/dashboard', '/expert/profile', '/expert/bookings', '/dashboard'];
+  const protectedRoutePrefixes = ['/expert/dashboard', '/expert/profile', '/expert/bookings', '/dashboard', '/admin'];
 
   const isAuthRoute = authRoutes.includes(url.pathname);
   const isProtectedRoute = protectedRoutePrefixes.some(prefix => url.pathname.startsWith(prefix));
+
+  // If the user is NOT logged in and trying to access a protected route, redirect them to login
+  if (!user && isProtectedRoute) {
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
 
   // If the user is logged in and trying to access auth pages (login/signup), redirect them to dashboard
   if (user && isAuthRoute) {
@@ -45,10 +51,56 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If the user is NOT logged in and trying to access a protected route, redirect them to login
-  if (!user && isProtectedRoute) {
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+  // Role-based protection for authenticated users
+  if (user) {
+    let role = user.user_metadata?.role;
+
+    // Database check fallback to ensure experts are correctly identified
+    if (role !== 'expert') {
+      const { data: eData } = await supabase
+        .from('expert_profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+        
+      if (eData) {
+        role = 'expert';
+        // Update user metadata to avoid hitting the DB in subsequent requests
+        await supabase.auth.updateUser({
+          data: { role: 'expert' }
+        });
+      }
+    }
+    
+    // Redirect /dashboard root depending on role
+    if (url.pathname === '/dashboard') {
+      url.pathname = role === 'expert' ? '/expert/dashboard' : '/dashboard/business';
+      return NextResponse.redirect(url);
+    }
+    
+    if (role === 'expert') {
+      // Expert is logged in. Prevent access to any business/client dashboard sub-routes, onboarding, bookings, and admin route
+      const isBusinessOrDashboardPath = url.pathname.startsWith('/dashboard') || 
+                                         url.pathname.startsWith('/admin') ||
+                                         url.pathname.startsWith('/onboarding') ||
+                                         url.pathname.startsWith('/booking') ||
+                                         url.pathname.startsWith('/book');
+      if (isBusinessOrDashboardPath) {
+        url.pathname = '/expert/dashboard';
+        return NextResponse.redirect(url);
+      }
+    } else {
+      // Business/mentee user is logged in. Prevent access to expert dashboard and admin route
+      const isExpertOrAdminPath = url.pathname.startsWith('/expert') || 
+                                  url.pathname.startsWith('/admin');
+      // Except for expert login / signup / callback (handled by authRoutes/public routes)
+      const isRestrictedExpertPath = isExpertOrAdminPath && 
+                                     !url.pathname.startsWith('/expert/login');
+      if (isRestrictedExpertPath) {
+        url.pathname = '/dashboard/business';
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   return supabaseResponse

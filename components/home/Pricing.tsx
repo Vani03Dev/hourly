@@ -27,8 +27,8 @@ export function Pricing() {
             <Grid container spacing={4} sx={{ mb: 4 }}>
               <Grid size={{ xs: 6 }}>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-                  <Box sx={{ p: 1, bgcolor: 'rgba(13,148,136,0.1)', borderRadius: 2 }}>
-                    <CheckCircle2 style={{ color: '#0D9488' }} size={24} />
+                  <Box sx={{ p: 1, bgcolor: 'rgba(37,99,235,0.1)', borderRadius: 2 }}>
+                    <CheckCircle2 style={{ color: '#2563EB' }} size={24} />
                   </Box>
                   <Box>
                     <Typography sx={{ fontWeight: 'bold' }} variant="subtitle1" color="text.primary" gutterBottom>Pay only for what you use</Typography>

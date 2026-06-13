@@ -6,10 +6,10 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
   palette: {
     mode,
     primary: {
-      main: mode === 'light' ? '#1E3A5F' : '#60A5FA', // Bright blue in dark mode for visible text
+      main: mode === 'light' ? '#111827' : '#F9FAFB', // Dark charcoal/white primary
     },
     secondary: {
-      main: mode === 'light' ? '#0D9488' : '#2DD4BF', // Brighter teal for dark mode visibility
+      main: mode === 'light' ? '#2563EB' : '#3B82F6', // Blue secondary brand accent
     },
     background: {
       default: mode === 'light' ? '#FAFAFA' : '#0A0A0A', // Ultra clean backgrounds
@@ -28,7 +28,7 @@ const getDesignTokens = (mode: 'light' | 'dark'): ThemeOptions => ({
     },
   },
   typography: {
-    fontFamily: 'var(--font-plus-jakarta), "Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: 'var(--font-plus-jakarta), system-ui, sans-serif',
     h1: {
       fontSize: '3.5rem',
       fontWeight: 900,

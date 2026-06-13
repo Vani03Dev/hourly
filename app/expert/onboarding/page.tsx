@@ -84,7 +84,7 @@ export default function ExpertOnboardingPage() {
       {/* Header */}
       <header className="h-[80px] bg-white border-b border-border flex items-center px-6 md:px-12 shrink-0">
         <div className="flex items-center gap-3">
-          <span className="text-[24px] font-bold text-navy-DEFAULT font-serif italic">Hourly.</span>
+          <span className="text-[24px] font-extrabold text-navy-DEFAULT tracking-tight">Sessionly</span>
           <span className="bg-teal-DEFAULT/10 text-teal-DEFAULT px-2.5 py-1 rounded-[6px] text-[11px] font-bold uppercase tracking-wider">Expert Profile Setup</span>
         </div>
       </header>

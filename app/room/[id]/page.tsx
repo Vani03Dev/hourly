@@ -51,7 +51,7 @@ export default function VideoRoomPage() {
         }
         
         setMeetingUrl(booking.meeting_link);
-        const extractedRoom = booking.meeting_link.split('/').pop() || `Hourly-${bookingId}`;
+        const extractedRoom = booking.meeting_link.split('/').pop() || `Sessionly-${bookingId}`;
         setRoomName(extractedRoom);
         
       } catch (err: any) {
@@ -135,8 +135,8 @@ export default function VideoRoomPage() {
         userInfo={{
           displayName: user?.user_metadata?.first_name 
             ? `${user.user_metadata.first_name} ${user.user_metadata.last_name || ''}` 
-            : user?.email || 'Hourly User',
-          email: user?.email || 'anonymous@hourly.app'
+            : user?.email || 'Sessionly User',
+          email: user?.email || 'anonymous@sessionly.in'
         }}
         onApiReady={(externalApi) => {
           // Listen for the hangup event to safely close/redirect without hitting the Jitsi ad

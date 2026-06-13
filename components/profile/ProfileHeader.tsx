@@ -8,6 +8,7 @@ import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { SlideUp, FadeIn } from "../shared/MotionWrapper";
+import { SHOW_RATINGS_AND_REVIEWS } from "@/lib/feature-flags";
 
 interface ProfileHeaderProps {
   expert: Expert;
@@ -92,10 +93,12 @@ export function ProfileHeader({ expert }: ProfileHeaderProps) {
               divider={<Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: 'divider', alignSelf: 'center' }} />}
               sx={{ flexWrap: 'wrap', gap: { xs: 2, md: 0 }, justifyContent: 'center', bgcolor: 'background.paper', px: 4, py: 1.5, borderRadius: 10, border: 1, borderColor: 'divider', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}
             >
+              {SHOW_RATINGS_AND_REVIEWS && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <StarIcon sx={{ color: '#F59E0B', fontSize: 20 }} />
                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{expert.rating} <Typography component="span" variant="body2" sx={{ color: 'text.secondary', fontWeight: 'normal' }}>({expert.sessions})</Typography></Typography>
               </Box>
+              )}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
                 <AccessTimeIcon fontSize="small" />
                 <Typography variant="body2">{expert.responseTime}</Typography>

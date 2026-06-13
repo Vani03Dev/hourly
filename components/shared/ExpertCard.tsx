@@ -1,9 +1,16 @@
-import React from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { MapPin, ShieldCheck, Star, Zap, Clock, CheckCircle2 } from 'lucide-react';
+import { MapPin, ShieldCheck, Zap, Clock, CheckCircle2 } from 'lucide-react';
+import { SHOW_RATINGS_AND_REVIEWS } from '@/lib/feature-flags';
 import { Button } from '../ui/Button';
+import { Badge } from '../ui/Badge';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
+import { createClient } from '../../utils/supabase/client';
 
 export interface ExpertData {
   id: string;
@@ -34,104 +41,110 @@ interface ExpertCardProps {
 
 export const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
   const { currency } = useCurrency();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [role, setRole] = useState<'company' | 'expert' | null>(user?.user_metadata?.role || null);
+
+  useEffect(() => {
+    async function checkRole() {
+      if (!user) {
+        setRole(null);
+        return;
+      }
+      const supabase = createClient();
+      const { data: eData } = await supabase.from('expert_profiles').select('id').eq('id', user.id).single();
+      if (eData || user.user_metadata?.role === 'expert') {
+        setRole('expert');
+      } else {
+        setRole('company');
+      }
+    }
+    checkRole();
+  }, [user]);
+
+  const displayName = expert.name;
 
   return (
-    <div className="bg-white border border-border rounded-[16px] p-6 relative flex flex-col h-full hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-teal-DEFAULT/40 transition-all duration-300 group">
+    <div className="bg-white border border-gray-200 rounded-[12px] p-[24px] shadow-level-1 relative flex flex-col h-full hover:-translate-y-[3px] hover:shadow-level-2 transition-all duration-200 ease-out group">
       
-      {/* ONLINE STATUS DOT (Top Right Corner) */}
-      <div className="absolute top-4 right-4 flex items-center gap-1.5">
-        {expert.isOnline && (
-          <>
-            <span className="w-2 h-2 rounded-full bg-green-DEFAULT animate-pulse" />
-            <span className="text-[11px] font-semibold text-green-DEFAULT uppercase tracking-wider">Online</span>
-          </>
+      {/* ONLINE STATUS & ITC BADGE */}
+      <div className="absolute top-[20px] right-[20px] flex flex-col items-end gap-[6px]">
+        {expert.isVerified && (
+          <Badge variant="verified" shape="tag">Verified</Badge>
+        )}
+        {expert.availability === 'now' ? (
+          <Badge variant="success" shape="pill" icon>Available</Badge>
+        ) : (
+          <Badge variant="warning" shape="pill" icon>Today</Badge>
         )}
       </div>
 
       {/* HEADER: AVATAR & INFO */}
-      <div className="flex gap-4">
+      <div className="flex gap-[16px]">
         <div className="relative shrink-0">
           {(expert.avatarUrl || expert.photo) ? (
             <Image 
               src={expert.avatarUrl || expert.photo || ''} 
-              alt={expert.name} 
-              width={64} 
-              height={64} 
-              className="w-16 h-16 rounded-full object-cover border border-border"
+              alt={displayName} 
+              width={52} 
+              height={52} 
+              className="w-[52px] h-[52px] rounded-full object-cover border-[3px] border-white ring-[3px] ring-teal"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-surface-2 border border-border flex items-center justify-center text-navy-DEFAULT font-bold text-[20px]">
-              {expert.name.charAt(0)}
+            <div className="w-[52px] h-[52px] rounded-full bg-[#0F2137] text-white flex items-center justify-center font-bold text-[18px]">
+              {displayName.charAt(0).toUpperCase()}
             </div>
           )}
         </div>
 
-        <div className="flex flex-col flex-1 min-w-0 pt-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-[18px] font-bold text-navy-DEFAULT truncate">{expert.name}</h3>
-            {expert.isVerified && (
-              <ShieldCheck className="w-[18px] h-[18px] text-teal-DEFAULT shrink-0" />
-            )}
+        <div className="flex flex-col flex-1 min-w-0 pt-[2px]">
+          <div className="flex items-center gap-[4px]">
+            <h3 className="text-[16px] font-bold text-[#0F2137] truncate">{displayName}</h3>
           </div>
           
-          <p className="text-[13px] text-text-sub mt-0.5 line-clamp-1 font-medium">{expert.title}</p>
-          
-          <div className="flex items-center gap-2 text-[12px] text-text-muted mt-1.5">
-            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{expert.location}</span>
-          </div>
+          <p className="text-[13px] text-gray-500 mt-[2px] line-clamp-1 font-medium">{expert.title}</p>
         </div>
       </div>
 
-      {/* SPECIALIZATIONS */}
-      <div className="flex flex-wrap gap-2 mt-5">
-        {(expert.specializations || expert.credentials || []).slice(0, 3).map((spec, i) => (
-          <span key={i} className="bg-surface-2 text-navy-DEFAULT text-[11px] font-semibold px-2.5 py-1 rounded-md border border-border/50">
-            {spec}
-          </span>
+      {/* CREDENTIAL PILLS */}
+      <div className="flex flex-wrap gap-[6px] mt-[16px]">
+        {(expert.specializations || expert.credentials || []).slice(0, 2).map((spec, i) => (
+          <Badge key={i} variant="workspace" shape="pill">{spec}</Badge>
         ))}
-        {(expert.specializations || expert.credentials || []).length > 3 && (
-          <span className="text-text-muted text-[11px] font-semibold px-1 py-1">
-            +{(expert.specializations || expert.credentials || []).length - 3}
-          </span>
+        {(expert.specializations || expert.credentials || []).length > 2 && (
+          <Badge variant="default" shape="pill">+{ (expert.specializations || expert.credentials || []).length - 2 } more</Badge>
         )}
       </div>
 
-      {/* TRUST & AVAILABILITY GRID */}
-      <div className="grid grid-cols-2 gap-y-2 mt-6 pt-5 border-t border-border/60">
-        <div className="flex items-center gap-1.5 text-[12px] text-text-sub">
-          <CheckCircle2 className="w-3.5 h-3.5 text-teal-DEFAULT" /> KYC Verified
+      {/* STATS ROW */}
+      <div className="flex items-center gap-[16px] border-t border-gray-100 mt-[16px] pt-[16px]">
+        {SHOW_RATINGS_AND_REVIEWS && (
+        <div className="flex items-center gap-[4px] text-[13px] font-semibold text-gray-700">
+          <span>{expert.rating || '4.9'}★</span>
         </div>
-        <div className="flex items-center gap-1.5 text-[12px] text-text-sub">
-          <CheckCircle2 className="w-3.5 h-3.5 text-teal-DEFAULT" /> NDA Ready
+        )}
+        <div className="text-[13px] text-gray-500">
+          {expert.sessionCount || expert.sessions || 12} sessions
         </div>
-        
-        <div className="flex items-center gap-1.5 text-[12px] font-medium mt-1">
-          {expert.availability === 'now' ? (
-            <span className="text-green-DEFAULT flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 fill-current" /> Available Now</span>
-          ) : expert.availability === 'today' ? (
-            <span className="text-teal-DEFAULT flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Available Today</span>
-          ) : (
-             <span className="text-text-muted flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Book Next Week</span>
-          )}
+        <div className="text-[13px] text-gray-500">
+          {expert.responseTime || '<1hr'}
         </div>
       </div>
 
       <div className="flex-grow"></div>
 
       {/* PRICE & ACTION */}
-      <div className="mt-6 pt-4 flex items-center justify-between">
+      <div className="mt-[20px] pt-[12px] flex items-center justify-between border-t border-gray-100">
         <div className="flex flex-col">
-          <span className="text-[11px] text-text-muted font-medium uppercase tracking-wider mb-0.5">Session Rate</span>
-          <div className="flex items-baseline gap-1">
-            <span className="text-[20px] font-bold text-navy-DEFAULT font-mono">
-              ₹{expert.price.toLocaleString('en-IN')}
-            </span>
-            <span className="text-[13px] text-text-sub font-medium">/hr</span>
-          </div>
+          <span className="text-price-s">
+            ₹{(expert.price || 600).toLocaleString('en-IN')}
+          </span>
+          <span className="text-[12px] text-gray-400 font-medium">30 or 60 min</span>
         </div>
         
-        <Button variant="primary" className="bg-navy-DEFAULT hover:bg-navy-dark text-white rounded-xl shadow-md group-hover:bg-teal-DEFAULT transition-colors px-6" asChild>
-          <Link href={`/book/${expert.id}`}>Book Now</Link>
+        <Button variant="primary" size="sm" asChild>
+          <Link href={role === 'expert' ? `/experts/${expert.id}` : `/booking/${expert.id}`}>
+            {role === 'expert' ? 'View Profile' : 'Book Now'}
+          </Link>
         </Button>
       </div>
     </div>

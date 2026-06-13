@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Container, Box, Typography, TextField, Button, Paper } from "@mui/material";
 import { Toast } from "../../utils/toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import Link from "next/link";
+import { Input } from "../../components/ui/Input";
+import { Button } from "../../components/ui/Button";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -45,52 +46,60 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 12 }}>
-      <Paper elevation={3} sx={{ p: 6, borderRadius: 4, textAlign: 'center' }}>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1, color: 'primary.main' }}>
-          Reset Password
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Enter your email address and we'll send you a link to reset your password.
-        </Typography>
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-bg px-[20px] py-[40px] font-sans relative overflow-hidden">
+      {/* Subtle dot grid pattern background */}
+      <div className="absolute inset-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: "radial-gradient(#E5E7EB 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
+      
+      {/* CENTERED CARD (max-width 400px) */}
+      <div className="bg-white border border-border rounded-xl p-[32px] w-full max-w-[400px] shadow-sm flex flex-col gap-[24px] relative z-10 animate-page-enter">
+        
+        {/* LOGO AND HEADER */}
+        <div className="text-center flex flex-col items-center">
+          <Link href="/" className="text-[26px] font-bold text-primary tracking-tight font-sans hover:opacity-90 transition-opacity">
+            Sessionly<span className="text-accent">.</span>
+          </Link>
+          <h2 className="text-[22px] font-bold text-primary mt-[16px] tracking-tight">
+            Reset Password
+          </h2>
+          <p className="text-[14px] text-muted mt-[6px] leading-relaxed font-medium">
+            Enter your email address and we'll send you a link to reset your password.
+          </p>
+        </div>
 
         {isSuccess ? (
-          <Box sx={{ mt: 2 }}>
-            <Typography variant="body1" sx={{ color: 'secondary.main', fontWeight: 'bold', mb: 3 }}>
+          <div className="flex flex-col gap-[18px] text-center">
+            <p className="text-[14px] text-success font-semibold leading-relaxed">
               Check your inbox! We've sent a password reset link to your email.
-            </Typography>
-            <Button component={Link} href="/login" variant="outlined" fullWidth sx={{ py: 1.5, fontWeight: 'bold' }}>
-              Return to Login
+            </p>
+            <Button variant="outline" className="border-border text-primary hover:bg-bg rounded-lg h-[44px] font-semibold w-full mt-[6px]" asChild>
+              <Link href="/auth/login">Return to Login</Link>
             </Button>
-          </Box>
+          </div>
         ) : (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <TextField 
-                label="Email Address" 
-                variant="outlined" 
-                fullWidth 
-                {...register("email")}
-                error={!!errors.email}
-                helperText={errors.email?.message}
-              />
-              <Button 
-                type="submit" 
-                variant="contained" 
-                color="secondary" 
-                size="large" 
-                disabled={isSubmitting}
-                sx={{ py: 1.5, fontWeight: 'bold', mt: 2 }}
-              >
-                {isSubmitting ? "Sending..." : "Send Reset Link"}
-              </Button>
-              <Button component={Link} href="/login" variant="text" sx={{ mt: 1 }}>
-                Back to Login
-              </Button>
-            </Box>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[18px]">
+            <Input 
+              label="Email Address"
+              type="email"
+              placeholder="name@company.com"
+              {...register("email")}
+              error={errors.email?.message}
+            />
+            
+            <Button 
+              type="submit" 
+              variant="primary"
+              className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[44px] font-semibold w-full mt-[6px]"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Sending..." : "Send Reset Link"}
+            </Button>
+
+            <Link href="/auth/login" className="text-center text-[14px] font-semibold text-accent hover:text-accent-hover transition-colors">
+              Back to Login
+            </Link>
           </form>
         )}
-      </Paper>
-    </Container>
+      </div>
+    </div>
   );
 }

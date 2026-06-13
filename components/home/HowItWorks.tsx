@@ -58,7 +58,7 @@ const steps = [
     id: "connect",
     icon: <VideoCameraFrontIcon fontSize="medium" />,
     title: "3. Connect & Learn",
-    description: "Join the video call or chat session directly from your Hourly dashboard. Ask questions, get advice, and level up your skills.",
+    description: "Join the video call or chat session directly from your Sessionly dashboard. Ask questions, get advice, and level up your skills.",
     previewContent: (
       <Box sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', p: 3 }}>
          <Box sx={{ width: '100%', height: '100%', bgcolor: 'background.paper', borderRadius: 4, border: 1, borderColor: 'divider', overflow: 'hidden', position: 'relative', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
@@ -86,7 +86,7 @@ export function HowItWorks() {
     <Box sx={{ py: 12, bgcolor: 'background.default' }}>
       <Container maxWidth="lg">
         <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Typography variant="h2" sx={{ mb: 2, fontWeight: 900, letterSpacing: '-0.02em' }}>How Hourly Works</Typography>
+          <Typography variant="h2" sx={{ mb: 2, fontWeight: 900, letterSpacing: '-0.02em' }}>How Sessionly Works</Typography>
           <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto', fontSize: '1.1rem' }}>
             Getting expert advice has never been easier. We've streamlined the process of finding and connecting with top-tier professionals.
           </Typography>
@@ -112,7 +112,7 @@ export function HowItWorks() {
                     cursor: 'pointer',
                     border: '1px solid',
                     borderColor: isActive ? 'secondary.main' : 'transparent',
-                    bgcolor: isActive ? (theme.palette.mode === 'light' ? 'rgba(13,148,136,0.05)' : 'rgba(13,148,136,0.1)') : 'transparent',
+                    bgcolor: isActive ? (theme.palette.mode === 'light' ? 'rgba(37,99,235,0.05)' : 'rgba(37,99,235,0.1)') : 'transparent',
                     transition: 'all 0.3s',
                     position: 'relative',
                     '&:hover': {

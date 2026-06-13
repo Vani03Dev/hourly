@@ -2,10 +2,10 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "How It Works",
-  description: "Learn how you can rent expertise by the hour or monetize your own knowledge. Find out how Hourly works for both experts and learners.",
+  description: "Learn how you can book expertise on-demand or monetize your own knowledge. Find out how Sessionly works for both experts and businesses.",
   openGraph: {
-    title: "How Hourly Works",
-    description: "Learn how you can rent expertise by the hour or monetize your own knowledge.",
+    title: "How Sessionly Works",
+    description: "Learn how you can book expertise on-demand or monetize your own knowledge.",
   }
 };
 

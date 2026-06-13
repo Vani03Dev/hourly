@@ -15,7 +15,7 @@ const videos = [
   {
     id: "video1",
     title: "Platform Overview",
-    description: "Discover how Hourly connects you with top-tier professionals instantly.",
+    description: "Discover how Sessionly connects you with top-tier professionals instantly.",
     src: "/media/explainer-1.mp4",
     thumbnail: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=600&q=80"
   },
@@ -67,13 +67,13 @@ export function ExplainerVideo() {
         <SlideUp>
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography variant="overline" sx={{ fontWeight: 'bold', color: 'primary.main', letterSpacing: 2 }}>
-              WHAT IS HOURLY?
+              WHAT IS SESSIONLY?
             </Typography>
             <Typography variant="h2" sx={{ mt: 1, mb: 2, fontWeight: 900, letterSpacing: '-0.02em' }}>
               Skip the Guesswork
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', fontSize: '1.125rem', lineHeight: 1.6 }}>
-              Hourly is a platform where you can instantly book 1-on-1 video sessions with top-tier professionals across various industries. 
+              Sessionly is a platform where you can instantly book 1-on-1 video sessions with top-tier professionals across various industries. 
             </Typography>
           </Box>
           
@@ -193,7 +193,7 @@ export function ExplainerVideo() {
                           backgroundPosition: 'center' 
                         }} 
                       />
-                      <Box sx={{ position: 'absolute', inset: 0, bgcolor: isActive ? 'rgba(13,148,136,0.3)' : 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box sx={{ position: 'absolute', inset: 0, bgcolor: isActive ? 'rgba(37,99,235,0.3)' : 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {isActive && isPlaying ? (
                            <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'flex-end', height: 16 }}>
                              <Box sx={{ width: 3, height: '100%', bgcolor: 'white', animation: `${equalizerPlay} 0.5s infinite alternate` }} />

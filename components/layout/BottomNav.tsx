@@ -3,11 +3,33 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, User } from "lucide-react";
+import { Home, Search, User, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { createClient } from "../../utils/supabase/client";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [role, setRole] = React.useState<'company' | 'expert'>(user?.user_metadata?.role || 'company');
+
+  React.useEffect(() => {
+    async function checkRole() {
+      if (!user) {
+        setRole('company');
+        return;
+      }
+      const supabase = createClient();
+      const { data: eData } = await supabase.from('expert_profiles').select('id').eq('id', user.id).single();
+      if (eData || user.user_metadata?.role === 'expert') {
+        setRole('expert');
+      } else {
+        setRole('company');
+      }
+    }
+    checkRole();
+  }, [user]);
 
   const getActive = (path: string) => {
     if (path === '/' && pathname === '/') return true;
@@ -15,11 +37,17 @@ export function BottomNav() {
     return false;
   };
 
-  const navItems = [
-    { label: "Home", icon: Home, path: "/" },
-    { label: "Explore", icon: Search, path: "/search" },
-    { label: "Account", icon: User, path: "/dashboard" },
-  ];
+  const navItems = role === 'expert'
+    ? [
+        { label: "Home", icon: Home, path: "/" },
+        { label: "Sessions", icon: Calendar, path: "/expert/sessions" },
+        { label: "Dashboard", icon: User, path: "/expert/dashboard" },
+      ]
+    : [
+        { label: "Home", icon: Home, path: "/" },
+        { label: "Explore", icon: Search, path: "/search" },
+        { label: "Account", icon: User, path: "/dashboard" },
+      ];
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[1100] md:hidden w-[90%] max-w-[340px]">

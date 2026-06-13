@@ -44,7 +44,7 @@ export function ShareProfileModal({ open, onClose, profileUrl, profileName }: Sh
   };
 
   const shareTitle = `Book a session with ${profileName}`;
-  const shareText = `Check out ${profileName}'s profile on Hourly and book a 1:1 session!`;
+  const shareText = `Check out ${profileName}'s profile on Sessionly and book a 1:1 session!`;
 
   const socialLinks = [
     {

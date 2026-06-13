@@ -241,7 +241,7 @@ export default function PublicProfilePage() {
       const endMins = startMins + 30;
       const endTimeSlot = minutesToTime(endMins);
       
-      const roomName = `Hourly-${crypto.randomUUID()}`;
+      const roomName = `Sessionly-${crypto.randomUUID()}`;
       const meetingLink = `https://meet.jit.si/${roomName}`;
       
       const { data: booking, error } = await supabase
@@ -292,7 +292,7 @@ export default function PublicProfilePage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '', // Needs to be added to .env.local
         amount: orderData.order.amount,
         currency: orderData.order.currency,
-        name: "Hourly Session",
+        name: "Sessionly Session",
         description: `Session with ${fullName}`,
         order_id: orderData.order.id,
         handler: async function (response: any) {
@@ -305,7 +305,7 @@ export default function PublicProfilePage() {
           email: user.email || '',
         },
         theme: {
-          color: "#0d9488", // Teal theme color
+          color: "#2563EB", // Sessionly blue accent color
         },
       };
 
@@ -367,7 +367,7 @@ export default function PublicProfilePage() {
           }}
         >
           {/* Calendar Header */}
-          <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'rgba(13,148,136,0.02)' }}>
+          <Box sx={{ p: 3, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'rgba(37,99,235,0.02)' }}>
             <Typography variant="h6" sx={{ fontWeight: 800 }}>Select Date & Time</Typography>
           </Box>
 
@@ -429,13 +429,13 @@ export default function PublicProfilePage() {
                       borderRadius: 2,
                       fontSize: '1rem',
                       fontWeight: isSelected ? 900 : canSelect ? 700 : 500,
-                      bgcolor: isSelected ? 'secondary.main' : canSelect ? 'rgba(13,148,136,0.04)' : 'transparent',
+                      bgcolor: isSelected ? 'secondary.main' : canSelect ? 'rgba(37,99,235,0.04)' : 'transparent',
                       color: isPastDate ? 'text.disabled' : isSelected ? 'white' : isAvailable ? 'text.primary' : 'text.disabled',
                       cursor: isPastDate ? 'not-allowed' : isAvailable ? 'pointer' : 'default',
                       border: '2px solid',
                       borderColor: isSelected ? 'secondary.main' : 'transparent',
                       transition: 'all 0.1s',
-                      '&:hover': canSelect && !isSelected ? { borderColor: 'secondary.light', bgcolor: 'rgba(13,148,136,0.08)' } : {}
+                      '&:hover': canSelect && !isSelected ? { borderColor: 'secondary.light', bgcolor: 'rgba(37,99,235,0.08)' } : {}
                     }}
                   >
                     {dateNum}
@@ -487,11 +487,11 @@ export default function PublicProfilePage() {
                         borderColor: isSelected ? 'secondary.main' : 'divider',
                         color: isBooked ? 'text.disabled' : isSelected ? 'secondary.main' : 'text.primary',
                         textDecoration: isBooked ? 'line-through' : 'none',
-                        bgcolor: isSelected ? 'rgba(13,148,136,0.05)' : 'transparent',
+                        bgcolor: isSelected ? 'rgba(37,99,235,0.05)' : 'transparent',
                         '&:hover': { 
                           borderWidth: 2,
                           borderColor: isBooked ? 'transparent' : 'secondary.main',
-                          bgcolor: isBooked ? 'transparent' : 'rgba(13,148,136,0.05)',
+                          bgcolor: isBooked ? 'transparent' : 'rgba(37,99,235,0.05)',
                         }
                       }}
                     >

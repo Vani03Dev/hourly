@@ -13,13 +13,13 @@ export function WelcomePage({ onContinueWithEmail }: WelcomePageProps) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', maxWidth: 400, width: '100%' }}>
       <Typography sx={{ fontWeight: 900, fontSize: '3.5rem', color: 'primary.main', mb: 1, lineHeight: 1, letterSpacing: '-0.02em' }} variant="h2">
-        Hourly<Box component="span" sx={{ color: 'secondary.main' }}>.</Box>
+        Sessionly<Box component="span" sx={{ color: 'secondary.main' }}>.</Box>
       </Typography>
       <Typography variant="subtitle2" sx={{ color: 'text.secondary', fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', mb: 4 }}>
         Expertise on Demand
       </Typography>
       <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'primary.main', mb: 2, lineHeight: 1.2 }}>
-        Welcome to Hourly
+        Welcome to Sessionly
       </Typography>
       <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 6, maxWidth: 320 }}>
         Join the network of top professionals and start consulting on your own terms.

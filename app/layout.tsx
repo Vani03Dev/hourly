@@ -7,57 +7,52 @@ import { BottomNav } from "../components/layout/BottomNav";
 import { ThemeRegistry } from "../components/ThemeRegistry";
 import { Toaster } from "react-hot-toast";
 
-import { Inter, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 
-const inter = Inter({ 
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-inter',
-});
-
-const instrument = Instrument_Serif({
-  subsets: ["latin"],
-  weight: ['400'],
-  style: ['italic', 'normal'],
-  variable: '--font-instrument',
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta",
+  display: "swap",
 });
 
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-jetbrains',
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-jetbrains",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Hourly',
-    default: 'Hourly | B2B Expertise-as-a-Service',
+    template: '%s | Sessionly',
+    default: 'Sessionly | India\'s Expert Session Booking Marketplace',
   },
-  description: "The premium B2B marketplace to hire the top 1% of vetted Indian professionals (Staff Engineers, Fractional CFOs, Legal Experts) for 60-minute unblocking sessions.",
-  keywords: ["B2B expertise", "fractional CFO", "staff engineer consulting", "legal experts india", "Hourly", "corporate micro-consulting"],
-  authors: [{ name: "Hourly Inc" }],
+  description: "India's expert session booking marketplace. Book verified experts (CAs, lawyers, CTOs, CFOs, HR leads) for 15-60 min paid sessions. Pay per session. No retainer.",
+  keywords: ["expert booking marketplace", "hire CA india", "startup lawyers", "fractional CFO", "on-demand CTO", "sessionly", "paid consultations"],
+  authors: [{ name: "Sessionly Inc" }],
   openGraph: {
     type: "website",
     locale: "en_IN",
-    url: "https://hourly.app",
-    title: "Hourly | B2B Expertise-as-a-Service",
-    description: "Unblock your engineering, finance, and legal teams with vetted top 1% Indian professionals in under 60 minutes.",
-    siteName: "Hourly",
+    url: "https://sessionly.in",
+    title: "Sessionly | India's Expert Session Booking Marketplace",
+    description: "Book verified experts (CAs, lawyers, CTOs, CFOs, HR leads) for 15-60 min paid sessions. Pay per session. No retainer.",
+    siteName: "Sessionly",
     images: [
       {
-        url: "https://hourly.app/og-image.jpg",
+        url: "https://sessionly.in/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Hourly - B2B Expertise Procurement",
+        alt: "Sessionly - Expert Session Booking Marketplace",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hourly | B2B Expertise-as-a-Service",
-    description: "Unblock your teams with vetted top 1% Indian professionals in under 60 minutes.",
-    creator: "@hourlyhq",
-    images: ["https://hourly.app/og-image.jpg"],
+    title: "Sessionly | India's Expert Session Booking Marketplace",
+    description: "Book verified experts for 15-60 min paid sessions.",
+    creator: "@sessionly",
+    images: ["https://sessionly.in/og-image.jpg"],
   },
   robots: {
     index: true,
@@ -85,14 +80,14 @@ export default function RootLayout({
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'B2BBusiness',
-    name: 'Hourly',
-    url: 'https://hourly.app',
-    description: 'The B2B Expertise Procurement Platform. Unblock your engineering, finance, and legal teams with vetted top 1% Indian professionals.',
+    name: 'Sessionly',
+    url: 'https://sessionly.in',
+    description: "India's expert session booking marketplace. Book verified experts (CAs, lawyers, CTOs, CFOs, HR leads) for 15-60 min paid sessions.",
   };
 
   return (
-    <html lang="en" className={`${inter.variable} ${instrument.variable} ${jetbrains.variable}`}>
-      <body className={`flex flex-col min-h-screen ${inter.className} bg-white text-text-primary`} style={{ fontFamily: 'var(--font-inter), sans-serif' }}>
+    <html lang="en" className={`${plusJakarta.variable} ${jetbrains.variable}`}>
+      <body className={`flex flex-col min-h-screen ${plusJakarta.className} bg-white text-text-primary antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

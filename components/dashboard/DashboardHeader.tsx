@@ -17,7 +17,7 @@ export function DashboardHeader() {
         </Box>
         
         <Stack direction="row" spacing={3} sx={{ alignItems: 'center' }}>
-          <Button component={Link} href="/expert/login" variant="contained" color="secondary" sx={{ fontWeight: 'bold' }}>
+          <Button component={Link} href="/auth/signup?role=expert" variant="contained" color="secondary" sx={{ fontWeight: 'bold' }}>
             Become a Pro
           </Button>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, borderLeft: 1, borderColor: 'divider', pl: 3 }}>
