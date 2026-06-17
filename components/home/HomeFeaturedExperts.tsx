@@ -26,7 +26,7 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
       <div className="max-w-[1200px] mx-auto">
         <SlideUp>
           <h2 className="text-h2 text-primary text-center mb-12">
-            Featured Experts
+            Our Founding Experts
           </h2>
         </SlideUp>
 
@@ -43,7 +43,7 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
                 key={exp.id}
                 variants={staggerItem}
                 whileHover={{ y: -6 }}
-                className="bg-white border border-border rounded-[16px] p-6 flex flex-col justify-between shadow-sm hover:border-accent/40 hover:shadow-md transition-colors duration-200"
+                className="bg-white border border-border rounded-[16px] p-6 flex flex-col justify-between shadow-sm hover:border-accent/30 hover:shadow-premium transition-all duration-300"
               >
                 <div>
                   <div className="flex justify-between items-start mb-4">
@@ -52,12 +52,12 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
                       <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-white" />
                     </div>
                     {exp.availableToday && (
-                      <span className="bg-green-50 text-success text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        Today
+                      <span className="bg-blue-50 text-accent border border-accent/20 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        Founding Member
                       </span>
                     )}
                   </div>
-                  <h3 className="text-[16px] font-bold text-primary">{exp.name}</h3>
+                  <h3 className="text-[17px] font-extrabold text-primary tracking-tight">{exp.name}</h3>
                   <p className="text-[13px] text-muted mt-0.5 min-h-[36px] line-clamp-2">{exp.title}</p>
                   <span className="inline-block mt-2 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gray-50 border border-border text-muted">
                     {exp.domain}
@@ -84,9 +84,9 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
           </motion.div>
         ) : (
           <div className="text-center py-12 px-4 border border-dashed border-border rounded-2xl bg-white max-w-lg mx-auto">
-            <p className="text-[14px] text-muted font-medium">Join as an expert to be featured here!</p>
+            <p className="text-[14px] text-muted font-medium">Apply to join the Founding Experts beta.</p>
             <Button variant="outline" className="mt-4 h-10 px-6 font-semibold" asChild>
-              <Link href="/auth/signup?role=expert">Become an Expert</Link>
+              <Link href="/auth/signup?role=expert">Apply for Access</Link>
             </Button>
           </div>
         )}
@@ -94,7 +94,7 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
         <SlideUp delay={0.2}>
           <div className="flex justify-center mt-10">
             <Button variant="primary" className="h-12 px-8 font-semibold" asChild>
-              <Link href="/experts">Browse All Experts →</Link>
+              <Link href="/experts">View All Founding Experts →</Link>
             </Button>
           </div>
         </SlideUp>

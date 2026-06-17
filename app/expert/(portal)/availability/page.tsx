@@ -202,8 +202,7 @@ export default function AvailabilityPage() {
       setLoading(false);
     }
     fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchMonthBookings, calendarYear, calendarMonth]);
 
 
   useEffect(() => {
@@ -632,12 +631,13 @@ export default function AvailabilityPage() {
             <p className="text-[13px] text-muted mb-4">
               Connect Google Calendar to auto-block busy times and prevent double bookings.
             </p>
-            <a
-              href="/api/auth/google"
+            <button
+              type="button"
+              onClick={() => window.location.assign('/api/auth/google')}
               className="inline-flex items-center justify-center w-full h-[40px] bg-gray-50 hover:bg-gray-100 border border-border text-primary font-semibold text-[14px] rounded-[8px] transition-colors"
             >
               Connect Calendar
-            </a>
+            </button>
           </div>
         </div>
       </div>

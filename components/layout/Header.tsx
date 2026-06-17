@@ -62,7 +62,7 @@ export function Header() {
     const supabase = createClient();
     await supabase.auth.signOut();
     setAvatarDropdown(false);
-    window.location.href = '/';
+    window.location.assign('/');
   };
   const { currency, setCurrency } = useCurrency();
   
@@ -102,7 +102,7 @@ export function Header() {
                 Sessionly
               </span>
               <span className="text-[11px] text-muted font-medium mt-1 hidden sm:block truncate tracking-wide">
-                India&apos;s Expert Session Booking Marketplace
+                The Private Network for India's Founders
               </span>
             </Link>
           </div>
@@ -206,7 +206,7 @@ export function Header() {
           <div className="flex items-center justify-between h-[64px] px-6 border-b border-border">
             <Link href="/" className="flex flex-col min-w-0" onClick={() => setMobileOpen(false)}>
               <span className="text-brand text-[22px] text-primary leading-none">Sessionly</span>
-              <span className="text-[11px] text-muted font-medium mt-1 tracking-wide">India&apos;s Expert Session Booking Marketplace</span>
+              <span className="text-[11px] text-muted font-medium mt-1 tracking-wide">The Private Network for India's Founders</span>
             </Link>
             <button onClick={() => setMobileOpen(false)} className="w-[40px] h-[40px] flex items-center justify-center text-gray-400 hover:bg-gray-50 rounded-full transition-colors">
               <X size={24} />

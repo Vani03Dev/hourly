@@ -2,9 +2,10 @@ import React from "react";
 import { createClient } from "../utils/supabase/server";
 import { HomeHero } from "../components/home/HomeHero";
 import { HomeStatsBar } from "../components/home/HomeStatsBar";
-import { CategoryExplorer } from "../components/home/CategoryExplorer";
 import { HomeHowItWorks } from "../components/home/HomeHowItWorks";
 import { HomeFeaturedExperts } from "../components/home/HomeFeaturedExperts";
+
+import { CategoryExplorer } from "../components/home/CategoryExplorer";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -46,6 +47,7 @@ export default async function HomePage() {
     <div className="w-full bg-bg min-h-screen flex flex-col font-sans overflow-x-hidden">
       <HomeHero isLoggedIn={!!user} role={role} />
       <HomeStatsBar />
+
       <CategoryExplorer />
       <HomeHowItWorks />
       <HomeFeaturedExperts experts={featuredExperts} />

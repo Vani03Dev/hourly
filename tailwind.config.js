@@ -114,6 +114,7 @@ module.exports = {
         'level-2': '0 4px 6px rgba(15,33,55,0.05), 0 10px 15px rgba(15,33,55,0.08)',
         'level-3': '0 10px 24px rgba(15,33,55,0.10), 0 24px 48px rgba(15,33,55,0.12)',
         'level-4': '0 20px 40px rgba(15,33,55,0.15), 0 40px 80px rgba(15,33,55,0.18)',
+        'premium': '0 10px 30px -10px rgba(37, 99, 235, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.05)',
       },
       borderRadius: {
         'xs': '4px',

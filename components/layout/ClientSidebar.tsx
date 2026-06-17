@@ -40,7 +40,7 @@ export function ClientSidebar() {
 
   const navItems = [
     { icon: <Home size={18} />, label: 'Dashboard', href: '/dashboard' },
-    { icon: <Search size={18} />, label: 'Find Experts', href: '/search' },
+    { icon: <Search size={18} />, label: 'Find Experts', href: '/experts' },
     { icon: <Calendar size={18} />, label: 'My Bookings', href: '/dashboard/bookings' },
     { icon: <Users size={18} />, label: 'Team Bookings', href: '/dashboard/team' },
     { icon: <CreditCard size={18} />, label: 'Wallet', href: '/dashboard/billing' },

@@ -15,7 +15,6 @@ const INITIAL_VISIBLE = 4;
 const CATEGORIES = [
   {
     name: "CA & Tax",
-    count: 42,
     icon: Briefcase,
     description: "GST, ITR, audits, and compliance for startups and SMEs.",
     topics: ["GST filing", "ITR & tax planning", "Audit prep", "Fundraise compliance"],
@@ -23,7 +22,6 @@ const CATEGORIES = [
   },
   {
     name: "Startup Legal",
-    count: 28,
     icon: Scale,
     description: "Contracts, incorporation, IP, and regulatory guidance.",
     topics: ["SHA & term sheets", "Employment contracts", "IP assignment", "Compliance"],
@@ -31,7 +29,6 @@ const CATEGORIES = [
   },
   {
     name: "Tech & CTO",
-    count: 54,
     icon: Cpu,
     description: "Architecture reviews, hiring, and technical strategy.",
     topics: ["System design", "Tech hiring", "Cloud costs", "Product roadmap"],
@@ -39,7 +36,6 @@ const CATEGORIES = [
   },
   {
     name: "Finance & CFO",
-    count: 31,
     icon: LineChart,
     description: "Unit economics, fundraising models, and cash flow.",
     topics: ["Financial modeling", "Investor decks", "Burn rate", "Pricing strategy"],
@@ -47,7 +43,6 @@ const CATEGORIES = [
   },
   {
     name: "HR & People",
-    count: 22,
     icon: Users,
     description: "Hiring, culture, compensation, and org design.",
     topics: ["Hiring plans", "ESOP design", "Performance reviews", "Culture building"],
@@ -55,7 +50,6 @@ const CATEGORIES = [
   },
   {
     name: "Sales & GTM",
-    count: 37,
     icon: Target,
     description: "Pipeline, outbound, partnerships, and revenue playbooks.",
     topics: ["GTM strategy", "Outbound sales", "Channel partners", "Pricing & packaging"],
@@ -63,7 +57,6 @@ const CATEGORIES = [
   },
   {
     name: "Marketing",
-    count: 45,
     icon: Megaphone,
     description: "Brand, growth, content, and paid acquisition.",
     topics: ["Brand positioning", "SEO & content", "Paid ads", "Launch campaigns"],
@@ -71,7 +64,6 @@ const CATEGORIES = [
   },
   {
     name: "Operations",
-    count: 19,
     icon: Settings2,
     description: "Processes, vendors, logistics, and scale-up ops.",
     topics: ["SOPs & workflows", "Vendor management", "Supply chain", "Cost optimization"],
@@ -79,7 +71,6 @@ const CATEGORIES = [
   },
   {
     name: "Leadership",
-    count: 26,
     icon: UserCheck,
     description: "Founder coaching, board prep, and executive decisions.",
     topics: ["Founder coaching", "Board meetings", "Team leadership", "Strategic planning"],
@@ -136,7 +127,7 @@ export function CategoryExplorer() {
           <Icon size={20} />
         </div>
         <h3 className="text-[14px] md:text-[15px] font-bold text-primary leading-tight">{cat.name}</h3>
-        <p className="text-[12px] font-mono text-muted mt-1">{cat.count} experts</p>
+        <p className="text-[12px] text-muted mt-1">Explore category →</p>
         {isActive && (
           <motion.div
             layoutId="category-active-ring"
@@ -218,19 +209,19 @@ export function CategoryExplorer() {
             )}
 
             {hasMore && !showAll && (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-5">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
                 <Button
                   variant="outline"
-                  className="h-10 px-5 font-semibold text-[13px] gap-2"
+                  className="h-[48px] px-6 font-semibold text-[14px] gap-2"
                   onClick={() => setShowAll(true)}
                 >
-                  See all {CATEGORIES.length} categories <ArrowRight size={14} />
+                  See all {CATEGORIES.length} categories <ArrowRight size={16} />
                 </Button>
                 <Link
                   href="/experts"
-                  className="text-[13px] font-semibold text-accent hover:underline"
+                  className="text-[14px] font-bold text-accent hover:underline"
                 >
-                  Browse all experts
+                  Browse founding experts
                 </Link>
               </div>
             )}
@@ -271,7 +262,7 @@ export function CategoryExplorer() {
                     </div>
                     <div>
                       <h3 className="text-[20px] font-bold leading-tight">{active.name}</h3>
-                      <p className="text-[13px] text-gray-400 mt-1 font-mono">{active.count} verified experts</p>
+                      <p className="text-[13px] text-accent font-bold mt-1 bg-white/10 inline-block px-2 py-0.5 rounded border border-white/10">Founding Experts</p>
                     </div>
                   </div>
 
@@ -291,11 +282,11 @@ export function CategoryExplorer() {
 
                   <Button
                     variant="primary"
-                    className="w-full h-11 bg-accent hover:bg-accent-hover text-white font-semibold rounded-[10px] gap-2"
+                    className="w-full h-[48px] bg-accent hover:bg-accent-hover text-white font-bold rounded-[10px] gap-2"
                     asChild
                   >
                     <Link href={`/experts?category=${encodeURIComponent(active.name)}`}>
-                      Browse {active.name} experts <ArrowRight size={16} />
+                      Browse {active.name} <ArrowRight size={16} />
                     </Link>
                   </Button>
                 </div>

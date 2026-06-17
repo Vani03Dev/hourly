@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Save, User, Link as LinkIcon, IndianRupee,
-  Copy, ExternalLink, X, Bell, Mail
+  Copy, ExternalLink, X, Bell, Mail, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { createClient } from '@/utils/supabase/client';
-import { updateExpertProfile } from '@/app/actions/expert';
+import { updateExpertProfile, updateAvatarUrl } from '@/app/actions/expert';
 import toast from 'react-hot-toast';
 
 const TIMEZONES = [
@@ -24,6 +24,27 @@ const EXPERTISE_SUGGESTIONS = [
 ];
 
 type SettingsTab = 'profile' | 'account';
+
+const inputClass =
+  'w-full h-[44px] px-4 rounded-[10px] border border-gray-200 bg-white text-[14px] text-primary placeholder:text-gray-400 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/15 transition-all shadow-sm';
+
+const labelClass = 'text-[13px] font-semibold text-primary';
+
+const Field = ({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) => (
+  <div className="flex flex-col gap-2">
+    <label className={labelClass}>{label}</label>
+    {children}
+    {hint && <p className="text-[12px] text-muted">{hint}</p>}
+  </div>
+);
 
 export default function ExpertSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -43,6 +64,8 @@ export default function ExpertSettingsPage() {
   const [timezone, setTimezone] = useState('asia_kolkata');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [bookingAlerts, setBookingAlerts] = useState(true);
@@ -79,6 +102,7 @@ export default function ExpertSettingsPage() {
         setLinkedinUrl(data.linkedin_url || '');
         setTimezone(data.timezone || 'asia_kolkata');
         setTags(data.tags || []);
+        setAvatarUrl(data.avatar_url || '');
       }
 
       setLoading(false);
@@ -108,6 +132,56 @@ export default function ExpertSettingsPage() {
     markChanged();
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be less than 2MB');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    const toastId = toast.loading('Uploading photo...');
+
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error('Not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        if (uploadError.message.includes('bucket')) {
+           throw new Error("Please create a public storage bucket named 'avatars' in Supabase.");
+        }
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(fileName);
+      
+      const newUrl = data.publicUrl;
+      setAvatarUrl(newUrl);
+      markChanged();
+      
+      // Auto-save the avatar directly so the user doesn't have to hit "Save Changes" just for the picture
+      await updateAvatarUrl(newUrl);
+      
+      toast.success('Photo uploaded successfully!', { id: toastId });
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast.error(error.message || 'Error uploading photo', { id: toastId });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleSave = async () => {
     if (tags.length === 0) {
       toast.error('Add at least one expertise tag');
@@ -132,6 +206,7 @@ export default function ExpertSettingsPage() {
       timezone,
       emailNotifications,
       bookingAlerts,
+      avatarUrl,
     });
 
     if (result.error) {
@@ -143,26 +218,7 @@ export default function ExpertSettingsPage() {
     setSaving(false);
   };
 
-  const inputClass =
-    'w-full h-[44px] px-4 rounded-[10px] border border-gray-200 bg-white text-[14px] text-primary placeholder:text-gray-400 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/15 transition-all shadow-sm';
 
-  const labelClass = 'text-[13px] font-semibold text-primary';
-
-  const Field = ({
-    label,
-    hint,
-    children,
-  }: {
-    label: string;
-    hint?: string;
-    children: React.ReactNode;
-  }) => (
-    <div className="flex flex-col gap-2">
-      <label className={labelClass}>{label}</label>
-      {children}
-      {hint && <p className="text-[12px] text-muted">{hint}</p>}
-    </div>
-  );
 
   if (loading) {
     return (
@@ -245,6 +301,35 @@ export default function ExpertSettingsPage() {
               Profile Details
             </h2>
             <div className="flex flex-col gap-5">
+              
+              {/* Avatar Upload */}
+              <div className="flex items-center gap-4 p-4 rounded-[12px] border border-gray-200 bg-gray-50/50">
+                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-white ring-2 ring-gray-100 shrink-0 bg-gray-200 flex items-center justify-center">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="text-gray-400" size={24} />
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <p className="text-[13px] font-semibold text-primary">Profile Photo</p>
+                  <p className="text-[11px] text-muted">Will be displayed on your public page. Max 2MB.</p>
+                  <div className="relative inline-block w-fit mt-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={uploadingAvatar}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                    />
+                    <Button type="button" variant="outline" size="sm" className="gap-2" disabled={uploadingAvatar}>
+                      <Upload size={14} />
+                      {uploadingAvatar ? 'Uploading...' : 'Upload new photo'}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Field label="First Name">
                   <input

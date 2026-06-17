@@ -258,6 +258,15 @@
     50% { opacity: 0.9; }
   }
 
+  /* Marquee animation */
+  .animate-marquee {
+    animation: marquee 35s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
   /* Progress fill */
   .transition-progress {
     transition: width 600ms ease-out;
@@ -322,7 +331,7 @@
   input[type="url"]:not([class*="Mui"]):not(.input-plain),
   textarea:not([class*="Mui"]):not(.input-plain),
   select:not([class*="Mui"]):not(.input-plain) {
-    @apply w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] text-primary shadow-sm outline-none transition-all duration-150 placeholder:text-muted focus:outline-none focus:border-accent focus:ring-0;
+    @apply w-full h-[48px] px-4 rounded-[8px] border border-border bg-white text-[14px] text-primary shadow-sm outline-none transition-all duration-150 placeholder:text-muted focus:outline-none focus:border-accent focus:ring-0;
   }
   
   /* Textarea custom height adjustments */

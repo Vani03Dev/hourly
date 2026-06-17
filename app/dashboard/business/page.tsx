@@ -2,17 +2,13 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { 
-  Calendar, 
-  DollarSign, 
-  Clock, 
-  Users2,
-  Video
-} from "lucide-react";
+import { Calendar, DollarSign, Clock, Users2, Video } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { createClient } from "../../../utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function BusinessDashboard() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ sessionsCount: 0, totalSpent: 0, hoursSaved: 0 });
@@ -104,8 +100,12 @@ export default function BusinessDashboard() {
             <h1 className="text-[24px] font-bold text-primary">Workspace Overview</h1>
             <p className="text-[13px] text-muted mt-[4px]">Manage your B2B session credits, upcoming meetings, and billing.</p>
           </div>
-          <Button variant="primary" className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[40px] font-bold" asChild>
-            <Link href="/experts">Book New Session &rarr;</Link>
+          <Button 
+            variant="primary" 
+            className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[48px] px-[20px] font-bold shadow-sm"
+            onClick={() => router.push('/experts')}
+          >
+            Book New Session &rarr;
           </Button>
         </div>
 
@@ -119,7 +119,7 @@ export default function BusinessDashboard() {
           ].map((stat, i) => {
             const Icon = stat.icon;
             return (
-              <div key={i} className="bg-white border border-border rounded-xl p-[20px] shadow-sm flex items-center justify-between">
+              <div key={i} className="bg-white border border-border rounded-xl p-[20px] shadow-premium flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-[12px] text-muted font-bold uppercase tracking-wider">{stat.label}</span>
                   <span className={`text-[20px] font-bold text-primary mt-[8px] ${stat.mono ? "font-mono" : ""}`}>{stat.value}</span>
@@ -133,7 +133,7 @@ export default function BusinessDashboard() {
         </div>
 
         {/* UPCOMING SESSIONS (table) */}
-        <div className="bg-white border border-border rounded-xl shadow-sm flex flex-col overflow-hidden">
+        <div className="bg-white border border-border rounded-xl shadow-premium flex flex-col overflow-hidden">
           <div className="p-[20px] border-b border-border">
             <h3 className="text-[16px] font-bold text-primary">Your Scheduled Sessions</h3>
           </div>
@@ -205,7 +205,7 @@ export default function BusinessDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[32px]">
           
           {/* RECENTLY BOOKED EXPERTS (Book Again) */}
-          <div className="bg-white border border-border rounded-xl shadow-sm p-[24px] flex flex-col gap-[16px]">
+          <div className="bg-white border border-border rounded-xl shadow-premium p-[24px] flex flex-col gap-[16px]">
             <h3 className="text-[16px] font-bold text-primary">Book Again</h3>
             {recentExperts.length > 0 ? (
               <div className="flex gap-[16px] overflow-x-auto pb-[12px] scrollbar-thin">
@@ -218,8 +218,12 @@ export default function BusinessDashboard() {
                       <h4 className="text-[13px] font-bold text-primary truncate w-[120px]">{exp.name}</h4>
                       <span className="text-[11px] text-muted block mt-0.5">Verified Expert</span>
                     </div>
-                    <Button variant="outline" className="border-border text-accent hover:bg-white rounded-lg h-[28px] px-3 text-[11px] font-bold mt-[8px]" asChild>
-                      <Link href="/experts">Book Again</Link>
+                    <Button 
+                      variant="outline" 
+                      className="border-border text-accent hover:bg-white rounded-lg h-[28px] px-3 text-[11px] font-bold mt-[8px]"
+                      onClick={() => router.push('/experts')}
+                    >
+                      Book Again
                     </Button>
                   </div>
                 ))}
@@ -227,15 +231,19 @@ export default function BusinessDashboard() {
             ) : (
               <div className="text-center py-6 text-muted text-[13px]">
                 <p>You haven't booked any sessions yet.</p>
-                <Button variant="outline" className="h-[32px] mt-3 border-border text-accent font-semibold px-4 text-[12px]" asChild>
-                  <Link href="/experts">Browse Experts</Link>
+                <Button 
+                  variant="outline" 
+                  className="h-[48px] mt-4 border-border text-accent font-bold px-6 text-[14px]"
+                  onClick={() => router.push('/experts')}
+                >
+                  Browse Experts
                 </Button>
               </div>
             )}
           </div>
 
           {/* HELP & RESOURCES BAND */}
-          <div className="bg-white border border-border rounded-xl shadow-sm p-[24px] flex flex-col gap-[16px]">
+          <div className="bg-white border border-border rounded-xl shadow-premium p-[24px] flex flex-col gap-[16px]">
             <h3 className="text-[16px] font-bold text-primary">Workspace Billing & Rules</h3>
             <div className="flex flex-col gap-[12px] text-[13px]">
               <div className="flex justify-between items-start border-b border-border pb-[8px]">

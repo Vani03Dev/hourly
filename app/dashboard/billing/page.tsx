@@ -10,11 +10,7 @@ import toast from 'react-hot-toast';
 
 export default function BillingPage() {
   const [walletBalance, setWalletBalance] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const stored = window.localStorage.getItem('wallet_balance');
-      return stored ? Number(stored) : 18500;
-    }
-    return 18500;
+    return 0;
   });
   const [autoTopUp, setAutoTopUp] = useState(true);
   const [threshold, setThreshold] = useState('5,000');
@@ -28,36 +24,7 @@ export default function BillingPage() {
     toast.success("₹10,000 added to team wallet");
   };
 
-  const transactions = [
-    {
-      date: "Feb 10, 2026",
-      desc: "Booking session - Aditi Sharma",
-      amount: "₹1,260",
-      type: "debit",
-      invoice: "INV-2026-0312"
-    },
-    {
-      date: "Jan 28, 2026",
-      desc: "Wallet Auto Top-up",
-      amount: "₹25,000",
-      type: "credit",
-      invoice: "INV-2026-0284"
-    },
-    {
-      date: "Jan 28, 2026",
-      desc: "Booking session - Rahul Sharma",
-      amount: "₹525",
-      type: "debit",
-      invoice: "INV-2026-0283"
-    },
-    {
-      date: "Jan 12, 2026",
-      desc: "Wallet Load - Manual Payment",
-      amount: "₹10,000",
-      type: "credit",
-      invoice: "INV-2026-0104"
-    }
-  ];
+  const transactions: any[] = [];
 
   return (
     <div className="max-w-[1200px] mx-auto p-[20px] md:p-[40px] font-sans selection:bg-teal selection:text-white bg-gray-50">
@@ -78,7 +45,7 @@ export default function BillingPage() {
               ₹{walletBalance.toLocaleString('en-IN')}
             </div>
             <p className="text-[13px] text-white/50 mt-[8px] font-semibold">
-              Last loaded: ₹25,000 · Jan 28
+              No recent loads
             </p>
           </div>
           <button 
@@ -214,29 +181,37 @@ export default function BillingPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {transactions.map((t, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-[16px] py-[14px] text-[14px] text-gray-500 font-semibold">{t.date}</td>
-                    <td className="px-[16px] py-[14px] text-[14px] font-bold text-[#0F2137]">{t.desc}</td>
-                    <td className="px-[16px] py-[14px] text-[14px] text-right font-mono font-bold text-[#0F2137]">{t.amount}</td>
-                    <td className="px-[16px] py-[14px] text-center">
-                      {t.type === 'debit' ? (
-                        <span className="bg-[#FEF2F2] text-[#EF4444] text-[11px] font-bold px-[8px] py-[2px] rounded-full">
-                          Debit
-                        </span>
-                      ) : (
-                        <span className="bg-[#ECFDF5] text-[#10B981] text-[11px] font-bold px-[8px] py-[2px] rounded-full">
-                          Credit
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-[16px] py-[14px] text-right">
-                      <a href="#" className="text-[13px] font-bold text-teal hover:underline flex items-center justify-end gap-[4px]">
-                        <Receipt size={12} /> {t.invoice}
-                      </a>
+                {transactions.length > 0 ? (
+                  transactions.map((t, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-[16px] py-[14px] text-[14px] text-gray-500 font-semibold">{t.date}</td>
+                      <td className="px-[16px] py-[14px] text-[14px] font-bold text-[#0F2137]">{t.desc}</td>
+                      <td className="px-[16px] py-[14px] text-[14px] text-right font-mono font-bold text-[#0F2137]">{t.amount}</td>
+                      <td className="px-[16px] py-[14px] text-center">
+                        {t.type === 'debit' ? (
+                          <span className="bg-[#FEF2F2] text-[#EF4444] text-[11px] font-bold px-[8px] py-[2px] rounded-full">
+                            Debit
+                          </span>
+                        ) : (
+                          <span className="bg-[#ECFDF5] text-[#10B981] text-[11px] font-bold px-[8px] py-[2px] rounded-full">
+                            Credit
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-[16px] py-[14px] text-right">
+                        <a href="#" className="text-[13px] font-bold text-teal hover:underline flex items-center justify-end gap-[4px]">
+                          <Receipt size={12} /> {t.invoice}
+                        </a>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-[16px] py-[32px] text-center text-[14px] text-gray-500 font-semibold">
+                      No transactions found. Load your wallet to get started.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

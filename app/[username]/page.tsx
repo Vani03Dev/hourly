@@ -40,41 +40,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
   const [selectedDate, setSelectedDate] = useState<number>(10);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('11:00 AM');
 
-  // Hardcoded detailed mock data for demo purposes, so it looks absolutely Stripe-grade
-  const demoExperts: Record<string, any> = {
-    "rahul": {
-      name: "Rahul Sharma",
-      title: "SEBI-Licensed CA & Startup Advisor",
-      avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=faces",
-      bio: "10+ years helping Indian startups with taxation, GST compliance, and fundraising models. Ex-McKinsey advisor. Helps structure flip setups and SOC2 compliance audits efficiently.",
-      hourly_rate: 600,
-      tags: ["ICAI", "SEBI Registered", "Corporate Tax", "FDI Law"],
-      rating: "4.9",
-      sessions: "312",
-      satisfaction: "99%",
-      responseTime: "< 1hr",
-      experience: [
-        { role: "Senior Tax Consultant", company: "McKinsey & Co", dates: "2020 - Present" },
-        { role: "Founding Partner", company: "Sharma Compliance Associates", dates: "2015 - 2020" }
-      ]
-    },
-    "aditi": {
-      name: "Aditi Sharma",
-      title: "Ex-Stripe Staff Engineer",
-      avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces",
-      bio: "Former Staff Engineer at Stripe. Built core payment rails and distributed ledger systems. Specializes in system design reviews, scale consulting for 10M+ users, and fintech APIs.",
-      hourly_rate: 1200,
-      tags: ["System Design", "AWS", "Ledger Rails", "Java"],
-      rating: "5.0",
-      sessions: "420",
-      satisfaction: "100%",
-      responseTime: "< 2hr",
-      experience: [
-        { role: "Staff Engineer", company: "Stripe Inc", dates: "2018 - 2024" },
-        { role: "Senior Engineer", company: "Razorpay", dates: "2015 - 2018" }
-      ]
-    }
-  };
+  // No fake data anymore
 
   useEffect(() => {
     async function fetchData() {
@@ -92,25 +58,18 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           id: profile.id,
           name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username,
           title: profile.title,
-          avatar_url: profile.avatar_url || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop&crop=faces",
+          avatar_url: profile.avatar_url || "",
           bio: profile.bio,
           hourly_rate: profile.hourly_rate,
           tags: profile.tags || [],
-          rating: "4.9",
-          sessions: "127",
-          satisfaction: "98%",
-          responseTime: "< 2hr",
-          experience: [
-            { role: "Consultant Partner", company: "Independent practice", dates: "2021 - Present" }
-          ]
+          rating: "0",
+          sessions: "0",
+          satisfaction: "0%",
+          responseTime: "-",
+          experience: []
         });
       } else {
-        // Fallback to demo profile (aditi is default)
-        const key = demoExperts[username.toLowerCase()] ? username.toLowerCase() : "aditi";
-        setExpert({
-          id: key,
-          ...demoExperts[key]
-        });
+        router.push('/404');
       }
       setLoading(false);
     }
@@ -153,7 +112,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
   ];
 
   const handleBookSlotClick = () => {
-    router.push(`/booking/${expert.id}?date=Feb%20${selectedDate}&time=${encodeURIComponent(selectedTimeSlot)}&duration=${selectedDuration}`);
+    router.push(`/book/${expert.id}?date=${selectedDate}&time=${encodeURIComponent(selectedTimeSlot)}&duration=${selectedDuration}`);
   };
 
   return (
@@ -165,12 +124,16 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           
           {/* Avatar side */}
           <div className="md:col-span-3 flex flex-col items-center">
-            <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-[3px] border-white ring-[3px] ring-teal">
-              <img 
-                src={expert.avatar_url} 
-                alt={expert.name} 
-                className="w-full h-full object-cover"
-              />
+            <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-[3px] border-white ring-[3px] ring-teal bg-gray-100 flex items-center justify-center">
+              {expert.avatar_url ? (
+                <img 
+                  src={expert.avatar_url} 
+                  alt={expert.name} 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-[40px] font-bold text-gray-400">{expert.name?.charAt(0)}</span>
+              )}
             </div>
             <Badge variant="success" shape="tag" className="mt-[16px]">
               Verified Expert
@@ -205,10 +168,9 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
             {/* Stats Row */}
             <div className={`grid gap-[24px] mt-[20px] pt-[20px] border-t border-gray-200 w-full ${SHOW_RATINGS_AND_REVIEWS ? "grid-cols-4" : "grid-cols-3"}`}>
               {[
-                ...(SHOW_RATINGS_AND_REVIEWS ? [{ val: `${expert.rating}★`, label: "Rating" }] : []),
-                { val: `${expert.sessions}+`, label: "Sessions" },
-                { val: expert.satisfaction, label: "Satisfaction" },
-                { val: expert.responseTime, label: "Response" }
+                ...(SHOW_RATINGS_AND_REVIEWS ? [{ val: `0★`, label: "Rating" }] : []),
+                { val: `0`, label: "Sessions" },
+                { val: "0%", label: "Satisfaction" },
               ].map((s, i) => (
                 <div key={i} className="flex flex-col">
                   <span className="text-[22px] font-extrabold text-[#0F2137]">{s.val}</span>
@@ -549,19 +511,21 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           </div>
 
           {/* Experience Card */}
-          <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
-            <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Work Timeline</h4>
-            <div className="flex flex-col gap-[20px] border-l-2 border-teal pl-[20px] ml-[8px]">
-              {expert.experience.map((exp: any, i: number) => (
-                <div key={i} className="relative">
-                  {/* Dot marker */}
-                  <div className="absolute -left-[27px] top-[4px] w-[12px] h-[12px] rounded-full bg-teal border-2 border-white" />
-                  <div className="text-[15px] font-bold text-[#0F2137]">{exp.role}</div>
-                  <div className="text-[13px] text-gray-500 font-semibold mt-[2px]">{exp.company} · {exp.dates}</div>
-                </div>
-              ))}
+          {expert.experience?.length > 0 && (
+            <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
+              <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Work Timeline</h4>
+              <div className="flex flex-col gap-[20px] border-l-2 border-teal pl-[20px] ml-[8px]">
+                {expert.experience.map((exp: any, i: number) => (
+                  <div key={i} className="relative">
+                    {/* Dot marker */}
+                    <div className="absolute -left-[27px] top-[4px] w-[12px] h-[12px] rounded-full bg-teal border-2 border-white" />
+                    <div className="text-[15px] font-bold text-[#0F2137]">{exp.role}</div>
+                    <div className="text-[13px] text-gray-500 font-semibold mt-[2px]">{exp.company} · {exp.dates}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
 

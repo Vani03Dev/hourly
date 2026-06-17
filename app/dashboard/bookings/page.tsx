@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Search, Video, Clock, ArrowRight, Download, Filter, Inbox, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Search, Video, Clock, ArrowRight, Download, Filter, Inbox, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import Link from 'next/link';
@@ -20,56 +20,7 @@ export default function BookingsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const demoBookings = [
-    {
-      id: "bk-1",
-      expertName: "Aditi Sharma",
-      title: "Ex-Stripe Staff Engineer",
-      date: "2026-02-10",
-      time: "11:00 AM - 12:00 PM",
-      duration: "60 mins",
-      amount: "₹1,260",
-      status: "upcoming",
-      category: "System Design",
-      invoice: "INV-2026-0312",
-    },
-    {
-      id: "bk-2",
-      expertName: "Rahul Sharma",
-      title: "SEBI Registered CA",
-      date: "2026-01-28",
-      time: "03:30 PM - 04:00 PM",
-      duration: "30 mins",
-      amount: "₹525",
-      status: "completed",
-      category: "GST & Tax",
-      invoice: "INV-2026-0284",
-    },
-    {
-      id: "bk-3",
-      expertName: "Priya Patel",
-      title: "Fractional CFO",
-      date: "2026-01-12",
-      time: "02:00 PM - 02:30 PM",
-      duration: "30 mins",
-      amount: "₹2,100",
-      status: "cancelled",
-      category: "Financial Model",
-      invoice: "INV-2026-0105",
-    },
-    {
-      id: "bk-4",
-      expertName: "Vikram Desai",
-      title: "Tech Lead · ex-Stripe",
-      date: "2026-02-18",
-      time: "10:00 AM - 10:30 AM",
-      duration: "30 mins",
-      amount: "₹630",
-      status: "upcoming",
-      category: "System Design",
-      invoice: "INV-2026-0330",
-    }
-  ];
+  // Demo bookings removed
 
   useEffect(() => {
     async function fetchBookings() {
@@ -102,7 +53,7 @@ export default function BookingsPage() {
         }
       }
 
-      setBookings([...demoBookings, ...dbBookings]);
+      setBookings(dbBookings);
       setLoading(false);
     }
     fetchBookings();
@@ -140,13 +91,7 @@ export default function BookingsPage() {
     return '';
   };
 
-  if (loading) {
-    return (
-      <div className="p-12 text-center text-gray-400 text-[15px] font-bold animate-skeleton-pulse font-sans">
-        Loading bookings catalog...
-      </div>
-    );
-  }
+  // Remove full-page loading to keep tabs instantly visible and interactive
 
   return (
     <div className="max-w-[1200px] mx-auto p-[20px] md:p-[40px] font-sans selection:bg-teal selection:text-white">
@@ -159,7 +104,7 @@ export default function BookingsPage() {
             <p className="text-[15px] text-gray-500 mt-[4px]">Monitor and manage all expert consultations across your workspace.</p>
           </div>
           <Button variant="primary" size="lg" asChild>
-            <Link href="/search"><Search size={16} className="mr-[8px]" /> Find Experts</Link>
+            <Link href="/experts"><Search size={16} className="mr-[8px]" /> Find Experts</Link>
           </Button>
         </div>
 
@@ -187,24 +132,33 @@ export default function BookingsPage() {
           </div>
 
           {/* Right Filters */}
-          <div className="flex items-center gap-[10px] pb-[8px] lg:pb-0">
-            <input 
-              type="date"
-              value={dateFilter}
-              onChange={(e) => { setDateFilter(e.target.value); setCurrentPage(1); }}
-              className="h-[44px] px-[12px] border border-gray-200 rounded-[8px] text-[14px] text-gray-600 font-semibold outline-none focus:border-teal bg-white"
-            />
+          <div className="flex items-center gap-[12px] pb-[8px] lg:pb-0 w-full lg:w-auto">
+            <div className="relative flex-1 lg:flex-none">
+              <Calendar className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-400 pointer-events-none" />
+              <input 
+                type="date"
+                value={dateFilter}
+                onChange={(e) => { setDateFilter(e.target.value); setCurrentPage(1); }}
+                className="w-full lg:w-[160px] h-[40px] pl-[36px] pr-[12px] border border-gray-200 rounded-[8px] text-[13px] text-gray-600 font-semibold outline-none focus:border-teal bg-white hover:border-gray-300 transition-colors shadow-sm cursor-pointer"
+              />
+            </div>
 
-            <select 
-              value={selectedCategory}
-              onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
-              className="h-[44px] px-[16px] border border-gray-200 rounded-[8px] text-[14px] text-gray-600 font-semibold outline-none bg-white focus:border-teal"
-            >
-              <option>All Categories</option>
-              <option>GST & Tax</option>
-              <option>System Design</option>
-              <option>Financial Model</option>
-            </select>
+            <div className="relative flex-1 lg:flex-none">
+              <Filter className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-400 pointer-events-none" />
+              <select 
+                value={selectedCategory}
+                onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
+                className="w-full lg:w-[180px] h-[40px] pl-[36px] pr-[16px] border border-gray-200 rounded-[8px] text-[13px] text-gray-600 font-semibold outline-none bg-white focus:border-teal hover:border-gray-300 transition-colors shadow-sm cursor-pointer appearance-none"
+              >
+                <option>All Categories</option>
+                <option>GST & Tax</option>
+                <option>System Design</option>
+                <option>Financial Model</option>
+              </select>
+              <div className="absolute right-[12px] top-1/2 -translate-y-1/2 pointer-events-none">
+                <ChevronDown size={14} className="text-gray-400" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -236,53 +190,73 @@ export default function BookingsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {paginatedBookings.map((bk) => (
-                    <tr key={bk.id} className={`hover:bg-gray-50/50 transition-colors ${getStatusBorder(bk.status)}`}>
-                      <td className="px-[24px] py-[16px] flex items-center gap-[12px]">
-                        <div className="w-[36px] h-[36px] rounded-full bg-[#0F2137] text-white flex items-center justify-center font-bold text-[14px]">
-                          {bk.expertName.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="text-[14px] font-bold text-[#0F2137]">{bk.expertName}</div>
-                          <div className="text-[12px] text-gray-400 font-semibold">{bk.title}</div>
-                        </div>
-                      </td>
-                      <td className="px-[24px] py-[16px] text-[14px] text-gray-600 font-bold">
-                        {new Date(bk.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </td>
-                      <td className="px-[24px] py-[16px] text-[14px] text-gray-600 font-semibold">{bk.duration}</td>
-                      <td className="px-[24px] py-[16px] text-[14px] text-[#0F2137] font-bold font-mono">{bk.amount}</td>
-                      <td className="px-[24px] py-[16px] text-center">
-                        {bk.status === 'upcoming' && (
-                          <Badge variant="warning" shape="pill">upcoming</Badge>
-                        )}
-                        {bk.status === 'completed' && (
-                          <Badge variant="success" shape="pill">completed</Badge>
-                        )}
-                        {bk.status === 'cancelled' && (
-                          <Badge variant="error" shape="pill">cancelled</Badge>
-                        )}
-                      </td>
-                      <td className="px-[24px] py-[16px] text-center">
-                        <a href="#" className="text-[13px] font-bold text-teal hover:underline inline-flex items-center gap-[4px] justify-center">
-                          <Download size={12} /> PDF
-                        </a>
-                      </td>
-                      <td className="px-[24px] py-[16px] text-right">
-                        {bk.status === 'upcoming' ? (
-                          <Button variant="primary" size="xs" asChild>
-                            <a href={`/room/${bk.id}`} target="_blank" rel="noopener noreferrer">
-                              <Video size={14} className="mr-1" /> Join
-                            </a>
-                          </Button>
-                        ) : bk.status === 'completed' ? (
-                          <Button variant="outline" size="xs">Rate</Button>
-                        ) : (
-                          <span className="text-gray-300">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {loading ? (
+                    Array.from({ length: 3 }).map((_, i) => (
+                      <tr key={i} className="animate-pulse">
+                        <td className="px-[24px] py-[16px] flex items-center gap-[12px]">
+                          <div className="w-[36px] h-[36px] rounded-full bg-gray-200" />
+                          <div className="flex flex-col gap-[6px]">
+                            <div className="h-[14px] w-[120px] bg-gray-200 rounded" />
+                            <div className="h-[10px] w-[80px] bg-gray-100 rounded" />
+                          </div>
+                        </td>
+                        <td className="px-[24px] py-[16px]"><div className="h-[14px] w-[80px] bg-gray-200 rounded" /></td>
+                        <td className="px-[24px] py-[16px]"><div className="h-[14px] w-[50px] bg-gray-200 rounded" /></td>
+                        <td className="px-[24px] py-[16px]"><div className="h-[14px] w-[60px] bg-gray-200 rounded" /></td>
+                        <td className="px-[24px] py-[16px]"><div className="h-[20px] w-[70px] bg-gray-200 rounded-full mx-auto" /></td>
+                        <td className="px-[24px] py-[16px]"><div className="h-[14px] w-[40px] bg-gray-200 rounded mx-auto" /></td>
+                        <td className="px-[24px] py-[16px]"><div className="h-[32px] w-[80px] bg-gray-200 rounded ml-auto" /></td>
+                      </tr>
+                    ))
+                  ) : (
+                    paginatedBookings.map((bk) => (
+                      <tr key={bk.id} className={`hover:bg-gray-50/50 transition-colors cursor-pointer group ${getStatusBorder(bk.status)}`}>
+                        <td className="px-[24px] py-[16px] flex items-center gap-[12px]">
+                          <div className="w-[36px] h-[36px] rounded-full bg-[#0F2137] text-white flex items-center justify-center font-bold text-[14px] group-hover:scale-105 transition-transform">
+                            {bk.expertName.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="text-[14px] font-bold text-[#0F2137] group-hover:text-teal transition-colors">{bk.expertName}</div>
+                            <div className="text-[12px] text-gray-400 font-semibold">{bk.title}</div>
+                          </div>
+                        </td>
+                        <td className="px-[24px] py-[16px] text-[14px] text-gray-600 font-bold">
+                          {new Date(bk.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </td>
+                        <td className="px-[24px] py-[16px] text-[14px] text-gray-600 font-semibold">{bk.duration}</td>
+                        <td className="px-[24px] py-[16px] text-[14px] text-[#0F2137] font-bold font-mono">{bk.amount}</td>
+                        <td className="px-[24px] py-[16px] text-center">
+                          {bk.status === 'upcoming' && (
+                            <Badge variant="warning" shape="pill">upcoming</Badge>
+                          )}
+                          {bk.status === 'completed' && (
+                            <Badge variant="success" shape="pill">completed</Badge>
+                          )}
+                          {bk.status === 'cancelled' && (
+                            <Badge variant="error" shape="pill">cancelled</Badge>
+                          )}
+                        </td>
+                        <td className="px-[24px] py-[16px] text-center">
+                          <a href="#" className="text-[13px] font-bold text-gray-400 hover:text-teal transition-colors inline-flex items-center gap-[4px] justify-center">
+                            <Download size={12} /> PDF
+                          </a>
+                        </td>
+                        <td className="px-[24px] py-[16px] text-right">
+                          {bk.status === 'upcoming' ? (
+                            <Button variant="primary" size="xs" className="opacity-90 group-hover:opacity-100 transition-opacity" asChild>
+                              <a href={`/room/${bk.id}`} target="_blank" rel="noopener noreferrer">
+                                <Video size={14} className="mr-1" /> Join
+                              </a>
+                            </Button>
+                          ) : bk.status === 'completed' ? (
+                            <Button variant="outline" size="xs" className="opacity-0 group-hover:opacity-100 transition-opacity">Rate</Button>
+                          ) : (
+                            <span className="text-gray-300">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

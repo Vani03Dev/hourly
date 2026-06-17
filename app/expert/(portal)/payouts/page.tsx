@@ -105,24 +105,24 @@ export default function PayoutsPage() {
           ) : (
           <div>
             <div className="mb-8">
-              <h1 className="text-[32px] font-bold text-navy-DEFAULT tracking-tight mb-2">Payouts</h1>
-              <p className="text-[15px] text-text-sub">Manage your earnings, platform fees, and withdrawal details.</p>
+              <h1 className="text-[32px] font-bold text-primary tracking-tight mb-2">Payouts</h1>
+              <p className="text-[15px] text-muted">Manage your earnings, platform fees, and withdrawal details.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white border border-border rounded-[16px] shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-2 text-text-sub">
+              <div className="bg-white border border-border rounded-[16px] shadow-premium p-6">
+                <div className="flex items-center gap-3 mb-2 text-muted">
                   <TrendingUp size={18} />
                   <span className="text-[14px] font-medium">Total Revenue</span>
                 </div>
-                <div className="text-[28px] font-bold text-navy-DEFAULT flex items-center">
-                  <IndianRupee size={22} className="mr-1 text-text-muted" />
+                <div className="text-[28px] font-bold text-primary flex items-center">
+                  <IndianRupee size={22} className="mr-1 text-muted" />
                   {totalRevenue.toFixed(2)}
                 </div>
               </div>
 
-              <div className="bg-white border border-border rounded-[16px] shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-2 text-text-sub">
+              <div className="bg-white border border-border rounded-[16px] shadow-premium p-6">
+                <div className="flex items-center gap-3 mb-2 text-muted">
                   <ArrowDownRight size={18} />
                   <span className="text-[14px] font-medium">Platform Fees (10%)</span>
                 </div>
@@ -132,13 +132,13 @@ export default function PayoutsPage() {
                 </div>
               </div>
 
-              <div className="bg-teal-DEFAULT/10 border border-teal-DEFAULT/20 rounded-[16px] p-6 relative overflow-hidden">
+              <div className="bg-accent/10 border border-accent/20 rounded-[16px] p-6 relative overflow-hidden">
                 <div className="relative z-10">
-                  <div className="flex items-center gap-3 mb-2 text-teal-dark">
+                  <div className="flex items-center gap-3 mb-2 text-accent">
                     <Wallet size={18} />
                     <span className="text-[14px] font-medium">Your Earnings</span>
                   </div>
-                  <div className="text-[32px] font-bold text-teal-DEFAULT flex items-center">
+                  <div className="text-[32px] font-bold text-accent flex items-center">
                     <IndianRupee size={24} className="mr-1" />
                     {expertEarnings.toFixed(2)}
                   </div>
@@ -148,15 +148,15 @@ export default function PayoutsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <div className="bg-white border border-border rounded-[16px] shadow-sm overflow-hidden">
+                <div className="bg-white border border-border rounded-[16px] shadow-premium overflow-hidden">
                   <div className="p-6 border-b border-border">
-                    <h2 className="text-[16px] font-bold text-navy-DEFAULT">Earning History</h2>
+                    <h2 className="text-[16px] font-bold text-primary">Earning History</h2>
                   </div>
                   {bookings.length > 0 ? (
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
-                          <tr className="bg-surface-1 text-text-sub text-[13px] uppercase tracking-wider">
+                          <tr className="bg-bg text-muted text-[13px] uppercase tracking-wider">
                             <th className="p-4 font-medium">Date</th>
                             <th className="p-4 font-medium">Client</th>
                             <th className="p-4 font-medium">Amount Paid</th>
@@ -169,14 +169,14 @@ export default function PayoutsPage() {
                             const fee = (booking.amount_paid || 0) * 0.1;
                             const earned = (booking.amount_paid || 0) - fee;
                             return (
-                              <tr key={booking.id} className="text-[14px] text-navy-DEFAULT hover:bg-surface-1 transition-colors">
+                              <tr key={booking.id} className="text-[14px] text-primary hover:bg-bg transition-colors">
                                 <td className="p-4 whitespace-nowrap">
-                                  {new Date(booking.booking_date).toLocaleDateString()} <span className="text-text-muted ml-2">{booking.start_time}</span>
+                                  {new Date(booking.booking_date).toLocaleDateString()} <span className="text-muted ml-2">{booking.start_time}</span>
                                 </td>
                                 <td className="p-4 font-medium">{booking.mentee_name}</td>
                                 <td className="p-4">₹{booking.amount_paid}</td>
                                 <td className="p-4 text-red-500">-₹{fee.toFixed(2)}</td>
-                                <td className="p-4 font-bold text-teal-DEFAULT">₹{earned.toFixed(2)}</td>
+                                <td className="p-4 font-bold text-accent">₹{earned.toFixed(2)}</td>
                               </tr>
                             );
                           })}
@@ -184,7 +184,7 @@ export default function PayoutsPage() {
                       </table>
                     </div>
                   ) : (
-                    <div className="p-12 text-center text-text-muted">
+                    <div className="p-12 text-center text-muted">
                       No paid bookings yet. Complete a session to see your earnings here.
                     </div>
                   )}
@@ -192,54 +192,54 @@ export default function PayoutsPage() {
               </div>
 
               <div>
-                <div className="bg-white border border-border rounded-[16px] shadow-sm p-6 sticky top-6">
-                  <h2 className="text-[16px] font-bold text-navy-DEFAULT mb-4">Payout Settings</h2>
-                  <p className="text-[13px] text-text-sub mb-6">
+                <div className="bg-white border border-border rounded-[16px] shadow-premium p-6 sticky top-6">
+                  <h2 className="text-[16px] font-bold text-primary mb-4">Payout Settings</h2>
+                  <p className="text-[13px] text-muted mb-6">
                     Enter your Bank or UPI details where you want your earnings to be transferred manually by the platform administrator.
                   </p>
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[13px] font-bold text-navy-DEFAULT mb-1">UPI ID</label>
+                      <label className="block text-[13px] font-bold text-primary mb-1">UPI ID</label>
                       <input 
                         type="text" 
                         value={paymentDetails.upi_id}
                         onChange={e => setPaymentDetails(p => ({...p, upi_id: e.target.value}))}
                         placeholder="e.g. yourname@okicici"
-                        className="w-full h-[40px] px-3 bg-surface-1 border border-border rounded-[8px] text-[14px] focus:border-teal-DEFAULT focus:bg-white outline-none transition-colors"
+                        className="w-full h-[40px] px-3 bg-bg border border-border rounded-[8px] text-[14px] focus:border-accent focus:bg-white outline-none transition-colors"
                       />
                     </div>
                     
                     <div className="relative py-2">
                       <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border"></div></div>
-                      <div className="relative flex justify-center"><span className="bg-white px-2 text-[12px] text-text-muted uppercase">OR BANK ACCOUNT</span></div>
+                      <div className="relative flex justify-center"><span className="bg-white px-2 text-[12px] text-muted uppercase">OR BANK ACCOUNT</span></div>
                     </div>
 
                     <div>
-                      <label className="block text-[13px] font-bold text-navy-DEFAULT mb-1">Account Holder Name</label>
+                      <label className="block text-[13px] font-bold text-primary mb-1">Account Holder Name</label>
                       <input 
                         type="text" 
                         value={paymentDetails.account_name}
                         onChange={e => setPaymentDetails(p => ({...p, account_name: e.target.value}))}
-                        className="w-full h-[40px] px-3 bg-surface-1 border border-border rounded-[8px] text-[14px] focus:border-teal-DEFAULT focus:bg-white outline-none transition-colors"
+                        className="w-full h-[40px] px-3 bg-bg border border-border rounded-[8px] text-[14px] focus:border-accent focus:bg-white outline-none transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-[13px] font-bold text-navy-DEFAULT mb-1">Account Number</label>
+                      <label className="block text-[13px] font-bold text-primary mb-1">Account Number</label>
                       <input 
                         type="text" 
                         value={paymentDetails.bank_account}
                         onChange={e => setPaymentDetails(p => ({...p, bank_account: e.target.value}))}
-                        className="w-full h-[40px] px-3 bg-surface-1 border border-border rounded-[8px] text-[14px] focus:border-teal-DEFAULT focus:bg-white outline-none transition-colors"
+                        className="w-full h-[40px] px-3 bg-bg border border-border rounded-[8px] text-[14px] focus:border-accent focus:bg-white outline-none transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-[13px] font-bold text-navy-DEFAULT mb-1">IFSC Code</label>
+                      <label className="block text-[13px] font-bold text-primary mb-1">IFSC Code</label>
                       <input 
                         type="text" 
                         value={paymentDetails.ifsc}
                         onChange={e => setPaymentDetails(p => ({...p, ifsc: e.target.value}))}
-                        className="w-full h-[40px] px-3 bg-surface-1 border border-border rounded-[8px] text-[14px] uppercase focus:border-teal-DEFAULT focus:bg-white outline-none transition-colors"
+                        className="w-full h-[40px] px-3 bg-bg border border-border rounded-[8px] text-[14px] uppercase focus:border-accent focus:bg-white outline-none transition-colors"
                       />
                     </div>
 

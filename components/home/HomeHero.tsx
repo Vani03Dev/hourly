@@ -35,7 +35,7 @@ export function HomeHero({ isLoggedIn, role }: HomeHeroProps) {
         transition={{ duration: 0.6, delay: 0.5 }}
         className="absolute top-12 right-[10%] hidden lg:flex items-center gap-2 px-3 py-2 rounded-full bg-teal-50 border border-accent/20 text-[12px] font-bold text-accent"
       >
-        <ShieldCheck size={14} /> 2,400+ verified experts
+        <ShieldCheck size={14} /> Founding Members Beta
       </motion.div>
 
       <div className="max-w-[800px] text-center flex flex-col items-center relative z-10">
@@ -43,9 +43,9 @@ export function HomeHero({ isLoggedIn, role }: HomeHeroProps) {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-hero text-primary"
+          className="text-[42px] md:text-[56px] lg:text-[72px] leading-[1.05] text-primary font-extrabold tracking-tighter"
         >
-          Book verified experts.
+          Stop guessing.
           <br />
           <motion.span
             initial={{ opacity: 0 }}
@@ -53,7 +53,7 @@ export function HomeHero({ isLoggedIn, role }: HomeHeroProps) {
             transition={{ delay: 0.3, duration: 0.5 }}
             className="text-accent"
           >
-            Solve business problems faster.
+            Ask the experts who built it.
           </motion.span>
         </motion.h1>
 
@@ -61,9 +61,9 @@ export function HomeHero({ isLoggedIn, role }: HomeHeroProps) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="text-body-l text-muted mt-5 max-w-[580px]"
+          className="text-[18px] md:text-[20px] text-muted mt-6 max-w-[600px] leading-relaxed font-medium"
         >
-          On-demand sessions with CAs, lawyers, CTOs and strategy experts. Pay per session. No retainer.
+          Skip the expensive consultants. Connect directly with world-class Founders, CTOs, and Legal experts for on-demand strategy sessions.
         </motion.p>
 
         <motion.div
@@ -73,14 +73,17 @@ export function HomeHero({ isLoggedIn, role }: HomeHeroProps) {
           className="flex flex-col sm:flex-row gap-4 mt-8 w-full sm:w-auto"
         >
           {!isLoggedIn ? (
-            <>
-              <Button variant="primary" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
-                <Link href="/experts">Browse Experts →</Link>
-              </Button>
-              <Button variant="outline" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
-                <Link href="/auth/signup?role=expert">Become an Expert</Link>
-              </Button>
-            </>
+            <div className="flex flex-col gap-3 w-full sm:w-auto items-center">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Button variant="primary" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
+                  <Link href="/experts">Browse Founding Experts →</Link>
+                </Button>
+                <Button variant="outline" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
+                  <Link href="/auth/signup?role=expert">Apply as Expert</Link>
+                </Button>
+              </div>
+              <p className="text-[12px] text-muted font-semibold mt-1">Currently in private beta. Accepting new startups.</p>
+            </div>
           ) : role === "expert" ? (
             <>
               <Button variant="primary" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
@@ -93,7 +96,7 @@ export function HomeHero({ isLoggedIn, role }: HomeHeroProps) {
           ) : (
             <>
               <Button variant="primary" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
-                <Link href="/experts">Browse Experts →</Link>
+                <Link href="/experts">Browse Founding Experts →</Link>
               </Button>
               <Button variant="outline" className="h-12 px-8 font-semibold w-full sm:w-auto" asChild>
                 <Link href="/dashboard/business">Go to Dashboard</Link>

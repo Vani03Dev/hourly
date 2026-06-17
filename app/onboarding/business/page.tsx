@@ -7,6 +7,7 @@ import { ArrowRight, ArrowLeft, Check, Users, ShieldCheck, Plus, X } from "lucid
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import toast from "react-hot-toast";
+import { submitClientOnboarding } from "../../../app/actions/client";
 
 const CATEGORIES = [
   "CA & Tax",
@@ -70,19 +71,35 @@ export default function BusinessOnboarding() {
 
   const handleFinishOnboarding = async () => {
     setIsSubmitting(true);
-    // Simulate updating Supabase profile
-    setTimeout(() => {
-      setIsSubmitting(false);
+    
+    try {
+      const result = await submitClientOnboarding({
+        companyName,
+        industry,
+        teamSize,
+        neededExpertise,
+        emails
+      });
+
+      if (result.error) {
+        toast.error(result.error);
+        setIsSubmitting(false);
+        return;
+      }
+
       toast.success("Workspace setup completed!");
       router.push("/dashboard/business");
-    }, 1200);
+    } catch (error: any) {
+      toast.error("Failed to set up workspace");
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="bg-bg min-h-[calc(100vh-64px)] flex items-center justify-center px-[20px] py-[40px] font-sans">
       
       {/* WIZARD CONTAINER */}
-      <div className="bg-white border border-border rounded-xl p-[32px] w-full max-w-[500px] shadow-sm flex flex-col gap-[24px]">
+      <div className="bg-white border border-border rounded-xl p-[32px] w-full max-w-[500px] shadow-premium flex flex-col gap-[24px]">
         
         {/* PROGRESS DOTS */}
         <div className="flex gap-[8px] justify-center">
@@ -111,7 +128,6 @@ export default function BusinessOnboarding() {
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               error={errors.companyName}
-              className="h-[40px]"
             />
 
             <Input 
@@ -121,7 +137,6 @@ export default function BusinessOnboarding() {
               value={industry}
               onChange={(e) => setIndustry(e.target.value)}
               error={errors.industry}
-              className="h-[40px]"
             />
 
             <div className="flex flex-col gap-[6px]">
@@ -129,7 +144,7 @@ export default function BusinessOnboarding() {
               <select
                 value={teamSize}
                 onChange={(e) => setTeamSize(e.target.value)}
-                className="h-[40px] px-[12px] border border-border rounded-lg text-[13.5px] text-primary font-semibold bg-white outline-none focus:border-accent"
+                className="h-[48px] px-[12px] border border-border rounded-lg text-[13.5px] text-primary font-semibold bg-white outline-none focus:border-accent"
               >
                 <option value="1-10">1 - 10 members</option>
                 <option value="11-50">11 - 50 members</option>
@@ -140,7 +155,7 @@ export default function BusinessOnboarding() {
 
             <Button 
               variant="primary" 
-              className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[44px] font-bold w-full mt-[8px] flex items-center justify-center gap-[8px]"
+              className="bg-primary hover:bg-primary/90 text-white rounded-lg h-[48px] font-bold w-full mt-[8px] flex items-center justify-center gap-[8px]"
               onClick={handleNextStep1}
             >
               Continue <ArrowRight className="w-[16px] h-[16px]" />
@@ -180,14 +195,14 @@ export default function BusinessOnboarding() {
             <div className="flex gap-[12px] mt-[8px]">
               <Button 
                 variant="outline" 
-                className="border-border text-primary rounded-lg h-[44px] font-bold flex-1"
+                className="border-border text-primary rounded-lg h-[48px] font-bold flex-1"
                 onClick={() => setStep(1)}
               >
                 Back
               </Button>
               <Button 
                 variant="primary" 
-                className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[44px] font-bold flex-1"
+                className="bg-primary hover:bg-primary/90 text-white rounded-lg h-[48px] font-bold flex-1"
                 onClick={() => setStep(3)}
                 disabled={neededExpertise.length === 0}
               >
@@ -211,11 +226,11 @@ export default function BusinessOnboarding() {
                 placeholder="colleague@company.com"
                 value={currentEmail}
                 onChange={(e) => setCurrentEmail(e.target.value)}
-                className="flex-grow px-[12px] h-[40px] border border-border text-[13px] rounded-lg focus:outline-none focus:border-accent"
+                className="flex-grow px-[12px] h-[48px] border border-border text-[13px] rounded-lg focus:outline-none focus:border-accent"
               />
               <Button 
                 variant="outline" 
-                className="border-border text-primary h-[40px] px-[16px] rounded-lg font-bold shrink-0 flex items-center gap-[4px]"
+                className="border-border text-primary h-[48px] px-[16px] rounded-lg font-bold shrink-0 flex items-center gap-[4px]"
                 onClick={handleAddEmail}
               >
                 <Plus className="w-[16px] h-[16px]" /> Add
@@ -239,7 +254,7 @@ export default function BusinessOnboarding() {
             <div className="flex flex-col gap-[12px] mt-[8px]">
               <Button 
                 variant="primary" 
-                className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[44px] font-bold w-full flex items-center justify-center gap-[8px]"
+                className="bg-primary hover:bg-primary/90 text-white rounded-lg h-[48px] font-bold w-full flex items-center justify-center gap-[8px]"
                 onClick={handleFinishOnboarding}
                 disabled={isSubmitting}
               >

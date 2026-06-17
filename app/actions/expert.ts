@@ -113,6 +113,7 @@ export async function updateExpertProfile(data: {
   timezone?: string;
   emailNotifications?: boolean;
   bookingAlerts?: boolean;
+  avatarUrl?: string;
 }) {
   try {
     const supabase = await createClient();
@@ -148,6 +149,7 @@ export async function updateExpertProfile(data: {
         tags: data.tags,
         timezone: data.timezone || 'asia_kolkata',
         updated_at: new Date().toISOString(),
+        ...(data.avatarUrl ? { avatar_url: data.avatarUrl.trim() } : {}),
       })
       .eq('id', user.id);
 
@@ -258,6 +260,24 @@ export async function deleteService(serviceId: string) {
       .delete()
       .eq('id', serviceId)
       .eq('expert_id', user.id);
+
+    if (error) throw error;
+    return { success: true };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function updateAvatarUrl(avatarUrl: string) {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Authentication required' };
+
+    const { error } = await supabase
+      .from('expert_profiles')
+      .update({ avatar_url: avatarUrl })
+      .eq('id', user.id);
 
     if (error) throw error;
     return { success: true };

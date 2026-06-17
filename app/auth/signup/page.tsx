@@ -157,9 +157,6 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-bg px-[20px] py-[40px] font-sans relative overflow-hidden">
-      {/* Subtle dot grid pattern background */}
-      <div className="absolute inset-0 opacity-[0.4] pointer-events-none" style={{ backgroundImage: "radial-gradient(#E5E7EB 1px, transparent 1px)", backgroundSize: "16px 16px" }} />
-      
       {/* CENTERED CARD (max-width 400px) */}
       <div className="bg-white border border-border rounded-xl p-[32px] w-full max-w-[400px] shadow-sm flex flex-col gap-[24px] relative z-10 animate-page-enter">
         
@@ -208,6 +205,22 @@ export default function SignupPage() {
             }}
             transition={{ type: "spring", stiffness: 350, damping: 30 }}
           />
+        </div>
+
+        {/* Google SSO placed upfront */}
+        <button 
+          onClick={handleGoogleSignup}
+          className="w-full h-[48px] border border-border rounded-lg flex items-center justify-center gap-[8px] text-[14px] font-semibold text-primary bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
+        >
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-[18px] h-[18px]" />
+          Continue with Google
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-[12px]">
+          <div className="flex-grow h-[1px] bg-border" />
+          <span className="text-[11px] text-muted font-bold uppercase tracking-wider shrink-0">or</span>
+          <div className="flex-grow h-[1px] bg-border" />
         </div>
 
         {/* SIGNUP FORM */}
@@ -262,7 +275,7 @@ export default function SignupPage() {
                 <select
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
-                  className="w-full h-[44px] px-[12px] border border-border rounded-lg text-[14px] text-primary font-medium bg-white outline-none transition-all duration-150 focus:border-accent focus:ring-2 focus:ring-accent/15"
+                  className="w-full h-[48px] px-[12px] border border-border rounded-lg text-[14px] text-primary font-medium bg-white outline-none transition-all duration-150 focus:border-accent focus:ring-2 focus:ring-accent/15"
                 >
                   {DOMAINS.map(d => (
                     <option key={d} value={d}>{d}</option>
@@ -321,7 +334,7 @@ export default function SignupPage() {
           <Button 
             type="submit" 
             variant="primary"
-            className="bg-accent hover:bg-accent-hover text-white rounded-lg h-[44px] font-semibold w-full mt-[6px] flex items-center justify-center gap-2"
+            className="bg-primary hover:bg-primary/90 text-white rounded-lg h-[48px] font-semibold w-full mt-[6px] flex items-center justify-center gap-2"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
@@ -329,29 +342,13 @@ export default function SignupPage() {
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 Creating Account...
               </>
-            ) : "Create Account"}
+            ) : "Sign Up with Email"}
           </Button>
 
         </form>
 
-        {/* Divider */}
-        <div className="flex items-center gap-[12px]">
-          <div className="flex-grow h-[1px] bg-border" />
-          <span className="text-[11px] text-muted font-bold uppercase tracking-wider shrink-0">or</span>
-          <div className="flex-grow h-[1px] bg-border" />
-        </div>
-
-        {/* Google SSO */}
-        <button 
-          onClick={handleGoogleSignup}
-          className="w-full h-[44px] border border-border rounded-lg flex items-center justify-center gap-[8px] text-[13.5px] font-semibold text-primary bg-white hover:bg-bg hover:border-gray-300 transition-colors"
-        >
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-[16px] h-[16px]" />
-          Continue with Google
-        </button>
-
         {/* Sign in link */}
-        <p className="text-center text-[14px] text-muted font-medium">
+        <p className="text-center text-[14px] text-muted font-medium mt-2">
           Already have an account?{" "}
           <Link href="/auth/login" className="text-accent hover:text-accent-hover font-semibold transition-colors">
             Login

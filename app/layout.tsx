@@ -86,7 +86,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${plusJakarta.variable} ${jetbrains.variable}`}>
+    <html lang="en" className={`${plusJakarta.variable} ${jetbrains.variable}`} data-scroll-behavior="smooth">
       <body className={`flex flex-col min-h-screen ${plusJakarta.className} bg-white text-text-primary antialiased`}>
         <script
           type="application/ld+json"

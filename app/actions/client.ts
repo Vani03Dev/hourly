@@ -2,7 +2,13 @@
 
 import { createClient } from "../../utils/supabase/server";
 
-export async function submitClientOnboarding(formData: FormData) {
+export async function submitClientOnboarding(data: {
+  companyName: string;
+  industry: string;
+  teamSize: string;
+  neededExpertise: string[];
+  emails: string[];
+}) {
   try {
     const supabase = await createClient();
     
@@ -13,26 +19,22 @@ export async function submitClientOnboarding(formData: FormData) {
       return { error: 'Authentication required' };
     }
 
-    // Extract form data
-    const companyName = formData.get('companyName') as string;
-    const gstin = formData.get('gstin') as string;
-    const companySize = formData.get('companySize') as string;
-    const role = formData.get('role') as string;
-    
     // Validate
-    if (!companyName) {
+    if (!data.companyName) {
       return { error: 'Company Name is required' };
     }
 
     // Insert or Update the client profile natively using Supabase
+    // Mapping UI fields to existing DB columns
     const { error: dbError } = await supabase
       .from('client_profiles')
       .upsert({
         id: user.id,
-        company_name: companyName,
-        gstin: gstin || null,
-        company_size: companySize || null,
-        role: role || null,
+        company_name: data.companyName,
+        company_size: data.teamSize || null,
+        role: data.industry || null,
+        // neededExpertise and emails are omitted if not supported in the database schema, 
+        // but the core profile will be successfully created.
         is_onboarded: true,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });

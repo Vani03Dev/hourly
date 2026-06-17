@@ -180,7 +180,7 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
         </div>
 
         {/* RIGHT BOOKING CARD (5 cols, sticky on scroll) */}
-        <div id="booking-card" className="lg:col-span-5 lg:sticky lg:top-[88px] bg-white border border-border rounded-xl p-[24px] shadow-sm flex flex-col gap-[20px]">
+        <div id="booking-card" className="lg:col-span-5 lg:sticky lg:top-[88px] bg-white border border-border rounded-xl p-[24px] shadow-premium flex flex-col gap-[20px]">
           {role === 'expert' ? (
             <div className="flex flex-col gap-4 text-center py-6">
               <div className="w-12 h-12 rounded-full bg-blue-50 text-accent flex items-center justify-center mx-auto mb-2">
@@ -260,9 +260,9 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                           setSelectedDate(day);
                           setSelectedTime(null);
                         }}
-                        className={`h-[40px] text-[13px] font-bold rounded-lg border font-mono transition-all ${
+                        className={`h-[48px] text-[13px] font-bold rounded-lg border font-mono transition-all ${
                           isSelected 
-                            ? "border-accent bg-accent text-white" 
+                            ? "border-accent bg-accent text-white shadow-sm" 
                             : "border-border text-primary hover:bg-bg bg-white"
                         }`}
                       >
@@ -284,9 +284,9 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                         <button
                           key={slot}
                           onClick={() => setSelectedTime(slot)}
-                          className={`h-[36px] text-[12px] font-semibold rounded-lg border transition-all ${
+                          className={`h-[48px] text-[13px] font-bold rounded-lg border transition-all ${
                             isSelected 
-                              ? "border-accent bg-accent text-white" 
+                              ? "border-accent bg-accent text-white shadow-sm" 
                               : "border-border text-primary hover:bg-bg"
                           }`}
                         >

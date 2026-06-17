@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
-  Save, ArrowLeft, ExternalLink, ShieldCheck, Sparkles, X, Eye, Palette
+  Save, ArrowLeft, ExternalLink, ShieldCheck, Sparkles, X, Eye, Palette, Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { createClient } from '@/utils/supabase/client';
-import { updateCreatorPage } from '@/app/actions/expert';
+import { updateCreatorPage, updateAvatarUrl } from '@/app/actions/expert';
 import toast from 'react-hot-toast';
 
 const AVATAR_PRESETS = [
@@ -38,6 +38,7 @@ export default function CustomizeCreatorPage() {
   const [tagInput, setTagInput] = useState('');
   const [pageTheme, setPageTheme] = useState<'teal' | 'blue' | 'navy'>('teal');
   const [hourlyRate, setHourlyRate] = useState(1000);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -101,6 +102,58 @@ export default function CustomizeCreatorPage() {
     setSaving(false);
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be less than 2MB');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    const toastId = toast.loading('Uploading photo...');
+
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('Not authenticated');
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        if (uploadError.message.includes('bucket')) {
+           throw new Error("Please create a public storage bucket named 'avatars' in Supabase.");
+        }
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      
+      const newUrl = data.publicUrl;
+      setAvatarUrl(newUrl);
+      
+      // Auto-save the avatar directly so the user doesn't have to hit "Publish changes" just for the picture
+      await updateAvatarUrl(newUrl);
+      
+      toast.success('Photo uploaded successfully!', { id: toastId });
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast.error(error.message || 'Error uploading photo', { id: toastId });
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const inputClass =
     'w-full h-[44px] px-4 rounded-[10px] border border-gray-200 bg-white text-[14px] text-primary placeholder:text-gray-400 focus:outline-none focus:border-teal focus:ring-2 focus:ring-teal/15 transition-all shadow-sm';
 
@@ -152,7 +205,7 @@ export default function CustomizeCreatorPage() {
               <div className={`w-20 h-20 rounded-full overflow-hidden border-2 border-white ring-2 ${activeTheme.ring} shrink-0`}>
                 <img src={avatarUrl} alt="Avatar preview" className="w-full h-full object-cover" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 flex flex-col gap-2">
                 <input
                   type="url"
                   value={avatarUrl}
@@ -160,7 +213,22 @@ export default function CustomizeCreatorPage() {
                   placeholder="https://..."
                   className={inputClass}
                 />
-                <p className="text-[11px] text-muted mt-1.5">Paste an image URL or pick a preset below</p>
+                
+                <div className="relative w-full">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    disabled={uploadingAvatar}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                  <Button type="button" variant="outline" className="w-full gap-2" disabled={uploadingAvatar}>
+                    <Upload size={14} />
+                    {uploadingAvatar ? 'Uploading...' : 'Upload from device'}
+                  </Button>
+                </div>
+                
+                <p className="text-[11px] text-muted mt-1.5">Paste an image URL, upload a file, or pick a preset below</p>
               </div>
             </div>
             <div className="flex gap-2 flex-wrap">

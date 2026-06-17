@@ -89,8 +89,8 @@ export default function ServicesPage() {
           <div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
               <div>
-                <h1 className="text-[32px] font-bold text-navy-DEFAULT tracking-tight mb-2">Services</h1>
-                <p className="text-[15px] text-text-sub">Create and manage your consultation offerings.</p>
+                <h1 className="text-[32px] font-bold text-primary tracking-tight mb-2">Services</h1>
+                <p className="text-[15px] text-muted">Create and manage your consultation offerings.</p>
               </div>
               <Button onClick={() => setShowModal(true)} className="shrink-0">
                 <Plus size={18} className="mr-2" /> New Service
@@ -98,14 +98,14 @@ export default function ServicesPage() {
             </div>
 
             {loading ? (
-              <div className="text-center py-20 text-text-muted">Loading...</div>
+              <div className="text-center py-20 text-muted">Loading...</div>
             ) : services.length === 0 ? (
               <div className="bg-white border border-border rounded-[16px] shadow-sm p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
-                <div className="w-16 h-16 bg-surface-2 rounded-full flex items-center justify-center text-text-muted mb-4">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-muted mb-4">
                   <FileText size={28} />
                 </div>
-                <h3 className="text-[20px] font-bold text-navy-DEFAULT mb-2">Create your first service</h3>
-                <p className="text-[15px] text-text-sub max-w-md mx-auto mb-6">Offer 1-on-1 consultations, code reviews, or mock interviews to your audience.</p>
+                <h3 className="text-[20px] font-bold text-primary mb-2">Create your first service</h3>
+                <p className="text-[15px] text-muted max-w-md mx-auto mb-6">Offer 1-on-1 consultations, code reviews, or mock interviews to your audience.</p>
                 <Button onClick={() => setShowModal(true)} variant="primary">
                   <Plus size={18} className="mr-2" /> Create Service
                 </Button>
@@ -113,15 +113,15 @@ export default function ServicesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.map((service) => (
-                  <div key={service.id} className="bg-white border border-border rounded-[16px] p-6 shadow-sm hover:shadow-md transition-shadow relative group">
-                    <button onClick={() => handleDelete(service.id)} className="absolute top-4 right-4 text-text-muted hover:text-red-DEFAULT opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div key={service.id} className="bg-white border border-border rounded-[16px] p-6 shadow-premium hover:-translate-y-1 hover:shadow-xl transition-shadow relative group">
+                    <button onClick={() => handleDelete(service.id)} className="absolute top-4 right-4 text-muted hover:text-red-DEFAULT opacity-0 group-hover:opacity-100 transition-opacity">
                       <Trash2 size={18} />
                     </button>
-                    <div className="text-[18px] font-bold text-navy-DEFAULT mb-2 pr-6">{service.title}</div>
-                    <div className="text-[14px] text-text-sub line-clamp-2 mb-4 h-[40px]">{service.description}</div>
+                    <div className="text-[18px] font-bold text-primary mb-2 pr-6">{service.title}</div>
+                    <div className="text-[14px] text-muted line-clamp-2 mb-4 h-[40px]">{service.description}</div>
                     <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="text-[14px] font-medium text-text-muted">{service.duration_minutes} mins</div>
-                      <div className="text-[16px] font-bold text-teal-DEFAULT">₹{service.price}</div>
+                      <div className="text-[14px] font-medium text-muted">{service.duration_minutes} mins</div>
+                      <div className="text-[16px] font-bold text-accent">₹{service.price}</div>
                     </div>
                   </div>
                 ))}
@@ -134,25 +134,25 @@ export default function ServicesPage() {
       {showModal && (
         <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-[24px] shadow-xl w-full max-w-[500px] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-border bg-surface-1">
-              <h2 className="text-[18px] font-bold text-navy-DEFAULT">Create New Service</h2>
-              <button onClick={() => setShowModal(false)} className="text-text-muted hover:text-navy-DEFAULT">
+            <div className="flex items-center justify-between p-6 border-b border-border bg-bg">
+              <h2 className="text-[18px] font-bold text-primary">Create New Service</h2>
+              <button onClick={() => setShowModal(false)} className="text-muted hover:text-primary">
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={handleCreate} className="p-6 flex flex-col gap-5">
               <div>
-                <label className="block text-[14px] font-bold text-navy-DEFAULT mb-2">Service Title</label>
-                <input required type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. 1-on-1 Mentorship" className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-teal-DEFAULT focus:ring-2 focus:ring-teal-DEFAULT/15 transition-all" />
+                <label className="block text-[14px] font-bold text-primary mb-2">Service Title</label>
+                <input required type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. 1-on-1 Mentorship" className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all" />
               </div>
               <div>
-                <label className="block text-[14px] font-bold text-navy-DEFAULT mb-2">Description</label>
-                <textarea required rows={3} value={description} onChange={e => setDescription(e.target.value)} placeholder="What will the mentee gain from this session?" className="w-full p-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-teal-DEFAULT focus:ring-2 focus:ring-teal-DEFAULT/15 transition-all resize-none"></textarea>
+                <label className="block text-[14px] font-bold text-primary mb-2">Description</label>
+                <textarea required rows={3} value={description} onChange={e => setDescription(e.target.value)} placeholder="What will the mentee gain from this session?" className="w-full p-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all resize-none"></textarea>
               </div>
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-[14px] font-bold text-navy-DEFAULT mb-2">Duration (Mins)</label>
-                  <select value={duration} onChange={e => setDuration(e.target.value)} className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-teal-DEFAULT focus:ring-2 focus:ring-teal-DEFAULT/15 transition-all">
+                  <label className="block text-[14px] font-bold text-primary mb-2">Duration (Mins)</label>
+                  <select value={duration} onChange={e => setDuration(e.target.value)} className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all">
                     <option value="15">15 minutes</option>
                     <option value="30">30 minutes</option>
                     <option value="45">45 minutes</option>
@@ -160,8 +160,8 @@ export default function ServicesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[14px] font-bold text-navy-DEFAULT mb-2">Price (₹)</label>
-                  <input required type="number" min="0" value={price} onChange={e => setPrice(e.target.value)} placeholder="1000" className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-teal-DEFAULT focus:ring-2 focus:ring-teal-DEFAULT/15 transition-all" />
+                  <label className="block text-[14px] font-bold text-primary mb-2">Price (₹)</label>
+                  <input required type="number" min="0" value={price} onChange={e => setPrice(e.target.value)} placeholder="1000" className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all" />
                 </div>
               </div>
               <div className="pt-4 flex gap-3">

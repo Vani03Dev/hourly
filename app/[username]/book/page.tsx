@@ -176,7 +176,12 @@ export default function PublicProfilePage() {
     } else {
       // Fallback to weekly schedule
       const weekly = profile.weekly_schedule || {};
-      availableTimeBlocks = weekly[dayName] || [];
+      const dayData = weekly[dayName];
+      if (dayData && typeof dayData === 'object' && 'enabled' in dayData) {
+        availableTimeBlocks = dayData.enabled ? (dayData.slots || []) : [];
+      } else {
+        availableTimeBlocks = Array.isArray(dayData) ? dayData : [];
+      }
     }
   }
 
@@ -412,7 +417,12 @@ export default function PublicProfilePage() {
                   isAvailable = overrides[dateString].length > 0;
                 } else {
                   const weekly = profile.weekly_schedule || {};
-                  isAvailable = (weekly[dayName] || []).length > 0;
+                  const dayData = weekly[dayName];
+                  if (dayData && typeof dayData === 'object' && 'enabled' in dayData) {
+                    isAvailable = dayData.enabled && (dayData.slots || []).length > 0;
+                  } else {
+                    isAvailable = Array.isArray(dayData) && dayData.length > 0;
+                  }
                 }
                 
                 const canSelect = isAvailable && !isPastDate;

@@ -254,7 +254,7 @@ export function BrowseExperts() {
       </div>
 
       <FilterSection title="Search">
-        <div className="flex items-center h-11 border border-border rounded-[10px] bg-gray-50 focus-within:bg-white focus-within:border-teal transition-all">
+        <div className="flex items-center h-[48px] border border-border rounded-[10px] bg-gray-50 focus-within:bg-white focus-within:border-teal transition-all">
           <Search size={16} className="ml-3.5 shrink-0 text-muted pointer-events-none" />
           <input
             type="text"
@@ -413,7 +413,7 @@ export function BrowseExperts() {
 
       <Button
         variant="outline"
-        className="w-full h-11 rounded-[10px] font-bold"
+        className="w-full h-[48px] rounded-[10px] font-bold"
         onClick={handleClearFilters}
         disabled={activeFilterCount === 0}
       >
@@ -422,20 +422,6 @@ export function BrowseExperts() {
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="max-w-[1440px] mx-auto px-5 md:px-12 lg:px-24 py-10">
-        <div className="animate-pulse grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="h-[600px] bg-gray-100 rounded-xl" />
-          <div className="lg:col-span-3 grid grid-cols-3 gap-5">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="h-64 bg-gray-100 rounded-xl" />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-[1440px] mx-auto w-full flex flex-col lg:flex-row px-5 md:px-12 lg:px-24 py-10 gap-8 items-start">
@@ -532,12 +518,42 @@ export function BrowseExperts() {
           )}
         </div>
 
-        {sortedExperts.length > 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white border border-border rounded-[16px] p-6 h-[260px] flex flex-col justify-between animate-pulse">
+                <div>
+                  <div className="flex gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-gray-200" />
+                    <div className="flex flex-col gap-2 pt-1 flex-1">
+                      <div className="h-4 bg-gray-200 rounded w-3/4" />
+                      <div className="h-3 bg-gray-100 rounded w-1/2" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-5 bg-gray-100 rounded w-16" />
+                    <div className="h-5 bg-gray-100 rounded w-20" />
+                  </div>
+                </div>
+                <div className="mt-6 pt-4 border-t border-border">
+                  <div className="flex justify-between items-baseline mb-4">
+                    <div className="h-3 bg-gray-100 rounded w-24" />
+                    <div className="h-5 bg-gray-200 rounded w-16" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="h-10 bg-gray-100 rounded-[10px]" />
+                    <div className="h-10 bg-gray-200 rounded-[10px]" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : sortedExperts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {sortedExperts.map((exp) => (
               <div
                 key={exp.id}
-                className="bg-white border border-border rounded-[16px] p-6 flex flex-col justify-between shadow-sm relative hover:border-teal/40 hover:shadow-md transition-all duration-200"
+                className="bg-white border border-border rounded-[16px] p-6 flex flex-col justify-between shadow-premium relative hover:border-teal/40 hover:-translate-y-[4px] hover:shadow-xl transition-all duration-300"
               >
                 <div className="absolute top-5 right-5 flex flex-col items-end gap-1.5 z-10">
                   <Chip
@@ -620,10 +636,10 @@ export function BrowseExperts() {
                     <span className="text-[18px] font-bold text-primary font-mono">₹{exp.price}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" className="h-10 rounded-[10px] text-[13px]" asChild>
+                    <Button variant="outline" className="h-[48px] rounded-[10px] text-[13px] font-semibold" asChild>
                       <Link href={`/experts/${exp.id}`}>Profile</Link>
                     </Button>
-                    <Button variant="primary" className="h-10 rounded-[10px] text-[13px] font-semibold" asChild>
+                    <Button variant="primary" className="h-[48px] rounded-[10px] text-[13px] font-bold" asChild>
                       <Link href={`/book/${exp.id}`}>Book</Link>
                     </Button>
                   </div>

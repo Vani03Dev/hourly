@@ -80,7 +80,7 @@ function AnimatedValue({ value, prefix = "₹" }: { value: number; prefix?: stri
     };
 
     requestAnimationFrame(tick);
-  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [value]);
 
   return (
     <span className="font-mono tabular-nums">
