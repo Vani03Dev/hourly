@@ -20,6 +20,8 @@ export async function submitExpertOnboarding(formData: FormData) {
     const bio = formData.get('bio') as string;
     const hourlyRate = parseInt(formData.get('hourlyRate') as string, 10);
     const tagsString = formData.get('tags') as string;
+    const isAnonymous = formData.get('isAnonymous') === 'true';
+    const linkedinDataString = formData.get('linkedinData') as string | null;
     
     // Validate
     if (!linkedinUrl || !username || !title || !bio || !hourlyRate || !tagsString) {
@@ -31,6 +33,11 @@ export async function submitExpertOnboarding(formData: FormData) {
       tags = JSON.parse(tagsString);
     } catch (e) {
       return { error: 'Invalid tags format' };
+    }
+
+    let linkedinData = null;
+    if (linkedinDataString) {
+      try { linkedinData = JSON.parse(linkedinDataString); } catch (e) {}
     }
 
     const fullName = user.user_metadata?.full_name || '';
@@ -57,6 +64,8 @@ export async function submitExpertOnboarding(formData: FormData) {
         tags,
         first_name: firstName,
         last_name: lastName,
+        is_anonymous: isAnonymous,
+        linkedin_data: linkedinData || {},
         is_onboarded: true,
         updated_at: new Date().toISOString()
       }, { onConflict: 'id' });
@@ -199,6 +208,7 @@ export async function updateCreatorPage(data: {
       title: data.title.trim(),
       bio: data.bio.trim(),
       tags: data.tags,
+      page_theme: data.pageTheme || 'teal',
       updated_at: new Date().toISOString(),
     };
 

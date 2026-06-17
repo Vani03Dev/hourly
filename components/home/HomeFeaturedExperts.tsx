@@ -18,6 +18,8 @@ export interface FeaturedExpert {
   price: number;
   availableToday: boolean;
   initials: string;
+  avatarUrl?: string;
+  isOnline?: boolean;
 }
 
 export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) {
@@ -36,20 +38,31 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: "-8%" }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+            className="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 pt-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
           >
             {experts.map((exp) => (
               <motion.div
                 key={exp.id}
                 variants={staggerItem}
                 whileHover={{ y: -6 }}
-                className="bg-white border border-border rounded-[16px] p-6 flex flex-col justify-between shadow-sm hover:border-accent/30 hover:shadow-premium transition-all duration-300"
+                className="bg-white border border-border rounded-[16px] p-6 flex flex-col justify-between shadow-sm hover:border-accent/30 hover:shadow-premium transition-all duration-300 min-w-[280px] sm:min-w-[300px] lg:w-[280px] shrink-0 snap-start"
               >
                 <div>
                   <div className="flex justify-between items-start mb-4">
-                    <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[16px] border border-border relative">
-                      {exp.initials}
-                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-success rounded-full border-2 border-white" />
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-[16px] border border-border overflow-hidden">
+                        {exp.avatarUrl ? (
+                          <img src={exp.avatarUrl} alt={exp.name} className="w-full h-full object-cover" />
+                        ) : (
+                          exp.initials
+                        )}
+                      </div>
+                      {exp.isOnline && (
+                        <span className="absolute bottom-0 right-0 flex h-3.5 w-3.5 z-10">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-success border-2 border-white"></span>
+                        </span>
+                      )}
                     </div>
                     {exp.availableToday && (
                       <span className="bg-blue-50 text-accent border border-accent/20 text-[10px] font-bold px-2 py-0.5 rounded-full">

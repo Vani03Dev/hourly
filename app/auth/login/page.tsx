@@ -96,7 +96,7 @@ export default function LoginPage() {
           onClick={handleGoogleLogin}
           className="w-full h-[48px] border border-border rounded-lg flex items-center justify-center gap-[8px] text-[14px] font-semibold text-primary bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
         >
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-[18px] h-[18px]" />
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" alt="Google" className="w-[18px] h-[18px]" />
           Continue with Google
         </button>
 

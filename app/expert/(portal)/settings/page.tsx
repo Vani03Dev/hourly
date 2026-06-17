@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { createClient } from '@/utils/supabase/client';
 import { updateExpertProfile, updateAvatarUrl } from '@/app/actions/expert';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 import toast from 'react-hot-toast';
 
 const TIMEZONES = [
@@ -151,7 +152,7 @@ export default function ExpertSettingsPage() {
       if (!user) throw new Error('Not authenticated');
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const fileName = `${user.id}/${Math.random().toString(36).substring(2)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -189,6 +190,10 @@ export default function ExpertSettingsPage() {
     }
     if (bio.length < 20) {
       toast.error('Bio must be at least 20 characters');
+      return;
+    }
+    if (hourlyRate < 100) {
+      toast.error('Hourly rate must be at least ₹100');
       return;
     }
 
@@ -400,8 +405,14 @@ export default function ExpertSettingsPage() {
                     min={100}
                     step={100}
                     value={hourlyRate}
+                    onKeyDown={(e) => {
+                      if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                        e.preventDefault();
+                      }
+                    }}
                     onChange={(e) => { setHourlyRate(parseInt(e.target.value, 10) || 0); markChanged(); }}
-                    className={`${inputClass} pl-10`}
+                    className={`${inputClass}`}
+                    style={{ paddingLeft: '40px' }}
                   />
                 </div>
               </Field>
@@ -491,19 +502,20 @@ export default function ExpertSettingsPage() {
             </h2>
             <div className="flex flex-col gap-5">
               <Field label="Email" hint="Contact support to change your email address.">
-                <input type="email" value={email} disabled className={`${inputClass} bg-gray-50 text-muted cursor-not-allowed`} />
+                <input 
+                  type="email" 
+                  value={email} 
+                  disabled 
+                  className="w-full h-[44px] px-4 rounded-[10px] border border-gray-200 bg-gray-100 text-[14px] text-gray-500 cursor-not-allowed focus:outline-none shadow-sm opacity-80" 
+                />
               </Field>
 
               <Field label="Timezone">
-                <select
+                <CustomSelect
                   value={timezone}
-                  onChange={(e) => { setTimezone(e.target.value); markChanged(); }}
-                  className={inputClass}
-                >
-                  {TIMEZONES.map((tz) => (
-                    <option key={tz.value} value={tz.value}>{tz.label}</option>
-                  ))}
-                </select>
+                  onChange={(val) => { setTimezone(val); markChanged(); }}
+                  options={TIMEZONES}
+                />
               </Field>
             </div>
           </section>

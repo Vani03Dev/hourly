@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/Button';
 import { createClient } from '@/utils/supabase/client';
 import { updateExpertAvailability } from '@/app/actions/expert';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 import toast from 'react-hot-toast';
 
 
@@ -426,19 +427,19 @@ export default function AvailabilityPage() {
 
 
   const dayCellClass = (status: string, isSelected: boolean) => {
-    const base = 'aspect-square flex flex-col items-center justify-center rounded-[10px] text-[14px] font-semibold transition-all border-2 relative';
-    if (isSelected) return `${base} border-teal bg-teal text-white shadow-sm`;
+    const base = 'aspect-square flex flex-col items-center justify-center rounded-[14px] text-[14px] font-bold transition-all relative border border-transparent';
+    if (isSelected) return `${base} bg-[#0F2137] text-white shadow-lg shadow-[#0F2137]/20 scale-105 z-10`;
     switch (status) {
       case 'past':
-        return `${base} border-transparent text-gray-300 cursor-default`;
+        return `${base} text-gray-300 cursor-default opacity-50`;
       case 'blocked':
-        return `${base} border-transparent bg-red-50 text-red-500 cursor-pointer hover:border-red-200`;
+        return `${base} bg-red-50/50 text-red-500 cursor-pointer hover:bg-red-50 hover:border-red-200`;
       case 'booked':
-        return `${base} border-transparent bg-teal-50 text-teal cursor-pointer hover:border-teal/30`;
+        return `${base} bg-[#ECFDF5] text-teal cursor-pointer hover:border-teal/30 hover:bg-[#D1FAE5]`;
       case 'available':
-        return `${base} border-transparent bg-gray-50 text-primary cursor-pointer hover:border-teal/30 hover:bg-teal-50/50`;
+        return `${base} bg-white text-[#0F2137] border-gray-100 cursor-pointer hover:border-gray-300 hover:bg-gray-50`;
       default:
-        return `${base} border-transparent text-gray-300 cursor-pointer hover:border-gray-200`;
+        return `${base} bg-gray-50/30 text-gray-400 cursor-pointer hover:bg-gray-100 hover:text-gray-600`;
     }
   };
 
@@ -485,8 +486,8 @@ export default function AvailabilityPage() {
         {/* Calendar */}
         <div className="lg:col-span-3 bg-white border border-border rounded-[16px] shadow-sm overflow-hidden">
           <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-[16px] font-bold text-primary flex items-center gap-2">
-              <CalendarIcon size={18} className="text-teal" />
+            <h2 className="text-[18px] font-extrabold text-[#0F2137] flex items-center gap-2">
+              <CalendarIcon size={20} className="text-teal" />
               {monthLabel}
             </h2>
             <div className="flex gap-2">
@@ -567,15 +568,15 @@ export default function AvailabilityPage() {
 
         {/* Selected date panel */}
         <div className="lg:col-span-2 flex flex-col gap-4">
-          <div className="bg-white border border-border rounded-[16px] shadow-sm p-6">
-            <h3 className="text-[15px] font-bold text-primary mb-1">
+          <div className="bg-white border border-border rounded-[20px] shadow-sm p-6 relative overflow-hidden">
+            <h3 className="text-[20px] font-extrabold text-[#0F2137] mb-1">
               {selectedDate
                 ? new Date(selectedDate + 'T12:00:00').toLocaleDateString('en-US', {
                     weekday: 'long', month: 'long', day: 'numeric',
                   })
                 : 'Select a date'}
             </h3>
-            <p className="text-[13px] text-muted mb-4">
+            <p className="text-[14px] text-gray-500 font-medium mb-5">
               {selectedIsBlocked
                 ? 'This date is manually blocked.'
                 : selectedDayBookings.length > 0
@@ -745,25 +746,19 @@ export default function AvailabilityPage() {
                       Slot {index + 1}
                     </div>
                     <div className="flex flex-1 items-center gap-3 flex-wrap">
-                      <select
+                      <CustomSelect
                         value={slot.start}
-                        onChange={(e) => updateSlot(selectedWeekday, index, 'start', e.target.value)}
-                        className="h-[44px] px-3 bg-white border border-border rounded-[8px] text-[14px] text-primary focus:border-teal focus:ring-2 focus:ring-teal/15 outline-none transition-all min-w-[110px]"
-                      >
-                        {timeOptions.map((t) => (
-                          <option key={`start-${selectedWeekday}-${index}-${t}`} value={t}>{t}</option>
-                        ))}
-                      </select>
+                        onChange={(val) => updateSlot(selectedWeekday, index, 'start', val)}
+                        options={timeOptions}
+                        className="w-[120px]"
+                      />
                       <span className="text-muted font-medium">to</span>
-                      <select
+                      <CustomSelect
                         value={slot.end}
-                        onChange={(e) => updateSlot(selectedWeekday, index, 'end', e.target.value)}
-                        className="h-[44px] px-3 bg-white border border-border rounded-[8px] text-[14px] text-primary focus:border-teal focus:ring-2 focus:ring-teal/15 outline-none transition-all min-w-[110px]"
-                      >
-                        {timeOptions.map((t) => (
-                          <option key={`end-${selectedWeekday}-${index}-${t}`} value={t}>{t}</option>
-                        ))}
-                      </select>
+                        onChange={(val) => updateSlot(selectedWeekday, index, 'end', val)}
+                        options={timeOptions}
+                        className="w-[120px]"
+                      />
                       <span className={`text-[12px] font-medium ${isInvalid ? 'text-red-500' : 'text-teal'}`}>
                         {formatDuration(slot.start, slot.end)}
                       </span>

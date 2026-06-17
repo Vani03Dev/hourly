@@ -82,9 +82,7 @@ export async function updateSession(request: NextRequest) {
       // Expert is logged in. Prevent access to any business/client dashboard sub-routes, onboarding, bookings, and admin route
       const isBusinessOrDashboardPath = url.pathname.startsWith('/dashboard') || 
                                          url.pathname.startsWith('/admin') ||
-                                         url.pathname.startsWith('/onboarding') ||
-                                         url.pathname.startsWith('/booking') ||
-                                         url.pathname.startsWith('/book');
+                                         url.pathname.startsWith('/onboarding');
       if (isBusinessOrDashboardPath) {
         url.pathname = '/expert/dashboard';
         return NextResponse.redirect(url);

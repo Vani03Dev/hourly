@@ -29,6 +29,7 @@ interface ExpertData {
   skills: string[];
   experience: { year: string; company: string; role: string }[];
   certifications: { year: string; name: string; issuer: string }[];
+  avatarUrl?: string;
 }
 
 export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
@@ -90,10 +91,14 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
         <div className="lg:col-span-7 flex flex-col gap-[32px]">
           {/* Main profile card header */}
           <div className="flex gap-[24px] items-start border-b border-border pb-[24px]">
-            <div className="w-[80px] h-[80px] rounded-full bg-primary text-white flex items-center justify-center font-bold text-[28px] border border-border shrink-0 relative">
-              {expert.initials}
+            <div className="w-[80px] h-[80px] rounded-full bg-primary text-white flex items-center justify-center font-bold text-[28px] border border-border shrink-0 relative overflow-hidden">
+              {expert.avatarUrl ? (
+                <img src={expert.avatarUrl} alt={expert.name} className="w-full h-full object-cover" />
+              ) : (
+                expert.initials
+              )}
               {expert.isVerified && (
-                <span className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-success rounded-full border-2 border-white flex items-center justify-center" title="Verified Badge">
+                <span className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-success rounded-full border-2 border-white flex items-center justify-center z-10" title="Verified Badge">
                   <span className="text-[10px] text-white font-bold">✓</span>
                 </span>
               )}
@@ -106,7 +111,7 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                 </h1>
               </div>
               <p className="text-[16px] text-muted font-semibold mt-[4px]">
-                {expert.title} @ {expert.company}
+                {expert.title}{expert.company ? ` @ ${expert.company}` : ''}
               </p>
 
               {/* Domain pills */}
@@ -377,7 +382,7 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                 <div className="flex flex-col gap-[16px]">
                   <h4 className="text-[16px] font-bold text-primary">Experience Timeline</h4>
                   <div className="flex flex-col gap-[12px]">
-                    {expert.experience.map((exp, idx) => (
+                    {expert.experience.length > 0 ? expert.experience.map((exp, idx) => (
                       <div key={idx} className="flex gap-[16px] items-start">
                         <span className="font-mono text-[13px] text-accent bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-lg shrink-0 mt-[2px]">{exp.year}</span>
                         <div>
@@ -385,7 +390,9 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                           <p className="text-[12px] text-muted">{exp.company}</p>
                         </div>
                       </div>
-                    ))}
+                    )) : (
+                      <p className="text-[13px] text-muted">No experience history listed.</p>
+                    )}
                   </div>
                 </div>
 

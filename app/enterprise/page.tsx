@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
+import { CustomSelect } from '../../components/ui/CustomSelect';
 import Link from 'next/link';
 import { 
   Building2, 
@@ -39,6 +40,7 @@ interface FormErrors {
   name?: string;
   email?: string;
   company?: string;
+  teamSize?: string;
   useCase?: string;
 }
 
@@ -452,7 +454,7 @@ export default function EnterprisePage() {
 
           {/* Right Form Card */}
           <div className="lg:col-span-7 w-full">
-            <div className="bg-white text-[#0F2137] rounded-xl p-[32px] md:p-[40px] shadow-level-4 relative overflow-hidden">
+            <div className="bg-white text-[#0F2137] rounded-xl p-[32px] md:p-[40px] shadow-level-4 relative flex flex-col">
               
               <AnimatePresence mode="wait">
                 {!isSuccess ? (
@@ -535,40 +537,42 @@ export default function EnterprisePage() {
                       {/* Team Size */}
                       <div className="flex flex-col gap-[6px]">
                         <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wider" htmlFor="teamSize">Team Size</label>
-                        <select 
-                          id="teamSize"
-                          name="teamSize"
+                        <CustomSelect 
                           value={formData.teamSize}
-                          onChange={handleChange}
-                          className="h-[44px] px-[12px] rounded-[6px] border border-gray-200 focus:border-teal text-[14px] font-medium bg-white transition-all outline-none"
-                        >
-                          <option value="5-20">5 - 20 employees</option>
-                          <option value="21-100">21 - 100 employees</option>
-                          <option value="101-500">101 - 500 employees</option>
-                          <option value="500+">500+ employees</option>
-                        </select>
+                          onChange={(val) => {
+                            setFormData(prev => ({ ...prev, teamSize: val }));
+                            if (errors.teamSize) setErrors(prev => ({ ...prev, teamSize: undefined }));
+                          }}
+                          options={[
+                            { label: '5 - 20 employees', value: '5-20' },
+                            { label: '21 - 100 employees', value: '21-100' },
+                            { label: '101 - 500 employees', value: '101-500' },
+                            { label: '500+ employees', value: '500+' }
+                          ]}
+                          className="w-full"
+                        />
                       </div>
                     </div>
 
                     {/* Primary Consultation Need */}
                     <div className="flex flex-col gap-[6px]">
                       <label className="text-[12px] font-bold text-gray-600 uppercase tracking-wider" htmlFor="useCase">Primary consultation need</label>
-                      <select 
-                        id="useCase"
-                        name="useCase"
+                      <CustomSelect 
                         value={formData.useCase}
-                        onChange={handleChange}
-                        className={`h-[44px] px-[12px] rounded-[6px] border text-[14px] font-medium bg-white transition-all outline-none ${
-                          errors.useCase ? 'border-red-500 bg-red-50/20' : 'border-gray-200 focus:border-teal'
-                        }`}
-                      >
-                        <option value="">Select primary need...</option>
-                        <option value="engineering">Engineering Architecture & Coding</option>
-                        <option value="legal">Corporate Tax, Legal & Contracts</option>
-                        <option value="finance">Fractional CFO & Budget Compliance</option>
-                        <option value="product">Product Review, UX & Design Audits</option>
-                        <option value="multiple">Combination / Full access</option>
-                      </select>
+                        onChange={(val) => {
+                          setFormData(prev => ({ ...prev, useCase: val }));
+                          if (errors.useCase) setErrors(prev => ({ ...prev, useCase: undefined }));
+                        }}
+                        placeholder="Select primary need..."
+                        options={[
+                          { label: 'Engineering Architecture & Coding', value: 'engineering' },
+                          { label: 'Corporate Tax, Legal & Contracts', value: 'legal' },
+                          { label: 'Fractional CFO & Budget Compliance', value: 'finance' },
+                          { label: 'Product Review, UX & Design Audits', value: 'product' },
+                          { label: 'Combination / Full access', value: 'multiple' }
+                        ]}
+                        className="w-full"
+                      />
                       {errors.useCase && <span className="text-[11px] text-red-500 font-semibold">{errors.useCase}</span>}
                     </div>
 

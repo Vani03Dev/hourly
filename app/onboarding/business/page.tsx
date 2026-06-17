@@ -8,6 +8,7 @@ import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
 import toast from "react-hot-toast";
 import { submitClientOnboarding } from "../../../app/actions/client";
+import { CustomSelect } from "../../../components/ui/CustomSelect";
 
 const CATEGORIES = [
   "CA & Tax",
@@ -141,16 +142,16 @@ export default function BusinessOnboarding() {
 
             <div className="flex flex-col gap-[6px]">
               <label className="text-[11px] font-bold text-muted uppercase tracking-wider">Team Size</label>
-              <select
+              <CustomSelect
                 value={teamSize}
-                onChange={(e) => setTeamSize(e.target.value)}
-                className="h-[48px] px-[12px] border border-border rounded-lg text-[13.5px] text-primary font-semibold bg-white outline-none focus:border-accent"
-              >
-                <option value="1-10">1 - 10 members</option>
-                <option value="11-50">11 - 50 members</option>
-                <option value="51-200">51 - 200 members</option>
-                <option value="200+">200+ members</option>
-              </select>
+                onChange={setTeamSize}
+                options={[
+                  { label: "1 - 10 members", value: "1-10" },
+                  { label: "11 - 50 members", value: "11-50" },
+                  { label: "51 - 200 members", value: "51-200" },
+                  { label: "200+ members", value: "200+" }
+                ]}
+              />
             </div>
 
             <Button 

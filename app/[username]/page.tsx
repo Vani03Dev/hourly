@@ -27,6 +27,16 @@ import { notFound, useRouter } from 'next/navigation';
 import { SHOW_RATINGS_AND_REVIEWS } from '@/lib/feature-flags';
 import toast from 'react-hot-toast';
 
+export const dynamic = 'force-dynamic';
+
+const getThemeClasses = (theme: string) => {
+  switch(theme) {
+    case 'blue': return { text: 'text-blue-600', bg: 'bg-blue-600', bgLight: 'bg-blue-50', ring: 'ring-blue-500', border: 'border-blue-500', borderLight: 'border-blue-200', hoverBg: 'hover:bg-blue-50', hoverText: 'hover:text-blue-600' };
+    case 'navy': return { text: 'text-[#0F2137]', bg: 'bg-[#0F2137]', bgLight: 'bg-gray-100', ring: 'ring-[#0F2137]', border: 'border-[#0F2137]', borderLight: 'border-gray-300', hoverBg: 'hover:bg-gray-100', hoverText: 'hover:text-[#0F2137]' };
+    default: return { text: 'text-teal', bg: 'bg-teal', bgLight: 'bg-teal-50', ring: 'ring-teal', border: 'border-teal', borderLight: 'border-teal/30', hoverBg: 'hover:bg-teal-50', hoverText: 'hover:text-teal' };
+  }
+};
+
 export default function ExpertPublicProfile({ params }: { params: Promise<{ username: string }> }) {
   const { username } = React.use(params);
   const router = useRouter();
@@ -54,19 +64,24 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
         .single();
         
       if (profile) {
-        setExpert({
+          setExpert({
           id: profile.id,
-          name: `${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username,
+          name: profile.is_anonymous ? 'Anonymous Expert' : (`${profile.first_name || ''} ${profile.last_name || ''}`.trim() || profile.username),
           title: profile.title,
-          avatar_url: profile.avatar_url || "",
+          avatar_url: profile.is_anonymous ? '' : (profile.avatar_url || ""),
           bio: profile.bio,
           hourly_rate: profile.hourly_rate,
           tags: profile.tags || [],
+          page_theme: profile.page_theme || 'teal',
+          linkedin_data: profile.linkedin_data || null,
+          is_anonymous: profile.is_anonymous || false,
+          is_online: profile.is_online || false,
+          last_active_at: profile.last_active_at || null,
           rating: "0",
           sessions: "0",
           satisfaction: "0%",
           responseTime: "-",
-          experience: []
+          experience: profile.linkedin_data?.experiences || []
         });
       } else {
         router.push('/404');
@@ -83,6 +98,9 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
       </div>
     );
   }
+
+  // Calculate if expert is online based on boolean set by PresenceTracker
+  const isOnlineNow = expert.is_online === true;
 
   const ratePerSession = selectedDuration === 30 ? expert.hourly_rate : expert.hourly_rate * 1.8;
   const platformFee = Math.round(ratePerSession * 0.05);
@@ -115,6 +133,8 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
     router.push(`/book/${expert.id}?date=${selectedDate}&time=${encodeURIComponent(selectedTimeSlot)}&duration=${selectedDuration}`);
   };
 
+  const t = getThemeClasses(expert?.page_theme || 'teal');
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans select-none overflow-x-hidden">
       
@@ -124,17 +144,27 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           
           {/* Avatar side */}
           <div className="md:col-span-3 flex flex-col items-center">
-            <div className="relative w-[120px] h-[120px] rounded-full overflow-hidden border-[3px] border-white ring-[3px] ring-teal bg-gray-100 flex items-center justify-center">
-              {expert.avatar_url ? (
-                <img 
-                  src={expert.avatar_url} 
-                  alt={expert.name} 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-[40px] font-bold text-gray-400">{expert.name?.charAt(0)}</span>
+            <div className="relative">
+              <div className={`relative w-[120px] h-[120px] rounded-full overflow-hidden border-[3px] border-white ring-[3px] ${t.ring} bg-gray-100 flex items-center justify-center`}>
+                {expert.avatar_url ? (
+                  <img 
+                    src={expert.avatar_url} 
+                    alt={expert.name} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-[40px] font-bold text-gray-400">{expert.name?.charAt(0)}</span>
+                )}
+              </div>
+              
+              {isOnlineNow && (
+                <span className="absolute bottom-[4px] right-[4px] flex h-[24px] w-[24px] z-10">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-[24px] w-[24px] bg-green-500 border-[4px] border-white shadow-sm"></span>
+                </span>
               )}
             </div>
+            
             <Badge variant="success" shape="tag" className="mt-[16px]">
               Verified Expert
             </Badge>
@@ -144,7 +174,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           <div className="md:col-span-9 flex flex-col items-start">
             <h1 className="text-[32px] font-extrabold text-[#0F2137] tracking-tight leading-none flex items-center gap-[8px]">
               <span>{expert.name}</span>
-              <ShieldCheck className="w-[24px] h-[24px] text-teal" />
+              <ShieldCheck className={`w-[24px] h-[24px] ${t.text}`} />
             </h1>
             <p className="text-[18px] text-gray-500 mt-[6px] font-medium">
               {expert.title}
@@ -234,11 +264,11 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
               onClick={() => setSelectedSessionType('video')}
               className={`border rounded-[10px] p-[20px] cursor-pointer transition-all ${
                 selectedSessionType === 'video' 
-                  ? 'border-teal bg-teal-50 ring-2 ring-teal/10' 
-                  : 'border-gray-200 hover:border-teal/30 bg-white'
+                  ? `${t.border} ${t.bgLight} ring-2 ring-opacity-10 ${t.ring}` 
+                  : `border-gray-200 ${t.borderLight.replace('border-', 'hover:border-')} bg-white`
               }`}
             >
-              <Video className="w-[40px] h-[40px] text-teal mb-[12px]" />
+              <Video className={`w-[40px] h-[40px] ${t.text} mb-[12px]`} />
               <h5 className="text-[17px] font-bold text-[#0F2137]">1:1 Video Call</h5>
               <p className="text-[14px] text-gray-500 mt-[4px]">
                 High-quality interactive screen share, audio, and chat rooms powered by Jitsi network.
@@ -249,7 +279,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                   onClick={(e) => { e.stopPropagation(); setSelectedDuration(30); }}
                   className={`px-[12px] py-[6px] rounded-[6px] text-[13px] font-bold transition-all ${
                     selectedDuration === 30 && selectedSessionType === 'video'
-                      ? 'bg-teal text-white' 
+                      ? `${t.bg} text-white` 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -259,7 +289,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                   onClick={(e) => { e.stopPropagation(); setSelectedDuration(60); }}
                   className={`px-[12px] py-[6px] rounded-[6px] text-[13px] font-bold transition-all ${
                     selectedDuration === 60 && selectedSessionType === 'video'
-                      ? 'bg-teal text-white' 
+                      ? `${t.bg} text-white` 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -273,11 +303,11 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
               onClick={() => setSelectedSessionType('async')}
               className={`border rounded-[10px] p-[20px] cursor-pointer transition-all ${
                 selectedSessionType === 'async' 
-                  ? 'border-teal bg-teal-50 ring-2 ring-teal/10' 
-                  : 'border-gray-200 hover:border-teal/30 bg-white'
+                  ? `${t.border} ${t.bgLight} ring-2 ring-opacity-10 ${t.ring}` 
+                  : `border-gray-200 ${t.borderLight.replace('border-', 'hover:border-')} bg-white`
               }`}
             >
-              <MessageSquare className="w-[40px] h-[40px] text-teal mb-[12px]" />
+              <MessageSquare className={`w-[40px] h-[40px] ${t.text} mb-[12px]`} />
               <h5 className="text-[17px] font-bold text-[#0F2137]">Async Question</h5>
               <p className="text-[14px] text-gray-500 mt-[4px]">
                 Submit your specific system blueprint or tax query. Expert replies via email/chat within 24 hours.
@@ -287,7 +317,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                 <button 
                   className={`px-[12px] py-[6px] rounded-[6px] text-[13px] font-bold transition-all ${
                     selectedSessionType === 'async'
-                      ? 'bg-teal text-white' 
+                      ? `${t.bg} text-white` 
                       : 'bg-gray-100 text-gray-700'
                   }`}
                 >
@@ -336,13 +366,13 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                   onClick={() => setSelectedDate(d.num)}
                   className={`h-[48px] rounded-[8px] flex flex-col items-center justify-center font-bold text-[14px] transition-all ${
                     isSelected 
-                      ? 'bg-teal text-white shadow-level-1' 
+                      ? `${t.bg} text-white shadow-level-1` 
                       : d.available 
-                        ? 'border border-gray-200 hover:bg-teal-50 hover:text-teal bg-white text-[#0F2137]'
+                        ? `border border-gray-200 ${t.hoverBg} ${t.hoverText} bg-white text-[#0F2137]`
                         : 'text-gray-300 cursor-not-allowed bg-transparent'
                   }`}
                 >
-                  <span className={d.today ? 'underline decoration-2 decoration-teal' : ''}>
+                  <span className={d.today ? `underline decoration-2 ${t.text.replace('text-', 'decoration-')}` : ''}>
                     {d.num}
                   </span>
                 </button>
@@ -366,12 +396,12 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                     onClick={() => setSelectedTimeSlot(ts.time)}
                     className={`h-[40px] px-[16px] rounded-[6px] text-[13px] font-semibold border transition-all ${
                       isSelected
-                        ? 'bg-teal text-white border-teal shadow-level-1'
+                        ? `${t.bg} text-white ${t.border} shadow-level-1`
                         : isBooked
                           ? 'bg-gray-100 text-gray-300 line-through border-transparent cursor-not-allowed'
                           : isOneLeft
                             ? 'bg-[#FFFBEB] text-[#F59E0B] border-[#F59E0B]'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-teal'
+                            : `bg-white text-gray-700 border-gray-200 ${t.borderLight.replace('border-', 'hover:border-')}`
                     }`}
                   >
                     {ts.time} {isOneLeft && '(1 slot left)'}
@@ -394,10 +424,10 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
             
             <div className="flex items-center gap-[24px] w-full sm:w-auto justify-between sm:justify-end">
               <div className="text-right">
-                <div className="text-[24px] font-extrabold text-teal">₹{totalDue}</div>
+                <div className={`text-[24px] font-extrabold ${t.text}`}>₹{totalDue}</div>
                 <div className="text-[11px] text-gray-400 font-bold">Total price</div>
               </div>
-              <Button size="xl" onClick={handleBookSlotClick}>
+              <Button size="xl" className={`${t.bg} hover:opacity-90 border-0`} onClick={handleBookSlotClick}>
                 Book This Slot
               </Button>
             </div>
@@ -438,7 +468,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                 <div key={i} className="flex items-center gap-[12px] text-[13px] text-gray-500 font-semibold">
                   <span className="w-[44px] shrink-0 text-left">{row.label}</span>
                   <div className="flex-1 bg-gray-200 h-[6px] rounded-full overflow-hidden">
-                    <div className={`bg-teal h-full ${row.fill}`} />
+                    <div className={`${t.bg} h-full ${row.fill}`} />
                   </div>
                   <span className="w-[28px] text-right shrink-0">{row.count}</span>
                 </div>
@@ -514,13 +544,18 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           {expert.experience?.length > 0 && (
             <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
               <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Work Timeline</h4>
-              <div className="flex flex-col gap-[20px] border-l-2 border-teal pl-[20px] ml-[8px]">
+              <div className={`flex flex-col gap-[20px] border-l-2 ${t.border} pl-[20px] ml-[8px]`}>
                 {expert.experience.map((exp: any, i: number) => (
                   <div key={i} className="relative">
                     {/* Dot marker */}
-                    <div className="absolute -left-[27px] top-[4px] w-[12px] h-[12px] rounded-full bg-teal border-2 border-white" />
-                    <div className="text-[15px] font-bold text-[#0F2137]">{exp.role}</div>
-                    <div className="text-[13px] text-gray-500 font-semibold mt-[2px]">{exp.company} · {exp.dates}</div>
+                    <div className={`absolute -left-[27px] top-[4px] w-[12px] h-[12px] rounded-full ${t.bg} border-2 border-white`} />
+                    <div className="text-[15px] font-bold text-[#0F2137]">{exp.title}</div>
+                    <div className="text-[13px] text-gray-500 font-semibold mt-[2px]">
+                      {exp.company} · {exp.starts_at?.year ? `${exp.starts_at.year} - ${exp.ends_at?.year || 'Present'}` : ''}
+                    </div>
+                    {exp.description && (
+                      <div className="text-[13px] text-gray-600 mt-[4px]">{exp.description}</div>
+                    )}
                   </div>
                 ))}
               </div>

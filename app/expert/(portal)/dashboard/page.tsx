@@ -189,109 +189,111 @@ export default function ExpertDashboardPage() {
               <div className="lg:col-span-2 flex flex-col gap-8">
                 
                 {/* Onboarding Checklist */}
-                <motion.div variants={fadeUp} className="bg-white border border-border rounded-[16px] p-6 md:p-8 shadow-sm">
-                  <h2 className="text-[20px] font-bold text-primary mb-2">Make the page yours!</h2>
-                  <p className="text-[15px] text-muted mb-8">Unlock the potential of your Sessionly page</p>
-                  
-                  {/* Progress Bar */}
-                  <div className="flex gap-2 mb-8">
-                    {[0, 1, 2].map((i) => (
-                      <div
-                        key={i}
-                        className={`h-2 flex-1 rounded-full ${i < completedSteps ? 'bg-accent' : 'bg-bg'}`}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex flex-col">
-                    {/* Item 1 */}
-                    <div className="border-b border-border py-4">
-                      <button 
-                        onClick={() => setExpandedChecklist(expandedChecklist === 'availability' ? null : 'availability')}
-                        className="w-full flex items-center justify-between group"
-                      >
-                        <div className="flex items-center gap-4">
-                          {profileStatus.hasAvailability ? (
-                            <CheckCircle2 className="text-accent" size={24} />
-                          ) : (
-                            <Circle className="text-muted" size={24} />
-                          )}
-                          <span className="text-[16px] font-bold text-primary">Set availability</span>
-                        </div>
-                      </button>
-                      {expandedChecklist === 'availability' && (
-                        <div className="pl-10 mt-4">
-                          <p className="text-[14px] text-muted mb-4">
-                            {profileStatus.hasAvailability
-                              ? 'Your weekly schedule is configured.'
-                              : 'Set your weekly hours so clients know when to book.'}
-                          </p>
-                          <Button variant={profileStatus.hasAvailability ? 'outline' : 'primary'} asChild>
-                            <Link href="/expert/availability">
-                              {profileStatus.hasAvailability ? 'Edit availability' : 'Set availability'}
-                            </Link>
-                          </Button>
-                        </div>
-                      )}
+                {completedSteps < 3 && (
+                  <motion.div variants={fadeUp} className="bg-white border border-border rounded-[16px] p-6 md:p-8 shadow-sm">
+                    <h2 className="text-[20px] font-bold text-primary mb-2">Make the page yours!</h2>
+                    <p className="text-[15px] text-muted mb-8">Unlock the potential of your Sessionly page</p>
+                    
+                    {/* Progress Bar */}
+                    <div className="flex gap-2 mb-8">
+                      {[0, 1, 2].map((i) => (
+                        <div
+                          key={i}
+                          className={`h-2 flex-1 rounded-full ${i < completedSteps ? 'bg-accent' : 'bg-bg'}`}
+                        />
+                      ))}
                     </div>
 
-                    {/* Item 2 */}
-                    <div className="border-b border-border py-4">
-                      <button 
-                        onClick={() => setExpandedChecklist(expandedChecklist === 'customize' ? null : 'customize')}
-                        className="w-full flex items-center justify-between group"
-                      >
-                        <div className="flex items-center gap-4">
-                          {profileStatus.hasCustomizedPage ? (
-                            <CheckCircle2 className="text-accent" size={24} />
-                          ) : (
-                            <Circle className="text-muted" size={24} />
-                          )}
-                          <span className="text-[16px] font-bold text-primary">Customize your creator page</span>
-                        </div>
-                      </button>
-                      {expandedChecklist === 'customize' && (
-                        <div className="pl-10 mt-4">
-                          <p className="text-[14px] text-muted mb-4">Add your photo, bio, theme, and expertise tags to stand out.</p>
-                          <Button asChild>
-                            <Link href="/expert/customize">Customize page</Link>
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                    <div className="flex flex-col">
+                      {/* Item 1 */}
+                      <div className="border-b border-border py-4">
+                        <button 
+                          onClick={() => setExpandedChecklist(expandedChecklist === 'availability' ? null : 'availability')}
+                          className="w-full flex items-center justify-between group"
+                        >
+                          <div className="flex items-center gap-4">
+                            {profileStatus.hasAvailability ? (
+                              <CheckCircle2 className="text-accent" size={24} />
+                            ) : (
+                              <Circle className="text-muted" size={24} />
+                            )}
+                            <span className="text-[16px] font-bold text-primary">Set availability</span>
+                          </div>
+                        </button>
+                        {expandedChecklist === 'availability' && (
+                          <div className="pl-10 mt-4">
+                            <p className="text-[14px] text-muted mb-4">
+                              {profileStatus.hasAvailability
+                                ? 'Your weekly schedule is configured.'
+                                : 'Set your weekly hours so clients know when to book.'}
+                            </p>
+                            <Button variant={profileStatus.hasAvailability ? 'outline' : 'primary'} asChild>
+                              <Link href="/expert/availability">
+                                {profileStatus.hasAvailability ? 'Edit availability' : 'Set availability'}
+                              </Link>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Item 3 */}
-                    <div className="py-4">
-                      <button 
-                        onClick={() => setExpandedChecklist(expandedChecklist === 'services' ? null : 'services')}
-                        className="w-full flex items-center justify-between group"
-                      >
-                        <div className="flex items-center gap-4">
-                          {profileStatus.hasServices ? (
-                            <CheckCircle2 className="text-accent" size={24} />
-                          ) : (
-                            <Circle className="text-muted" size={24} />
-                          )}
-                          <span className="text-[16px] font-bold text-primary">Create your services</span>
-                        </div>
-                      </button>
-                      {expandedChecklist === 'services' && (
-                        <div className="pl-10 mt-4">
-                          <p className="text-[14px] text-muted mb-4">
-                            {profileStatus.hasServices
-                              ? 'Your services are active and ready to be booked.'
-                              : 'Create consultation offerings with pricing and duration.'}
-                          </p>
-                          <Button variant={profileStatus.hasServices ? 'outline' : 'primary'} asChild>
-                            <Link href="/expert/services">
-                              {profileStatus.hasServices ? 'Manage services' : 'Create a service'}
-                            </Link>
-                          </Button>
-                        </div>
-                      )}
+                      {/* Item 2 */}
+                      <div className="border-b border-border py-4">
+                        <button 
+                          onClick={() => setExpandedChecklist(expandedChecklist === 'customize' ? null : 'customize')}
+                          className="w-full flex items-center justify-between group"
+                        >
+                          <div className="flex items-center gap-4">
+                            {profileStatus.hasCustomizedPage ? (
+                              <CheckCircle2 className="text-accent" size={24} />
+                            ) : (
+                              <Circle className="text-muted" size={24} />
+                            )}
+                            <span className="text-[16px] font-bold text-primary">Customize your creator page</span>
+                          </div>
+                        </button>
+                        {expandedChecklist === 'customize' && (
+                          <div className="pl-10 mt-4">
+                            <p className="text-[14px] text-muted mb-4">Add your photo, bio, theme, and expertise tags to stand out.</p>
+                            <Button asChild>
+                              <Link href="/expert/customize">Customize page</Link>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Item 3 */}
+                      <div className="py-4">
+                        <button 
+                          onClick={() => setExpandedChecklist(expandedChecklist === 'services' ? null : 'services')}
+                          className="w-full flex items-center justify-between group"
+                        >
+                          <div className="flex items-center gap-4">
+                            {profileStatus.hasServices ? (
+                              <CheckCircle2 className="text-accent" size={24} />
+                            ) : (
+                              <Circle className="text-muted" size={24} />
+                            )}
+                            <span className="text-[16px] font-bold text-primary">Create your services</span>
+                          </div>
+                        </button>
+                        {expandedChecklist === 'services' && (
+                          <div className="pl-10 mt-4">
+                            <p className="text-[14px] text-muted mb-4">
+                              {profileStatus.hasServices
+                                ? 'Your services are active and ready to be booked.'
+                                : 'Create consultation offerings with pricing and duration.'}
+                            </p>
+                            <Button variant={profileStatus.hasServices ? 'outline' : 'primary'} asChild>
+                              <Link href="/expert/services">
+                                {profileStatus.hasServices ? 'Manage services' : 'Create a service'}
+                              </Link>
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                )}
 
                 {/* Upcoming Sessions */}
                 <motion.div variants={fadeUp} className="bg-white border border-border rounded-[16px] p-6 md:p-8 shadow-sm">

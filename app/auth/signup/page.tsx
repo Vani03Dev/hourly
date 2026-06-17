@@ -10,18 +10,7 @@ import { Input } from "../../../components/ui/Input";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Categories dropdown
-const DOMAINS = [
-  "CA & Tax",
-  "Startup Legal",
-  "Tech & CTO",
-  "Finance & CFO",
-  "HR & People",
-  "Sales & GTM",
-  "Marketing",
-  "Operations",
-  "Leadership"
-];
+
 
 export default function SignupPage() {
   const router = useRouter();
@@ -34,7 +23,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [company, setCompany] = useState("");
-  const [domain, setDomain] = useState("CA & Tax");
+  const [domain, setDomain] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // States
@@ -89,11 +78,15 @@ export default function SignupPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errors.email = "Please enter a valid email address";
     }
-    if (!password || password.length < 8) {
-      errors.password = "Password must be at least 8 characters";
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!password || !passwordRegex.test(password)) {
+      errors.password = "Password must be at least 8 chars, include uppercase, lowercase, number, and special character";
     }
     if (role === "business" && !company.trim()) {
       errors.company = "Company name is required";
+    }
+    if (role === "expert" && !domain.trim()) {
+      errors.domain = "Domain & expertise is required";
     }
     if (!agreedToTerms) {
       errors.terms = "You must agree to the terms and conditions";
@@ -212,7 +205,7 @@ export default function SignupPage() {
           onClick={handleGoogleSignup}
           className="w-full h-[48px] border border-border rounded-lg flex items-center justify-center gap-[8px] text-[14px] font-semibold text-primary bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors shadow-sm"
         >
-          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className="w-[18px] h-[18px]" />
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" alt="Google" className="w-[18px] h-[18px]" />
           Continue with Google
         </button>
 
@@ -271,16 +264,14 @@ export default function SignupPage() {
                 transition={{ duration: 0.15 }}
                 className="flex flex-col gap-[6px]"
               >
-                <label className="text-[13px] font-medium text-gray-700 select-none">Domain Expertise</label>
-                <select
+                <Input 
+                  label="Domain & Expertise"
+                  type="text"
+                  placeholder="e.g. CA & Tax, Tech & CTO"
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
-                  className="w-full h-[48px] px-[12px] border border-border rounded-lg text-[14px] text-primary font-medium bg-white outline-none transition-all duration-150 focus:border-accent focus:ring-2 focus:ring-accent/15"
-                >
-                  {DOMAINS.map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
+                  error={formErrors.domain}
+                />
               </motion.div>
             )}
           </AnimatePresence>

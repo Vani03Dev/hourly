@@ -94,6 +94,12 @@ export const ExpertCard: React.FC<ExpertCardProps> = ({ expert }) => {
               {displayName.charAt(0).toUpperCase()}
             </div>
           )}
+          {expert.isOnline && (
+            <span className="absolute bottom-0 right-0 flex h-3.5 w-3.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-green-500 border-2 border-white"></span>
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col flex-1 min-w-0 pt-[2px]">

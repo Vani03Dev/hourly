@@ -27,7 +27,7 @@ export default async function HomePage() {
     .from("expert_profiles")
     .select("*")
     .eq("is_onboarded", true)
-    .limit(4);
+    .limit(10);
 
   const featuredExperts = dbExperts
     ? dbExperts.map((exp: any) => ({
@@ -40,6 +40,8 @@ export default async function HomePage() {
         price: exp.hourly_rate || 1000,
         availableToday: true,
         initials: (exp.first_name?.charAt(0) || exp.username?.charAt(0) || "E").toUpperCase(),
+        avatarUrl: exp.avatar_url,
+        isOnline: exp.is_online === true,
       }))
     : [];
 

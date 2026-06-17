@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Plus, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { CustomSelect } from '@/components/ui/CustomSelect';
 import { createClient } from '@/utils/supabase/client';
 import { createService, deleteService } from '@/app/actions/expert';
 import toast from 'react-hot-toast';
@@ -113,15 +114,41 @@ export default function ServicesPage() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.map((service) => (
-                  <div key={service.id} className="bg-white border border-border rounded-[16px] p-6 shadow-premium hover:-translate-y-1 hover:shadow-xl transition-shadow relative group">
-                    <button onClick={() => handleDelete(service.id)} className="absolute top-4 right-4 text-muted hover:text-red-DEFAULT opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Trash2 size={18} />
+                  <div key={service.id} className="bg-white border border-gray-100 rounded-[20px] p-6 shadow-sm hover:shadow-level-2 hover:-translate-y-1 transition-all duration-300 relative group flex flex-col h-full">
+                    {/* Delete Action - Top Right */}
+                    <button 
+                      onClick={() => handleDelete(service.id)} 
+                      className="absolute top-4 right-4 w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-100 transform hover:scale-110"
+                      title="Delete Service"
+                    >
+                      <Trash2 size={16} />
                     </button>
-                    <div className="text-[18px] font-bold text-primary mb-2 pr-6">{service.title}</div>
-                    <div className="text-[14px] text-muted line-clamp-2 mb-4 h-[40px]">{service.description}</div>
-                    <div className="flex items-center justify-between pt-4 border-t border-border">
-                      <div className="text-[14px] font-medium text-muted">{service.duration_minutes} mins</div>
-                      <div className="text-[16px] font-bold text-accent">₹{service.price}</div>
+                    
+                    {/* Icon & Title */}
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 border border-teal/10 group-hover:bg-teal group-hover:text-white transition-colors duration-300">
+                        <FileText size={22} className="text-teal group-hover:text-white transition-colors duration-300" />
+                      </div>
+                      <div className="pt-1 pr-6">
+                        <div className="text-[12px] font-bold text-teal uppercase tracking-wider mb-1">1-ON-1 SESSION</div>
+                        <h3 className="text-[18px] font-extrabold text-primary leading-tight line-clamp-2">{service.title}</h3>
+                      </div>
+                    </div>
+                    
+                    {/* Description */}
+                    <div className="text-[14px] text-muted line-clamp-2 mb-6 flex-grow leading-relaxed">
+                      {service.description}
+                    </div>
+                    
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-5 border-t border-gray-100 mt-auto">
+                      <div className="flex items-center gap-1.5 text-[14px] font-semibold text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {service.duration_minutes} Mins
+                      </div>
+                      <div className="text-[20px] font-extrabold text-primary">
+                        ₹{service.price}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -133,10 +160,10 @@ export default function ServicesPage() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-primary/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-[24px] shadow-xl w-full max-w-[500px] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-border bg-bg">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-[24px] shadow-xl w-full max-w-[500px] flex flex-col relative">
+            <div className="flex items-center justify-between p-6 border-b border-border bg-bg rounded-t-[24px]">
               <h2 className="text-[18px] font-bold text-primary">Create New Service</h2>
-              <button onClick={() => setShowModal(false)} className="text-muted hover:text-primary">
+              <button type="button" onClick={() => setShowModal(false)} className="text-muted hover:text-primary">
                 <X size={20} />
               </button>
             </div>
@@ -152,12 +179,16 @@ export default function ServicesPage() {
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block text-[14px] font-bold text-primary mb-2">Duration (Mins)</label>
-                  <select value={duration} onChange={e => setDuration(e.target.value)} className="w-full h-[44px] px-4 rounded-[8px] border border-border bg-white text-[14px] focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 transition-all">
-                    <option value="15">15 minutes</option>
-                    <option value="30">30 minutes</option>
-                    <option value="45">45 minutes</option>
-                    <option value="60">60 minutes</option>
-                  </select>
+                  <CustomSelect 
+                    value={duration} 
+                    onChange={setDuration} 
+                    options={[
+                      { label: '15 minutes', value: '15' },
+                      { label: '30 minutes', value: '30' },
+                      { label: '45 minutes', value: '45' },
+                      { label: '60 minutes', value: '60' },
+                    ]} 
+                  />
                 </div>
                 <div>
                   <label className="block text-[14px] font-bold text-primary mb-2">Price (₹)</label>

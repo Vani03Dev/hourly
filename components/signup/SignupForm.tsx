@@ -15,7 +15,7 @@ const signupSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must be at least 8 chars, include uppercase, lowercase, number, and special character"),
   city: z.string().min(2, "City is required"),
 });
 
@@ -281,7 +281,7 @@ export function SignupForm() {
             mb: 2
           }}
         >
-          <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" sx={{ width: 20, height: 20, mr: 1.5 }} />
+          <Box component="img" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" alt="Google" sx={{ width: 20, height: 20, mr: 1.5 }} />
           Continue with Google
         </Button>
 

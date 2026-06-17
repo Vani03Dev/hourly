@@ -8,7 +8,7 @@ import {
   Star, Clock3, Calendar, Sparkles
 } from "lucide-react";
 import { Button } from "../ui/Button";
-import { Slider, Avatar, Chip } from "@mui/material";
+import { Slider, Avatar, Chip, Badge as MuiBadge } from "@mui/material";
 import { SHOW_RATINGS_AND_REVIEWS } from "@/lib/feature-flags";
 
 const CATEGORIES = [
@@ -44,6 +44,8 @@ interface Expert {
   reviewsCount: number;
   initials: string;
   isVerified: boolean;
+  avatarUrl?: string;
+  isOnline: boolean;
 }
 
 function FilterSection({
@@ -118,19 +120,23 @@ export function BrowseExperts() {
         .eq("is_onboarded", true);
 
       if (data) {
-        const formatted = data.map((exp: any) => ({
-          id: exp.username || exp.id,
-          name: `${exp.first_name || ""} ${exp.last_name || ""}`.trim() || exp.username,
-          title: exp.title || "Expert Advisor",
-          categories: exp.tags || [],
-          availability: "any" as const,
-          durations: [15, 30, 60] as (15 | 30 | 60)[],
-          price: exp.hourly_rate || 1000,
-          rating: 5.0,
-          reviewsCount: 0,
-          initials: (exp.first_name?.charAt(0) || exp.username?.charAt(0) || "E").toUpperCase(),
-          isVerified: true,
-        }));
+        const formatted = data.map((exp: any) => {
+          return {
+            id: exp.username || exp.id,
+            name: `${exp.first_name || ""} ${exp.last_name || ""}`.trim() || exp.username,
+            title: exp.title || "Expert Advisor",
+            categories: exp.tags || [],
+            availability: "any" as const,
+            durations: [15, 30, 60] as (15 | 30 | 60)[],
+            price: exp.hourly_rate || 1000,
+            rating: 5.0,
+            reviewsCount: 0,
+            initials: (exp.first_name?.charAt(0) || exp.username?.charAt(0) || "E").toUpperCase(),
+            isVerified: true,
+            avatarUrl: exp.avatar_url || "",
+            isOnline: exp.is_online === true,
+          };
+        });
         setExperts(formatted);
       }
       setLoading(false);
@@ -585,21 +591,32 @@ export function BrowseExperts() {
 
                 <div>
                   <div className="flex gap-4 mb-4">
-                    <Avatar
-                      sx={{
-                        width: 48,
-                        height: 48,
-                        bgcolor: "#111827",
-                        color: "#fff",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        border: "1px solid #E5E7EB",
-                      }}
+                    <MuiBadge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      variant="dot"
+                      invisible={!exp.isOnline}
+                      sx={{ "& .MuiBadge-badge": { backgroundColor: "#22c55e", width: 12, height: 12, borderRadius: "50%", border: "2px solid #fff" } }}
                     >
-                      {exp.initials}
-                    </Avatar>
+                      <Avatar
+                        src={exp.avatarUrl}
+                        sx={{
+                          width: 48,
+                          height: 48,
+                          bgcolor: "#111827",
+                          color: "#fff",
+                          fontSize: "16px",
+                          fontWeight: "bold",
+                          border: "1px solid #E5E7EB",
+                        }}
+                      >
+                        {!exp.avatarUrl && exp.initials}
+                      </Avatar>
+                    </MuiBadge>
                     <div className="flex flex-col pr-16">
-                      <h3 className="text-[16px] font-bold text-primary line-clamp-1">{exp.name}</h3>
+                      <h3 className="text-[16px] font-bold text-primary line-clamp-1">
+                        {exp.name}
+                      </h3>
                       <p className="text-[12px] text-muted font-semibold mt-0.5 line-clamp-2 min-h-[32px]">{exp.title}</p>
                     </div>
                   </div>

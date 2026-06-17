@@ -70,6 +70,7 @@ export function Header() {
   const [currencyDropdown, setCurrencyDropdown] = useState(false);
   const [avatarDropdown, setAvatarDropdown] = useState(false);
   const [role, setRole] = useState<'company' | 'expert'>(user?.user_metadata?.role || 'company');
+  const [isOnline, setIsOnline] = useState(false);
 
   React.useEffect(() => {
     async function checkRole() {
@@ -78,9 +79,10 @@ export function Header() {
         return;
       }
       const supabase = createClient();
-      const { data: eData } = await supabase.from('expert_profiles').select('id').eq('id', user.id).single();
+      const { data: eData } = await supabase.from('expert_profiles').select('id, is_online').eq('id', user.id).single();
       if (eData || user.user_metadata?.role === 'expert') {
         setRole('expert');
+        if (eData?.is_online) setIsOnline(true);
       } else {
         setRole('company');
       }
@@ -152,36 +154,46 @@ export function Header() {
                   </span>
                 )}
                 
-                {/* Avatar Dropdown */}
-                <div className="relative">
+                <div 
+                  className="relative"
+                  onMouseLeave={() => setAvatarDropdown(false)}
+                >
                   <button 
                     onClick={() => setAvatarDropdown(!avatarDropdown)}
                     className="w-[36px] h-[36px] rounded-full bg-[#111827] text-white flex items-center justify-center font-bold text-[14px] hover:opacity-90 transition-opacity border-2 border-[#2563EB]"
                   >
                     {initials.toUpperCase()}
                   </button>
+                  {isOnline && (
+                    <span className="absolute bottom-0 right-0 flex h-3 w-3 pointer-events-none">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-success border-2 border-white"></span>
+                    </span>
+                  )}
 
                   {avatarDropdown && (
-                    <div className="absolute top-full right-0 mt-[8px] w-56 bg-white border border-border shadow-md rounded-[8px] overflow-hidden z-50 animate-dropdown-open">
-                      <div className="p-4 border-b border-gray-100">
-                        <p className="font-bold text-[14px] text-[#111827] truncate">{user?.user_metadata?.full_name || "User"}</p>
-                        <p className="text-[12px] text-[#6B7280] truncate">{user?.email}</p>
-                      </div>
-                      <div className="p-2 flex flex-col gap-[2px]">
-                        <Link href={role === 'expert' ? "/expert/dashboard" : "/dashboard/business"} className="flex items-center gap-[8px] px-3 py-2 text-[14px] text-[#111827] hover:bg-gray-50 rounded-[6px] transition-colors">
-                          <LayoutDashboard size={16} /> Dashboard
-                        </Link>
-                        <Link href={role === 'expert' ? "/expert/sessions" : "/dashboard/bookings"} className="flex items-center gap-[8px] px-3 py-2 text-[14px] text-[#111827] hover:bg-gray-50 rounded-[6px] transition-colors">
-                          <CalendarCheck size={16} /> My Bookings
-                        </Link>
-                        <Link href={role === 'expert' ? "/expert/settings" : "/dashboard/settings"} className="flex items-center gap-[8px] px-3 py-2 text-[14px] text-[#111827] hover:bg-gray-50 rounded-[6px] transition-colors">
-                          <Settings size={16} /> Settings
-                        </Link>
-                      </div>
-                      <div className="p-2 border-t border-gray-100">
-                        <button onClick={handleLogout} className="flex items-center w-full gap-[8px] px-3 py-2 text-[14px] text-red-600 hover:bg-red-50 rounded-[6px] transition-colors">
-                          <LogOut size={16} /> Log Out
-                        </button>
+                    <div className="absolute top-full right-0 pt-[8px] z-50 animate-dropdown-open">
+                      <div className="w-56 bg-white border border-border shadow-md rounded-[8px] overflow-hidden">
+                        <div className="p-4 border-b border-gray-100">
+                          <p className="font-bold text-[14px] text-[#111827] truncate">{user?.user_metadata?.full_name || "User"}</p>
+                          <p className="text-[12px] text-[#6B7280] truncate">{user?.email}</p>
+                        </div>
+                        <div className="p-2 flex flex-col gap-[2px]">
+                          <Link href={role === 'expert' ? "/expert/dashboard" : "/dashboard/business"} onClick={() => setAvatarDropdown(false)} className="flex items-center gap-[8px] px-3 py-2 text-[14px] text-[#111827] hover:bg-gray-50 rounded-[6px] transition-colors">
+                            <LayoutDashboard size={16} /> Dashboard
+                          </Link>
+                          <Link href={role === 'expert' ? "/expert/sessions" : "/dashboard/bookings"} onClick={() => setAvatarDropdown(false)} className="flex items-center gap-[8px] px-3 py-2 text-[14px] text-[#111827] hover:bg-gray-50 rounded-[6px] transition-colors">
+                            <CalendarCheck size={16} /> My Bookings
+                          </Link>
+                          <Link href={role === 'expert' ? "/expert/settings" : "/dashboard/settings"} onClick={() => setAvatarDropdown(false)} className="flex items-center gap-[8px] px-3 py-2 text-[14px] text-[#111827] hover:bg-gray-50 rounded-[6px] transition-colors">
+                            <Settings size={16} /> Settings
+                          </Link>
+                        </div>
+                        <div className="p-2 border-t border-gray-100">
+                          <button onClick={handleLogout} className="flex items-center w-full gap-[8px] px-3 py-2 text-[14px] text-red-600 hover:bg-red-50 rounded-[6px] transition-colors">
+                            <LogOut size={16} /> Log Out
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

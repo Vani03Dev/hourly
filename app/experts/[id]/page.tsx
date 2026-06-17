@@ -32,14 +32,15 @@ async function getExpertData(username: string) {
       reviewsCount: 0,
       initials: (data.first_name?.charAt(0) || data.username?.charAt(0) || "E").toUpperCase(),
       isVerified: true,
-      company: "Independent Practice",
+      company: "",
       memberSince: data.created_at ? new Date(data.created_at).getFullYear().toString() : "2026",
       bio: data.bio || "Verified Sessionly Expert available for B2B strategic consultation.",
       credentials: ["LinkedIn Verified", "Verified Account"],
       languages: ["English"],
       skills: data.tags || [],
-      experience: [{ year: "2020 - Present", company: "Independent", role: data.title }],
-      certifications: []
+      experience: [],
+      certifications: [],
+      avatarUrl: data.avatar_url || "",
     };
   } catch (e) {
     return null;

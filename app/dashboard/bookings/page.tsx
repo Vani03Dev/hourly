@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Search, Video, Clock, ArrowRight, Download, Filter, Inbox, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { FilterDropdown } from '@/components/ui/FilterDropdown';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
 import toast from 'react-hot-toast';
@@ -143,22 +144,13 @@ export default function BookingsPage() {
               />
             </div>
 
-            <div className="relative flex-1 lg:flex-none">
-              <Filter className="absolute left-[12px] top-1/2 -translate-y-1/2 w-[16px] h-[16px] text-gray-400 pointer-events-none" />
-              <select 
-                value={selectedCategory}
-                onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
-                className="w-full lg:w-[180px] h-[40px] pl-[36px] pr-[16px] border border-gray-200 rounded-[8px] text-[13px] text-gray-600 font-semibold outline-none bg-white focus:border-teal hover:border-gray-300 transition-colors shadow-sm cursor-pointer appearance-none"
-              >
-                <option>All Categories</option>
-                <option>GST & Tax</option>
-                <option>System Design</option>
-                <option>Financial Model</option>
-              </select>
-              <div className="absolute right-[12px] top-1/2 -translate-y-1/2 pointer-events-none">
-                <ChevronDown size={14} className="text-gray-400" />
-              </div>
-            </div>
+            <FilterDropdown
+              icon={<Filter size={16} />}
+              value={selectedCategory}
+              options={['All Categories', 'GST & Tax', 'System Design', 'Financial Model']}
+              onChange={(val) => { setSelectedCategory(val); setCurrentPage(1); }}
+              className="w-full lg:w-[180px]"
+            />
           </div>
         </div>
 

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, ArrowLeft, Upload, Check, ShieldCheck, HelpCircle } from "lucide-react";
 import { Button } from "../../../components/ui/Button";
 import { Input } from "../../../components/ui/Input";
+import { CustomSelect } from "../../../components/ui/CustomSelect";
 import toast from "react-hot-toast";
 
 const DOMAINS = [
@@ -178,15 +179,11 @@ export default function ExpertOnboarding() {
 
             <div className="flex flex-col gap-[6px]">
               <label className="text-[11px] font-bold text-muted uppercase tracking-wider">Primary Domain</label>
-              <select
+              <CustomSelect
                 value={domain}
-                onChange={(e) => setDomain(e.target.value)}
-                className="h-[40px] px-[12px] border border-border rounded-lg text-[13.5px] text-primary font-semibold bg-white outline-none focus:border-accent"
-              >
-                {DOMAINS.map(d => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
+                onChange={setDomain}
+                options={DOMAINS}
+              />
             </div>
 
             <Input 
