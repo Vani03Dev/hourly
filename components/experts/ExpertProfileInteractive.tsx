@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Star, ShieldCheck, ChevronDown, ChevronUp, MapPin, Globe, Languages, Check, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "../ui/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
@@ -30,6 +31,7 @@ interface ExpertData {
   experience: { year: string; company: string; role: string }[];
   certifications: { year: string; name: string; issuer: string }[];
   avatarUrl?: string;
+  isOnline?: boolean;
 }
 
 export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
@@ -82,13 +84,24 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
   const timeSlots = ["10:00 AM", "11:30 AM", "2:00 PM", "4:30 PM", "6:00 PM"];
 
   return (
-    <div className="w-full flex flex-col gap-[40px]">
+    <motion.div 
+      initial="hidden"
+      animate="show"
+      variants={{
+        hidden: { opacity: 0 },
+        show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
+      }}
+      className="w-full flex flex-col gap-[40px]"
+    >
       
       {/* TOP SECTION (2-col: left info, right booking) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-[40px] items-start">
         
         {/* LEFT INFORMATION COLUMN (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col gap-[32px]">
+        <motion.div 
+          variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}
+          className="lg:col-span-7 flex flex-col gap-[32px]"
+        >
           {/* Main profile card header */}
           <div className="flex gap-[24px] items-start border-b border-border pb-[24px]">
             <div className="w-[80px] h-[80px] rounded-full bg-primary text-white flex items-center justify-center font-bold text-[28px] border border-border shrink-0 relative overflow-hidden">
@@ -97,17 +110,23 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
               ) : (
                 expert.initials
               )}
-              {expert.isVerified && (
-                <span className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-success rounded-full border-2 border-white flex items-center justify-center z-10" title="Verified Badge">
-                  <span className="text-[10px] text-white font-bold">✓</span>
+              {expert.isOnline && (
+                <span className="absolute bottom-[2px] right-[2px] flex h-[20px] w-[20px] z-10">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-[20px] w-[20px] bg-green-500 border-[3px] border-white shadow-sm"></span>
                 </span>
               )}
             </div>
 
             <div className="flex flex-col">
               <div className="flex items-center gap-[8px] flex-wrap">
-                <h1 className="text-[28px] font-bold text-primary leading-tight">
+                <h1 className="text-[28px] font-bold text-primary leading-tight flex items-center gap-[8px]">
                   {expert.name}
+                  {expert.isVerified && (
+                    <span title="Verified Expert" className="flex items-center">
+                      <ShieldCheck className="w-[24px] h-[24px] text-success" />
+                    </span>
+                  )}
                 </h1>
               </div>
               <p className="text-[16px] text-muted font-semibold mt-[4px]">
@@ -182,10 +201,14 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
             <span>Languages: {expert.languages.join(", ")}</span>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* RIGHT BOOKING CARD (5 cols, sticky on scroll) */}
-        <div id="booking-card" className="lg:col-span-5 lg:sticky lg:top-[88px] bg-white border border-border rounded-xl p-[24px] shadow-premium flex flex-col gap-[20px]">
+        <motion.div 
+          variants={{ hidden: { opacity: 0, scale: 0.95 }, show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } } }}
+          id="booking-card" 
+          className="lg:col-span-5 lg:sticky lg:top-[88px] bg-white border border-border rounded-xl p-[24px] shadow-premium flex flex-col gap-[20px]"
+        >
           {role === 'expert' ? (
             <div className="flex flex-col gap-4 text-center py-6">
               <div className="w-12 h-12 rounded-full bg-blue-50 text-accent flex items-center justify-center mx-auto mb-2">
@@ -231,14 +254,16 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                   ].map((type) => {
                     const isSelected = selectedDuration === type.min;
                     return (
-                      <button
+                      <motion.button
                         key={type.min}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => {
                           setSelectedDuration(type.min);
                           setSelectedDate(null);
                           setSelectedTime(null);
                         }}
-                        className={`flex justify-between items-center px-[16px] h-[48px] rounded-lg border text-[13.5px] font-semibold transition-all ${
+                        className={`flex justify-between items-center px-[16px] h-[48px] rounded-lg border text-[13.5px] font-semibold transition-colors duration-200 ${
                           isSelected 
                             ? "border-accent bg-blue-50/50 text-accent" 
                             : "border-border text-primary hover:bg-bg"
@@ -246,7 +271,7 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                       >
                         <span>{type.min} min Session</span>
                         <span className="font-mono">₹{type.price}</span>
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -259,20 +284,22 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                   {availableDays.map((day) => {
                     const isSelected = selectedDate === day;
                     return (
-                      <button
+                      <motion.button
                         key={day}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => {
                           setSelectedDate(day);
                           setSelectedTime(null);
                         }}
-                        className={`h-[48px] text-[13px] font-bold rounded-lg border font-mono transition-all ${
+                        className={`h-[48px] text-[13px] font-bold rounded-lg border font-mono transition-colors duration-200 ${
                           isSelected 
                             ? "border-accent bg-accent text-white shadow-sm" 
                             : "border-border text-primary hover:bg-bg bg-white"
                         }`}
                       >
                         {day} Jun
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -286,17 +313,19 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
                     {timeSlots.map((slot) => {
                       const isSelected = selectedTime === slot;
                       return (
-                        <button
-                          key={slot}
-                          onClick={() => setSelectedTime(slot)}
-                          className={`h-[48px] text-[13px] font-bold rounded-lg border transition-all ${
-                            isSelected 
-                              ? "border-accent bg-accent text-white shadow-sm" 
-                              : "border-border text-primary hover:bg-bg"
-                          }`}
-                        >
-                          {slot}
-                        </button>
+                      <motion.button
+                        key={slot}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setSelectedTime(slot)}
+                        className={`h-[48px] text-[13px] font-bold rounded-lg border transition-colors duration-200 ${
+                          isSelected 
+                            ? "border-accent bg-accent text-white shadow-sm" 
+                            : "border-border text-primary hover:bg-bg"
+                        }`}
+                      >
+                        {slot}
+                      </motion.button>
                       );
                     })}
                   </div>
@@ -332,12 +361,15 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
               </div>
             </>
           )}
-        </div>
+        </motion.div>
 
       </div>
 
       {/* TABS BELOW: About · Reviews · Availability */}
-      <div className="border-t border-border pt-[40px] mt-[24px]">
+      <motion.div 
+        variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }}
+        className="border-t border-border pt-[40px] mt-[24px]"
+      >
         {/* Tabs Headers */}
         <div className="flex border-b border-border mb-[24px] gap-[24px]">
           {[
@@ -516,7 +548,7 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
           )}
 
         </div>
-      </div>
+      </motion.div>
 
       {/* MOBILE STICKY BOTTOM BAR */}
       {role !== 'expert' && (
@@ -543,6 +575,6 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
         </div>
       )}
 
-    </div>
+    </motion.div>
   );
 }

@@ -139,7 +139,12 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans select-none overflow-x-hidden">
       
       {/* 1. PROFILE HEADER */}
-      <section className="bg-white px-[20px] md:px-[48px] lg:px-[96px] py-[40px] border-b border-gray-200 shadow-level-1">
+      <motion.section 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="bg-white px-[20px] md:px-[48px] lg:px-[96px] py-[40px] border-b border-gray-200 shadow-level-1 relative z-10"
+      >
         <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-[32px] md:gap-[48px] items-center">
           
           {/* Avatar side */}
@@ -211,7 +216,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
           </div>
 
         </div>
-      </section>
+      </motion.section>
 
       {/* 2. STICKY ACTION BAR */}
       <div className="sticky top-[64px] z-40 bg-white border-b border-gray-200 shadow-level-2 h-[64px] flex items-center justify-center px-[20px] md:px-[48px] lg:px-[96px] w-full">
@@ -244,25 +249,38 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
       </div>
 
       {/* 3. PAGE CONTENT */}
-      <main className="max-w-[1000px] w-full mx-auto py-[32px] px-[20px] md:px-[40px] flex flex-col gap-[16px]">
+      <motion.main 
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+          }
+        }}
+        className="max-w-[1000px] w-full mx-auto py-[32px] px-[20px] md:px-[40px] flex flex-col gap-[16px]"
+      >
         
         {/* ABOUT CARD */}
-        <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
           <h4 className="text-[20px] font-bold text-[#0F2137] mb-[12px]">About</h4>
           <p className="text-[18px] text-gray-600 leading-[1.7] font-normal">
             {expert.bio}
           </p>
-        </div>
+        </motion.div>
 
         {/* SESSION TYPES CARD */}
-        <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
           <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Session Types</h4>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[16px]">
             {/* Video Consultation */}
-            <div 
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedSessionType('video')}
-              className={`border rounded-[10px] p-[20px] cursor-pointer transition-all ${
+              className={`border rounded-[10px] p-[20px] cursor-pointer transition-colors duration-200 ${
                 selectedSessionType === 'video' 
                   ? `${t.border} ${t.bgLight} ring-2 ring-opacity-10 ${t.ring}` 
                   : `border-gray-200 ${t.borderLight.replace('border-', 'hover:border-')} bg-white`
@@ -296,12 +314,14 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                   60 min — ₹{Math.round(expert.hourly_rate * 1.8)}
                 </button>
               </div>
-            </div>
+            </motion.div>
 
             {/* Async Q&A */}
-            <div 
+            <motion.div 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedSessionType('async')}
-              className={`border rounded-[10px] p-[20px] cursor-pointer transition-all ${
+              className={`border rounded-[10px] p-[20px] cursor-pointer transition-colors duration-200 ${
                 selectedSessionType === 'async' 
                   ? `${t.border} ${t.bgLight} ring-2 ring-opacity-10 ${t.ring}` 
                   : `border-gray-200 ${t.borderLight.replace('border-', 'hover:border-')} bg-white`
@@ -324,12 +344,12 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                   Per Thread — ₹{Math.round(expert.hourly_rate * 0.8)}
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* BOOKING CALENDAR CARD */}
-        <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
+        <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
           <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Available Slots</h4>
           
           {/* Month Header */}
@@ -433,7 +453,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
             </div>
           </div>
 
-        </div>
+        </motion.div>
 
         {/* REVIEWS CARD */}
         {SHOW_RATINGS_AND_REVIEWS && (
@@ -529,7 +549,7 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
           
           {/* Credentials Card */}
-          <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
+          <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
             <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Credentials & Licenses</h4>
             <div className="flex flex-wrap gap-[8px]">
               {expert.tags.map((tag: string, i: number) => (
@@ -538,11 +558,11 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                 </Badge>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Experience Card */}
           {expert.experience?.length > 0 && (
-            <div className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
+            <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
               <h4 className="text-[20px] font-bold text-[#0F2137] mb-[20px]">Work Timeline</h4>
               <div className={`flex flex-col gap-[20px] border-l-2 ${t.border} pl-[20px] ml-[8px]`}>
                 {expert.experience.map((exp: any, i: number) => (
@@ -559,12 +579,12 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
         </div>
 
-      </main>
+      </motion.main>
     </div>
   );
 }

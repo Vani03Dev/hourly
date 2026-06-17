@@ -41,6 +41,7 @@ async function getExpertData(username: string) {
       experience: [],
       certifications: [],
       avatarUrl: data.avatar_url || "",
+      isOnline: data.is_online || false,
     };
   } catch (e) {
     return null;

@@ -84,6 +84,16 @@ export async function signup(formData: FormData) {
 
 export async function logout() {
   const supabase = await createClient()
+  
+  // Set presence to offline before logging out
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    await supabase.rpc('update_presence', {
+      user_id: user.id,
+      online_status: false
+    })
+  }
+
   await supabase.auth.signOut()
   redirect('/')
 }

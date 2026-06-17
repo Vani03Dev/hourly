@@ -84,7 +84,7 @@ export function HomeFeaturedExperts({ experts }: { experts: FeaturedExpert[] }) 
                   )}
                 </div>
                 <div className="mt-5 pt-4 border-t border-border">
-                  <p className="text-[18px] font-bold font-mono mb-3">
+                  <p className="text-[18px] font-bold text-primary font-mono mb-3">
                     ₹{exp.price}
                     <span className="text-[12px] text-muted font-sans font-normal"> / session</span>
                   </p>
