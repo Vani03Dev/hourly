@@ -167,9 +167,10 @@ export function ExpertProfileInteractive({ expert }: { expert: ExpertData }) {
           {/* Bio (3 lines, expand toggle) */}
           <div className="flex flex-col gap-[8px]">
             <h3 className="text-[18px] font-bold text-primary">About Expert</h3>
-            <p className={`text-[14px] text-muted leading-relaxed ${bioExpanded ? "" : "line-clamp-3"}`}>
-              {expert.bio}
-            </p>
+            <div 
+              className={`text-[14px] text-muted leading-relaxed [&>p]:mb-2 [&>p:last-child]:mb-0 ${bioExpanded ? "" : "line-clamp-3"}`}
+              dangerouslySetInnerHTML={{ __html: expert.bio }}
+            />
             <button 
               onClick={() => setBioExpanded(!bioExpanded)}
               className="text-[13px] font-bold text-accent hover:text-accent-hover flex items-center gap-[4px] w-fit mt-[4px]"

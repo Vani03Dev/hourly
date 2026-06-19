@@ -381,9 +381,10 @@ export default function CustomizeCreatorPage() {
                 )}
               </div>
 
-              <p className="text-[14px] text-gray-600 leading-relaxed text-center mb-6">
-                {bio || 'Your bio will appear here. Write a compelling description of your expertise.'}
-              </p>
+              <div 
+                className="text-[14px] text-gray-600 leading-relaxed text-center mb-6 [&>p]:mb-2 [&>p:last-child]:mb-0"
+                dangerouslySetInnerHTML={{ __html: bio || 'Your bio will appear here. Write a compelling description of your expertise.' }}
+              />
 
               <div className="p-4 rounded-[12px] bg-gray-50 border border-gray-200 text-center">
                 <p className="text-[12px] text-muted mb-1">Starting from</p>

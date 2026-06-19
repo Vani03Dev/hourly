@@ -265,9 +265,10 @@ export default function ExpertPublicProfile({ params }: { params: Promise<{ user
         {/* ABOUT CARD */}
         <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="bg-white border border-gray-200 rounded-[12px] p-[32px] shadow-level-1">
           <h4 className="text-[20px] font-bold text-[#0F2137] mb-[12px]">About</h4>
-          <p className="text-[18px] text-gray-600 leading-[1.7] font-normal">
-            {expert.bio}
-          </p>
+          <div 
+            className="text-[18px] text-gray-600 leading-[1.7] font-normal [&>p]:mb-4 [&>p:last-child]:mb-0"
+            dangerouslySetInnerHTML={{ __html: expert.bio }}
+          />
         </motion.div>
 
         {/* SESSION TYPES CARD */}
